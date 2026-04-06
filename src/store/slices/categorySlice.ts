@@ -1,0 +1,75 @@
+// src/redux/slices/essaySlice.ts
+import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
+import type { Category, Pagination } from "../../utils/types";
+import { fetchCategory } from "../../services/apiServices";
+
+interface CatgoryState extends Pagination<Category> { }
+
+const initialState: CatgoryState = {
+    data: [],
+    next: null,
+    pagination: {
+        total_results: null,
+        total_pages: null,
+        current_page: null,
+        next_page: null,
+        page_size: null,
+        previous_page: null,
+    },
+    previous: null,
+    page: 1,
+    loading: false,
+    error: null,
+};
+
+// Async thunk to fetch paginated student data
+export const getCategory = createAsyncThunk<Pagination<Category>, { page?: number; search?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
+    "category/getCategory",
+    async ({ page = 1, search = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
+        try {
+            return await fetchCategory(page, search, ordering, status, startDate, endDate);
+        } catch (err: any) {
+            return rejectWithValue(err?.message || "Failed to fetch categories");
+        }
+    }
+);
+
+const categorySlice = createSlice({
+    name: "category",
+    initialState,
+    reducers: {
+        setPage(state, action) {
+            state.page = action.payload;
+        },
+        removeCategory: (state, action: PayloadAction<Number | string>) => {
+            state.data = state.data.filter((item) => item.id !== action.payload);
+        },
+        StatusCategory: (state, action: PayloadAction<number | string>) => {
+            state.data = state.data.map((item) =>
+                item.id.toString() === action.payload.toString()
+                    ? { ...item, status: !item.status }
+                    : item
+            );
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(getCategory.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getCategory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload.data;
+                state.pagination = action.payload.pagination
+            })
+            .addCase(getCategory.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+    },
+});
+
+export const { setPage, removeCategory, StatusCategory } = categorySlice.actions;
+
+export default categorySlice.reducer;
