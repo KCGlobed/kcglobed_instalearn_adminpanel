@@ -1,7 +1,7 @@
 // src/redux/slices/essaySlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
 import type { Category, Pagination } from "../../utils/types";
-import { fetchCategory } from "../../services/apiServices";
+import { createCategory, fetchCategory, updateCategoryApi } from "../../services/apiServices";
 
 interface CatgoryState extends Pagination<Category> { }
 
@@ -23,16 +23,45 @@ const initialState: CatgoryState = {
 };
 
 // Async thunk to fetch paginated student data
-export const getCategory = createAsyncThunk<Pagination<Category>, { page?: number; search?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
+export const getCategory = createAsyncThunk<Pagination<Category>, { page?: number; search?: string; name?: string; description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
     "category/getCategory",
-    async ({ page = 1, search = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
+    async ({ page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
         try {
-            return await fetchCategory(page, search, ordering, status, startDate, endDate);
+            return await fetchCategory(page, search, name, description, ordering, status, startDate, endDate);
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch categories");
         }
     }
 );
+
+export const addCategory = createAsyncThunk<Category, any, { rejectValue: string }>(
+    "category/addCategory",
+    async (categoryData, { rejectWithValue }) => {
+        try {
+            const data = await createCategory(categoryData);
+            // the API response might be direct object or wrapped in `data`
+            return data?.data ? data.data : data;
+
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to create category");
+        }
+    }
+);
+
+export const editCategory = createAsyncThunk<Category, any, { rejectValue: string }>(
+    "category/editCategory",
+    async ({ id, categoryData }, { rejectWithValue }) => {
+        try {
+            const data = await updateCategoryApi(id, categoryData);
+            return data.data;
+
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to fetch blogs");
+        }
+    }
+);
+
+
 
 const categorySlice = createSlice({
     name: "category",
@@ -66,6 +95,14 @@ const categorySlice = createSlice({
             .addCase(getCategory.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(addCategory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data.unshift(action.payload);
+            })
+            .addCase(editCategory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
             })
     },
 });
