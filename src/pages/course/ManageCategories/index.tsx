@@ -3,11 +3,12 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../../components/Table/Table';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useRedux';
-import { getCategory, removeCategory } from '../../../store/slices/categorySlice';
+import { getCategory, removeCategory, updateCategoryStatus } from '../../../store/slices/categorySlice';
 import useDebounce from '../../../hooks/useDebounce';
 import moment from 'moment';
 import CategoryForm from '../../../components/Forms/CategoryForm';
 import { useModal } from '../../../context/ModalContext';
+import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
@@ -186,10 +187,18 @@ const ManageCategories: React.FC = () => {
         {
             key: 'status',
             title: 'Status',
-            render: (value: boolean) => (
-                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${value ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+            render: (value: boolean, row: any) => (
+                <button
+                    onClick={() => {
+                        dispatch(updateCategoryStatus({ id: row.id, status: !value }))
+                            .unwrap()
+                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .catch((err) => toast.error(err || "Failed to update status"));
+                    }}
+                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
+                >
                     {value ? 'Active' : 'Inactive'}
-                </span>
+                </button>
             ),
             width: '100px',
             align: 'center',
@@ -292,6 +301,7 @@ const ManageCategories: React.FC = () => {
                                 search: debouncedSearchTerm,
                                 name: debouncedFilters.name,
                                 description: debouncedFilters.description,
+                                status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
@@ -299,6 +309,7 @@ const ManageCategories: React.FC = () => {
                                 search: debouncedSearchTerm,
                                 name: debouncedFilters.name,
                                 description: debouncedFilters.description,
+                                status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}

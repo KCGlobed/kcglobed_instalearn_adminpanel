@@ -1,7 +1,7 @@
 // src/redux/slices/essaySlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
 import type { Category, Pagination } from "../../utils/types";
-import { createCategory, fetchCategory, updateCategoryApi } from "../../services/apiServices";
+import { createCategory, fetchCategory, updateCategoryApi, updateCategoryStatusApi } from "../../services/apiServices";
 
 interface CatgoryState extends Pagination<Category> { }
 
@@ -61,6 +61,18 @@ export const editCategory = createAsyncThunk<Category, any, { rejectValue: strin
     }
 );
 
+export const updateCategoryStatus = createAsyncThunk<Category, any, { rejectValue: string }>
+    ("category/updateCategoryStatus",
+        async ({ id, status }, { rejectWithValue }) => {
+            try {
+                const data = await updateCategoryStatusApi(id, { status });
+                return data.data;
+            } catch (error: any) {
+                return rejectWithValue(error.message || "Failed to update category status");
+            }
+        }
+    );
+
 
 
 const categorySlice = createSlice({
@@ -101,6 +113,10 @@ const categorySlice = createSlice({
                 state.data.unshift(action.payload);
             })
             .addCase(editCategory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
+            })
+            .addCase(updateCategoryStatus.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
             })
