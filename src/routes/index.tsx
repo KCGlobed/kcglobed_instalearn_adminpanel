@@ -14,8 +14,6 @@ import ManageSubCategories from "../pages/course/ManageSubCategories";
 
 
 
-
-
 export default function AppRoutes() {
   return (
     <Routes>

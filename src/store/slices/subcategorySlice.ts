@@ -1,7 +1,7 @@
 // src/store/slices/subcategorySlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import type { Subcategory, Pagination } from "../../utils/types";
-import { createCategory, fetchCategory, fetchSubcategory, updateCategoryApi, updateCategoryStatusApi } from "../../services/apiServices";
+import { createSubCategory, fetchSubcategory, updateCategoryStatusApi, updateSubCategoryApi, updateSubCategoryStatusApi } from "../../services/apiServices";
 
 interface SubcategoryState extends Pagination<Subcategory> { }
 
@@ -41,7 +41,7 @@ export const addSubcategory = createAsyncThunk<Subcategory, any, { rejectValue: 
     "subcategory/addSubcategory",
     async (subcategoryData, { rejectWithValue }) => {
         try {
-            const data = await createCategory(subcategoryData);
+            const data = await createSubCategory(subcategoryData);
             // the API response might be direct object or wrapped in `data`
             return data?.data ? data.data : data;
         } catch (error: any) {
@@ -54,7 +54,7 @@ export const editSubcategory = createAsyncThunk<Subcategory, { id: string | numb
     "subcategory/editSubcategory",
     async ({ id, subcategoryData }, { rejectWithValue }) => {
         try {
-            const data = await updateCategoryApi(id, subcategoryData);
+            const data = await updateSubCategoryApi(id, subcategoryData);
             return data.data;
         } catch (error: any) {
             return rejectWithValue(error.message || "Failed to update subcategory");
@@ -62,17 +62,20 @@ export const editSubcategory = createAsyncThunk<Subcategory, { id: string | numb
     }
 );
 
-export const updateSubcategoryStatus = createAsyncThunk<Subcategory, { id: string | number; status: boolean }, { rejectValue: string }>(
-    "subcategory/updateSubcategoryStatus",
-    async ({ id, status }, { rejectWithValue }) => {
-        try {
-            const data = await updateCategoryStatusApi(id, { status });
-            return data.data;
-        } catch (error: any) {
-            return rejectWithValue(error.message || "Failed to update subcategory status");
+
+
+export const updateSubCategoryStatus = createAsyncThunk<Subcategory, any, { rejectValue: string }>
+    ("subcategory/updateSubCategoryStatus",
+        async ({ id, status }, { rejectWithValue }) => {
+            try {
+                const data = await updateSubCategoryStatusApi(id, { status });
+                return data.data;
+            } catch (error: any) {
+                return rejectWithValue(error.message || "Failed to update category status");
+            }
         }
-    }
-);
+    );
+
 
 const subcategorySlice = createSlice({
     name: "subcategory",
@@ -83,13 +86,6 @@ const subcategorySlice = createSlice({
         },
         removeSubcategory: (state, action: PayloadAction<number | string>) => {
             state.data = state.data.filter((item) => item.id !== action.payload);
-        },
-        toggleSubcategoryStatus: (state, action: PayloadAction<number | string>) => {
-            state.data = state.data.map((item) =>
-                item.id.toString() === action.payload.toString()
-                    ? { ...item, status: !item.status }
-                    : item
-            );
         }
     },
     extraReducers: (builder) => {
@@ -117,13 +113,14 @@ const subcategorySlice = createSlice({
                 state.loading = false;
                 state.data = state.data.map(item => item.id === action.payload.id ? action.payload : item);
             })
-            .addCase(updateSubcategoryStatus.fulfilled, (state, action) => {
+
+            .addCase(updateSubCategoryStatus.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = state.data.map(item => item.id === action.payload.id ? action.payload : item);
             });
     },
 });
 
-export const { setPage, removeSubcategory, toggleSubcategoryStatus } = subcategorySlice.actions;
+export const { setPage, removeSubcategory } = subcategorySlice.actions;
 
 export default subcategorySlice.reducer;
