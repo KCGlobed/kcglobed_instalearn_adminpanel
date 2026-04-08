@@ -12,9 +12,6 @@ import ResetPassword from "../pages/forgotpassward/ResetPassword";
 import ManageCategories from "../pages/course/ManageCategories";
 import ManageSubCategories from "../pages/course/ManageSubCategories";
 import ManageTags from "../pages/course/ManageTags";
-import ManageInstructor from "../pages/course/ManageInstructor";
-
-
 
 export default function AppRoutes() {
   return (
@@ -31,7 +28,6 @@ export default function AppRoutes() {
           <Route path="/dashboard/categories" element={<ManageCategories />} />
           <Route path="/dashboard/sub-category" element={<ManageSubCategories />} />
           <Route path="/dashboard/tags" element={<ManageTags />} />
-          <Route path="/dashboard/instructor" element={<ManageInstructor/>} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

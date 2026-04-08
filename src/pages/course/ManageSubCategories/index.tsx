@@ -3,22 +3,22 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../../components/Table/Table';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useRedux';
-import { getSubcategory, removeSubcategory, updateSubcategoryStatus } from '../../../store/slices/subcategorySlice';
+import { getSubcategory, removeSubcategory, updateSubCategoryStatus } from '../../../store/slices/subcategorySlice';
 import useDebounce from '../../../hooks/useDebounce';
 import moment from 'moment';
-import CategoryForm from '../../../components/Forms/CategoryForm';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteCategory, downloadCategoryExcelApi, downloadCategoryPdfApi, downloadSubCategoryExcelApi, downloadSubCategoryPdfApi } from '../../../services/apiServices';
+import { deleteSubCategory, downloadSubCategoryExcelApi, downloadSubCategoryPdfApi } from '../../../services/apiServices';
 import ExportFile from '../../../components/Forms/ExportFile';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
 import { filterConfig } from '../../../utils/filterConfiguration';
+import SubCategoryForm from '../../../components/Forms/SubCategoryForm';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -102,13 +102,12 @@ const ManageSubCategories: React.FC = () => {
 
 
     const handleSort = (key: string, direction: 'asc' | 'desc') => {
-        const orderPrefix = direction === 'desc' ? '-' : '';
-        setOrdering(`${orderPrefix}${key}`);
+        setOrdering(direction === 'desc' ? `-${key}` : key);
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'name';
-        handleSort(currentKey, direction);
+        const currentField = ordering.replace(/^-/, '') || 'name';
+        handleSort(currentField, direction);
         setShowSort(false);
     };
 
@@ -190,7 +189,7 @@ const ManageSubCategories: React.FC = () => {
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateSubcategoryStatus({ id: row.id, status: !value }))
+                        dispatch(updateSubCategoryStatus({ id: row.id, status: !value }))
                             .unwrap()
                             .then(() => toast.success(`Subcategory ${!value ? 'activated' : 'deactivated'} successfully`))
                             .catch((err) => toast.error(err || "Failed to update status"));
@@ -215,8 +214,8 @@ const ManageSubCategories: React.FC = () => {
                         title="Edit"
                         onClick={() =>
                             showModal({
-                                title: 'Edit Category',
-                                content: <CategoryForm categoryData={row} />,
+                                title: 'Edit Sub Category',
+                                content: <SubCategoryForm categoryData={row} />,
                                 type: 'success',
                                 size: 'xl',
                             })
@@ -228,13 +227,17 @@ const ManageSubCategories: React.FC = () => {
                         title="Delete"
                         onClick={() => {
                             showModal({
-                                title: 'Delete Category',
+                                title: 'Delete Sub Category',
                                 content: <DeleteConfirmationModal
-                                    id={row}
+                                    id={row.id}
                                     name={row.name}
                                     onDelete={async (id) => {
-                                        await deleteCategory(row.id);
-                                        dispatch(removeSubcategory(row.id));
+                                        try {
+                                            await deleteSubCategory(id);
+                                            dispatch(removeSubcategory(id));
+                                        } catch (error: any) {
+                                            toast.error(error?.message || "Failed to delete subcategory");
+                                        }
                                     }}
                                 />,
                                 type: 'custom',
@@ -248,6 +251,8 @@ const ManageSubCategories: React.FC = () => {
             align: 'right',
         },
     ];
+
+
 
 
 
@@ -318,15 +323,15 @@ const ManageSubCategories: React.FC = () => {
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
                                 showModal({
-                                    title: "Add Category",
-                                    content: <CategoryForm />,
+                                    title: "Add Sub Category",
+                                    content: <SubCategoryForm />,
                                     type: 'custom',
                                     size: 'lg',
                                 })
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
-                            Add Category
+                            Add Sub Category
                         </button>
                     </div>
                 </div>
