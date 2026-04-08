@@ -65,6 +65,44 @@ export const downloadSubCategoryExcelApi = async ({ search = "", name = "", desc
   return await apiRequest(`course/export-subcategory-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+// ----------------sub category service end------- //
+// ----------------tags service start------- //
+export async function fetchTags(page = 1, search: string = "", ordering: string = "", status: string, start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-tags-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createTag = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-tags/`, 'POST', payload);
+};
+
+export const deleteTag = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-tags/${id}`, 'DELETE');
+}
+
+export const updateTagApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-tags/${id}`, 'POST', payload)
+}
+
+export const updateTagStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-tags-status/${id}`, 'POST', payload)
+}
+
+export const downloadTagsPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-tags-listing-pdf?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadTagsExcelApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-tags-listing-excel?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+// ----------------tags service end------- //
+
 export const createSubCategory = async (payload: any): Promise<any> => {
   return await apiRequest(`course/create-subcategory/`, 'POST', payload);
 };
@@ -81,7 +119,6 @@ export async function fetchSubCategoryParentList(): Promise<any> {
   const res: any = await apiRequest(`course/get-parent-category/`, "GET");
   return res; // returns { count, next, previous, results } or array
 }
-
 export const updateSubCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-subcategory-status/${id}`, 'POST', payload);
 }

@@ -31,7 +31,8 @@ const Dashboard: React.FC = () => {
       submenu: [
         { name: 'Manage Category', path: '/dashboard/categories' },
         { name: 'Manage SubCategory', path: '/dashboard/sub-category' },
-        { name: 'Manage Videos', path: '/dashboard/videos' }
+        { name: 'Manage Videos', path: '/dashboard/videos' },
+        { name: 'Tags', path: '/dashboard/tags' },
       ]
     }
   ].filter(Boolean);
