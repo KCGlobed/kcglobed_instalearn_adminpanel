@@ -11,6 +11,7 @@ import DashboardPage from "../pages/dashboard/home";
 import ResetPassword from "../pages/forgotpassward/ResetPassword";
 import ManageCategories from "../pages/course/ManageCategories";
 import ManageSubCategories from "../pages/course/ManageSubCategories";
+import ManageVideo from "../pages/course/ManageVideo";
 
 
 
@@ -28,6 +29,7 @@ export default function AppRoutes() {
           <Route index element={<DashboardPage />} />
           <Route path="/dashboard/categories" element={<ManageCategories />} />
           <Route path="/dashboard/sub-category" element={<ManageSubCategories />} />
+          <Route path="/dashboard/videos" element={<ManageVideo />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

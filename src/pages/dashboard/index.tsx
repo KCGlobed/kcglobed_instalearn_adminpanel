@@ -29,9 +29,9 @@ const Dashboard: React.FC = () => {
       icon: <FaDiscourse className="mr-2" />,
       path: '#',
       submenu: [
-        { name: 'Category', path: '/dashboard/categories' },
-        { name: 'SubCategory', path: '/dashboard/sub-category' },
-        { name: 'Course', path: '/dashboard/courses' }
+        { name: 'Manage Category', path: '/dashboard/categories' },
+        { name: 'Manage SubCategory', path: '/dashboard/sub-category' },
+        { name: 'Manage Videos', path: '/dashboard/videos' }
       ]
     }
   ].filter(Boolean);

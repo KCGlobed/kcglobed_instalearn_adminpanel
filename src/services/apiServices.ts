@@ -81,9 +81,38 @@ export async function fetchSubCategoryParentList(): Promise<any> {
   const res: any = await apiRequest(`course/get-parent-category/`, "GET");
   return res; // returns { count, next, previous, results } or array
 }
+
 export const updateSubCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-subcategory-status/${id}`, 'POST', payload);
 }
 
 
+// ----------------video service start------- //
+export async function fetchVideo(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-videos-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  return await apiRequest(query, "GET");
+}
 
+export const createVideo = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/upload-video/`, 'POST', payload);
+};
+
+export const updateVideoApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/edit-video/${id}`, 'POST', payload);
+}
+
+export const deleteVideo = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-video/${id}`, 'DELETE');
+}
+
+export const updateVideoStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-video-status/${id}`, 'POST', payload);
+}
+
+export const markVideoCompleteApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/make-upload-complete/${id}`, 'POST', payload);
+}
+// ----------------video service end------- //

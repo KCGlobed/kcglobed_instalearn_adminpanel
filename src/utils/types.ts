@@ -574,14 +574,15 @@ export interface IRSFile{
 /*-------IRS Publication Type End -----*/
 /*-------Course Video Start -----*/
 export interface CourseVideo {
-  index:number
   id: number;
   name: string;
   video_duration: string | number;
-  created_at: string;
+  description: string | null;
+  is_completed: boolean;
+  is_uploaded: boolean;
   status: boolean;
-  actions?: any,
-
+  created_at: string;
+  actions?: any;
 }
 /*-------Course Video End -----*/
 /*-------Manager User Start -----*/
