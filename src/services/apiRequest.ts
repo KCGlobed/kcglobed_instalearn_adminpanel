@@ -33,7 +33,7 @@ export async function apiRequest<T>(
       // Retry request once with the new token
       return apiRequest<T>(url, method, body, false);
     }
-    else{
+    else {
       console.error("Token refresh failed, please log in again.");
       localStorage.clear()
     }

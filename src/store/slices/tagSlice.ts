@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Pagination, Tag } from "../../utils/types";
-import { createTag, fetchTags, deleteTag, updateTagApi } from "../../services/apiServices";
+import { createTag, fetchTags, deleteTag, updateTagApi, updateTagStatusApi } from "../../services/apiServices";
 
 interface tagState extends Pagination<Tag> { }
 
@@ -58,7 +58,7 @@ export const deleteTags = createAsyncThunk<number | string, any, { rejectValue: 
         }
     }
 )
-export const updateTag = createAsyncThunk<Tag, { id: number | string; tagData: any }, { rejectValue: string }>(
+export const editTag = createAsyncThunk<Tag, { id: number | string; tagData: any }, { rejectValue: string }>(
     "tags/updateTags",
     async ({ id, tagData }, { rejectWithValue }) => {
         try {
@@ -70,7 +70,17 @@ export const updateTag = createAsyncThunk<Tag, { id: number | string; tagData: a
     }
 )
 
-
+export const editTagStatus = createAsyncThunk<Tag, { id: number | string; tagData: any }, { rejectValue: string }>(
+    "tags/updateTagStatus",
+    async ({ id, tagData }, { rejectWithValue }) => {
+        try {
+            const response = await updateTagStatusApi(id, tagData);
+            return response?.data ? response.data : response;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to update tag status");
+        }
+    }
+)
 
 const tagsSlice = createSlice({
     name: "tags",
@@ -113,13 +123,18 @@ const tagsSlice = createSlice({
                 state.loading = false;
                 state.data = state.data.filter((item) => item.id !== action.payload);
             })
-            .addCase(updateTag.fulfilled, (state, action) => {
+            .addCase(editTag.fulfilled, (state, action) => {
                 state.loading = false;
                 const index = state.data.findIndex((item) => item.id === action.payload.id);
                 if (index !== -1) {
                     state.data[index] = action.payload;
                 }
             })
+            .addCase(editTagStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
+            })
+
     }
 }
 )

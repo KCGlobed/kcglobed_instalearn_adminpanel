@@ -29,15 +29,11 @@ const Dashboard: React.FC = () => {
       icon: <FaDiscourse className="mr-2" />,
       path: '#',
       submenu: [
-<<<<<<< Updated upstream
         { name: 'Category', path: '/dashboard/categories' },
         { name: 'SubCategory', path: '/dashboard/sub-category' },
-        { name: 'Course', path: '/dashboard/courses' }
-=======
-        { name: 'Categories', path: '/dashboard/categories' },
-        { name: 'Courses', path: '/dashboard/courses' },
-        {name:'Tags', path:'/dashboard/tags'},
->>>>>>> Stashed changes
+        { name: 'Course', path: '/dashboard/courses' },
+        { name: 'Tags', path: '/dashboard/tags' },
+        {name:''}
       ]
     }
   ].filter(Boolean);

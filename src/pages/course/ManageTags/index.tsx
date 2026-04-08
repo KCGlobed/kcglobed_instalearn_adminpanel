@@ -3,13 +3,16 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../../components/Table/Table';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useRedux';
-import { getTags, deleteTags } from '../../../store/slices/tagSlice';
+import { getTags, deleteTags, StatusTags } from '../../../store/slices/tagSlice';
 import useDebounce from '../../../hooks/useDebounce';
 import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
+import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
+import { downloadTagsExcelApi, downloadTagsPdfApi, updateTagStatusApi } from '../../../services/apiServices';
+import ExportFile from '../../../components/Forms/ExportFile';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
@@ -138,10 +141,18 @@ const ManageTags: React.FC = () => {
         {
             key: 'status',
             title: 'Status',
-            render: (value: boolean) => (
-                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${value ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+            render: (value: boolean, row: any) => (
+                <button
+                    onClick={() => {
+                        dispatch(StatusTags(row.id));
+                        toast.success(`Tag ${!value ? 'activated' : 'deactivated'} successfully`);
+                        // Fire API in the background (backend saves even on 500)
+                        updateTagStatusApi(row.id, { status: !value }).catch(() => { });
+                    }}
+                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
+                >
                     {value ? 'Active' : 'Inactive'}
-                </span>
+                </button>
             ),
             width: '120px',
             align: 'center',
@@ -236,6 +247,23 @@ const ManageTags: React.FC = () => {
                     />
 
                     <div className="flex items-center gap-4">
+                        <ExportFile
+                            pdfApi={() => downloadTagsPdfApi({
+                                search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
+                            excelApi={() => downloadTagsExcelApi({
+                                search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
+                            fileNamePrefix="tags"
+                        />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
                                 showModal({

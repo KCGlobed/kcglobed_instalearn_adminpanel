@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addTag, updateTag } from '../../store/slices/tagSlice';
+import { addTag, editTag } from '../../store/slices/tagSlice';
 import toast from 'react-hot-toast';
 
 type TagFormValues = {
@@ -52,7 +52,7 @@ const TagForm = ({ tagData }: Props) => {
             if (tagData?.id) {
                 const formData = new FormData();
                 formData.append('name', data.name.trim());
-                await dispatch(updateTag({ id: tagData.id, tagData: formData })).unwrap();
+                await dispatch(editTag({ id: tagData.id, tagData: formData })).unwrap();
                 toast.success("Tag updated successfully");
             } else {
                 await dispatch(addTag(payload)).unwrap();
