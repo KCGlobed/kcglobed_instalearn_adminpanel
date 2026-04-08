@@ -8,7 +8,7 @@ export const resetPassword = async (payload: { password: string, confirm_passwor
   return await apiRequest(`user/reset-password/`, 'POST', payload);
 };
 
-
+// ----------------category service start------- //
 export async function fetchCategory(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   let query = `course/get-category-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
@@ -43,3 +43,25 @@ export const updateCategoryApi = async (id: string | number, payload: FormData):
 export const updateCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-category-status/${id}`, 'POST', payload);
 }
+
+// ----------------category service end------- //
+// ----------------sub category service start------- //
+export async function fetchSubcategory(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-subcategory-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const downloadSubCategoryPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-subcategory-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadSubCategoryExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-subcategory-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+

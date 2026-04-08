@@ -20,7 +20,11 @@ const DashboardHeader: React.FC = () => {
     const segments = location.pathname.split('/').filter(Boolean);
     const last = segments[segments.length - 1];
     if (!last || last === 'dashboard') return 'Dashboard';
-    return last.charAt(0).toUpperCase() + last.slice(1).replace(/-/g, ' ');
+    return last
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');;
   };
 
   const handleLogout = () => {

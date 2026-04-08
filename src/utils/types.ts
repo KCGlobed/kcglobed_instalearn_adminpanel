@@ -316,14 +316,16 @@ export interface Category {
   id: number;
   name: string;
   description: string;
-  parent?: {
-    id: number;
-    name: string;
-    description: string;
-  } | null;
+  parent?: Category | null;
   status?: boolean;
-  actions?: any,
+  created_at?: string;
+  bg_code?: string | null;
+  text_code?: string | null;
+  icon?: string | null;
+  actions?: any;
 }
+
+export interface Subcategory extends Category {}
 /*-------category End ----*/
 
 /*-------Course Start ----*/

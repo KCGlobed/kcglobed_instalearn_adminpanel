@@ -1,4 +1,4 @@
-// src/redux/slices/essaySlice.ts
+// src/store/slices/categorySlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
 import type { Category, Pagination } from "../../utils/types";
 import { createCategory, fetchCategory, updateCategoryApi, updateCategoryStatusApi } from "../../services/apiServices";

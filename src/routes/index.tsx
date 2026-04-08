@@ -10,6 +10,7 @@ import ForgotFlow from "../pages/forgotpassward";
 import DashboardPage from "../pages/dashboard/home";
 import ResetPassword from "../pages/forgotpassward/ResetPassword";
 import ManageCategories from "../pages/course/ManageCategories";
+import ManageSubCategories from "../pages/course/ManageSubCategories";
 
 
 
@@ -28,6 +29,7 @@ export default function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<DashboardPage />} />
           <Route path="/dashboard/categories" element={<ManageCategories />} />
+          <Route path="/dashboard/sub-category" element={<ManageSubCategories />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
