@@ -213,6 +213,17 @@ export interface ChapterState {
 
 /*--------chapter types End----*/
 
+/*-----------Tags Start-----*/
+export interface Tag {
+  id: number;
+  name: string;
+  status: boolean;
+  created_at?: string;
+  actions?: any;
+}
+/*---------Tags End-----------*/
+
+
 /*-------topic type start ----*/
 export interface Topic {
   id: number,

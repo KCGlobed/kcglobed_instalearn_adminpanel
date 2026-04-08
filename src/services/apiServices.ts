@@ -44,6 +44,7 @@ export const updateCategoryStatusApi = async (id: string | number, payload: { st
   return await apiRequest(`course/update-category-status/${id}`, 'POST', payload);
 }
 
+<<<<<<< Updated upstream
 // ----------------category service end------- //
 // ----------------sub category service start------- //
 export async function fetchSubcategory(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
@@ -65,3 +66,24 @@ export const downloadSubCategoryExcelApi = async ({ search = "", name = "", desc
   return await apiRequest(`course/export-subcategory-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+=======
+export async function fetchTags(page = 1, search: string = "", ordering: string = "", status: string, start_date: string = "", end_date: string = ""): Promise<any> {
+  let query = `course/get-tags-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${status && status !== 'all' ? `&status=${status === 'active' ? 'true' : 'false'}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createTag = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-tags/`, 'POST', payload);
+};
+
+export const deleteTag = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-tags/${id}`, 'DELETE');
+}
+
+export const updateTagApi= async(id:string | number, payload:FormData):Promise<any>=>{
+  return await apiRequest(`course/edit-tags/${id}`,'POST',payload)
+}
+>>>>>>> Stashed changes

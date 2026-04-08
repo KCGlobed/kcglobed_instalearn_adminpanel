@@ -4,7 +4,7 @@ import tryRefreshToken from "./tokenService";
 
 export async function apiRequest<T>(
   url: string,
-  method: "GET" | "POST" | "PUT" | "DELETE"|"PATCH",
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
   body?: any,
   retry: boolean = true
 ): Promise<T> {
