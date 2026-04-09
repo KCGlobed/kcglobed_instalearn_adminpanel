@@ -39,6 +39,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/instructor" element={<ManageInstructor />} />
           {/* //-----------------------Abhishek Manage Instructor end ------------// */}
           
+
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
