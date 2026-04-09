@@ -34,7 +34,8 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Videos', path: '/dashboard/videos' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
       ]
-    }
+    },
+    { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
   ].filter(Boolean);
 
 

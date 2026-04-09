@@ -153,3 +153,9 @@ export const markVideoCompleteApi = async (id: string | number, payload: { statu
   return await apiRequest(`course/make-upload-complete/${id}`, 'POST', payload);
 }
 // ----------------video service end------- //
+
+
+
+//-----------------------Abhishek Manage Instructor ------------//
+
+
