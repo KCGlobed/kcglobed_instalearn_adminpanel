@@ -32,6 +32,7 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Category', path: '/dashboard/categories' },
         { name: 'Manage SubCategory', path: '/dashboard/sub-category' },
         { name: 'Manage Videos', path: '/dashboard/videos' },
+        { name: 'Manage Ebooks', path: '/dashboard/ebooks' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
       ]
     }

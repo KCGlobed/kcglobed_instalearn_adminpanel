@@ -13,6 +13,7 @@ import ManageCategories from "../pages/course/ManageCategories";
 import ManageSubCategories from "../pages/course/ManageSubCategories";
 import ManageTags from "../pages/course/ManageTags";
 import ManageVideo from "../pages/course/ManageVideo";
+import ManageEbook from "../pages/course/ManageEbook";
 
 export default function AppRoutes() {
   return (
@@ -30,6 +31,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/sub-category" element={<ManageSubCategories />} />
           <Route path="/dashboard/videos" element={<ManageVideo />} />
           <Route path="/dashboard/tags" element={<ManageTags />} />
+          <Route path="/dashboard/ebooks" element={<ManageEbook />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

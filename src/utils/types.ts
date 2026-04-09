@@ -596,6 +596,16 @@ export interface CourseVideo {
   actions?: any;
 }
 /*-------Course Video End -----*/
+/*-------Ebook Start -----*/
+export interface Ebook {
+  id: number;
+  name: string;
+  book_file: string;
+  status: boolean;
+  created_at: string;
+  actions?: any;
+}
+/*-------Ebook End -----*/
 /*-------Manager User Start -----*/
 export interface ManagerUser {
   id: number;
