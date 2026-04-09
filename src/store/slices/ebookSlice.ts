@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import type { Ebook, Pagination } from "../../utils/types";
-import { createEbook, fetchEbook, updateEbookApi, updateEbookStatusApi } from "../../services/apiServices";
+import { createEbook, fetchEbookViewData, updateEbookApi, updateEbookStatusApi } from "../../services/apiServices";
 
 interface EbookState extends Pagination<Ebook> { }
 
@@ -26,7 +26,7 @@ export const getEbooks = createAsyncThunk<Pagination<Ebook>, { page?: number; se
     "ebook/getEbooks",
     async ({ page = 1, search = "", name = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
         try {
-            return await fetchEbook(page, search, name, ordering, status, startDate, endDate);
+            return await fetchEbookViewData(page, search, name, ordering, status, startDate, endDate);
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch ebooks");
         }

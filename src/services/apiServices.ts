@@ -65,6 +65,26 @@ export const downloadSubCategoryExcelApi = async ({ search = "", name = "", desc
   return await apiRequest(`course/export-subcategory-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+export const createSubCategory = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-subcategory/`, 'POST', payload);
+};
+
+export const updateSubCategoryApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-subcategory/${id}`, 'POST', payload);
+}
+
+export const deleteSubCategory = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-subcategory/${id}`, 'DELETE');
+}
+
+export async function fetchSubCategoryParentList(): Promise<any> {
+  const res: any = await apiRequest(`course/get-parent-category/`, "GET");
+  return res; // returns { count, next, previous, results } or array
+}
+export const updateSubCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-subcategory-status/${id}`, 'POST', payload);
+}
+
 // ----------------sub category service end------- //
 // ----------------tags service start------- //
 export async function fetchTags(page = 1, search: string = "", ordering: string = "", status: string, start_date: string = "", end_date: string = ""): Promise<any> {
@@ -103,25 +123,7 @@ export const downloadTagsExcelApi = async ({ search = "", name = "", status = ""
 }
 // ----------------tags service end------- //
 
-export const createSubCategory = async (payload: any): Promise<any> => {
-  return await apiRequest(`course/create-subcategory/`, 'POST', payload);
-};
 
-export const updateSubCategoryApi = async (id: string | number, payload: FormData): Promise<any> => {
-  return await apiRequest(`course/edit-subcategory/${id}`, 'POST', payload);
-}
-
-export const deleteSubCategory = async (id: string | number): Promise<any> => {
-  return await apiRequest(`course/delete-subcategory/${id}`, 'DELETE');
-}
-
-export async function fetchSubCategoryParentList(): Promise<any> {
-  const res: any = await apiRequest(`course/get-parent-category/`, "GET");
-  return res; // returns { count, next, previous, results } or array
-}
-export const updateSubCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
-  return await apiRequest(`course/update-subcategory-status/${id}`, 'POST', payload);
-}
 
 
 // ----------------video service start------- //
@@ -159,7 +161,7 @@ export const markVideoCompleteApi = async (id: string | number, payload: { statu
 
 
 // ----------------ebook service start------- //
-export async function fetchEbook(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchEbookViewData(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   let query = `course/get-ebook-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
