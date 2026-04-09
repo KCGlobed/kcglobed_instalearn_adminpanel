@@ -20,3 +20,17 @@ export const filterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const ebookFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Ebook Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];

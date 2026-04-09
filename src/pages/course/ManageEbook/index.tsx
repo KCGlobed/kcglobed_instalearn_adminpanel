@@ -9,15 +9,17 @@ import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiDownload, FiEdit, FiTrash } from 'react-icons/fi';
+import { FiDownload, FiEdit, FiEye, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteEbook } from '../../../services/apiServices';
+import { deleteEbook, downloadEbookExcelApi, downloadEbookPdfApi } from '../../../services/apiServices';
 import ExportFile from '../../../components/Forms/ExportFile';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
-import { filterConfig } from '../../../utils/filterConfiguration';
+import { ebookFilterConfig, filterConfig } from '../../../utils/filterConfiguration';
+import EbookForm from '../../../components/Forms/EbookForm';
+import EbookView from '../../../components/View/EbookView';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -126,28 +128,6 @@ const ManageEbook: React.FC = () => {
             width: '250px',
         },
         {
-            key: 'book_file',
-            title: 'Source File',
-            render: (value: string) => (
-                <div className="flex items-center gap-2">
-                    {value ? (
-                        <a 
-                            href={value} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 font-bold text-xs bg-indigo-50 px-2.5 py-1.5 rounded-lg transition-colors border border-indigo-100"
-                        >
-                            <FiDownload size={14} />
-                            View Ebook
-                        </a>
-                    ) : (
-                        <span className="text-gray-400 text-xs italic">No file attached</span>
-                    )}
-                </div>
-            ),
-            width: '180px',
-        },
-        {
             key: 'created_at',
             title: 'Date Created',
             render: (value: string) => (
@@ -185,12 +165,29 @@ const ManageEbook: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View Ebook',
+                                content: <EbookView ebookData={row} />,
+                                type: 'success',
+                                size: 'lg',
+                            });
+                        }}
+                    />
+                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
                         onClick={() => {
-                            // TODO: Add EbookForm
-                            toast.loading("Ebook Edit form coming soon...", { duration: 2000 });
+                            showModal({
+                                title: 'Edit Ebook',
+                                content: <EbookForm ebookData={row} />,
+                                type: 'success',
+                                size: 'lg',
+                            });
                         }}
                     />
                     <GlassButton
@@ -219,8 +216,6 @@ const ManageEbook: React.FC = () => {
             align: 'right',
         },
     ];
-
-
 
     return (
         <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
@@ -262,19 +257,35 @@ const ManageEbook: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search categories..."
+                        placeholder="Search ebooks..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={async () => { toast.error("Ebook PDF export coming soon"); return null; }}
-                            excelApi={async () => { toast.error("Ebook Excel export coming soon"); return null; }}
+                            pdfApi={() => downloadEbookPdfApi({
+                                search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
+                            excelApi={() => downloadEbookExcelApi({
+                                search: debouncedSearchTerm,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
                             fileNamePrefix="ebooks"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() => {
-                                toast.loading("Add Ebook form coming soon...", { duration: 2000 });
+                                showModal({
+                                    title: 'Add Ebook',
+                                    content: <EbookForm />,
+                                    type: 'custom',
+                                    size: 'lg',
+                                });
                             }}
                         >
                             <Plus size={18} strokeWidth={3} />
@@ -286,7 +297,7 @@ const ManageEbook: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={filterConfig}
+                    config={ebookFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
