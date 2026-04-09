@@ -156,6 +156,35 @@ export const markVideoCompleteApi = async (id: string | number, payload: { statu
 
 
 
-//-----------------------Abhishek Manage Instructor ------------//
 
 
+// ----------------ebook service start------- //
+export async function fetchEbook(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-ebook-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createEbook = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-ebook/`, 'POST', payload);
+};
+
+export const updateEbookApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/edit-ebook/${id}`, 'POST', payload);
+}
+
+export const deleteEbook = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-ebook/${id}`, 'DELETE');
+}
+
+export const updateEbookStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-ebook-status/${id}`, 'POST', payload);
+}
+// ----------------ebook service end------- //
+
+
+//-----------------------Abhishek Manage Instructor start ------------//
+
+// export const fetchInstructor=async(page=1,search:string="",ordering:string="",status:string="",start_date:string="",end_date:string="",name:string="",email:string="")
