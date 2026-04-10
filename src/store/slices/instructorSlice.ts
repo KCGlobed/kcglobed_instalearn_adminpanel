@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Instructor, Pagination } from "../../utils/types";
-import { createInstructor, fetchInstructor, updateInstructorApi, updateInstructorStatusApi } from "../../services/apiServices";
+import { createInstructor, deleteInstructorApi, fetchInstructor, updateInstructorApi, updateInstructorStatusApi } from "../../services/apiServices";
 
 interface instructorState extends Pagination<Instructor> { }
 
@@ -21,10 +21,10 @@ const initialState: instructorState = {
     error: null,
 }
 
-export const getInstructor = createAsyncThunk<Pagination<Instructor>, { page?: number; search?: string; name?: string; description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
-    "instructor/getInstructor", async ({ page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
+export const getInstructor = createAsyncThunk<Pagination<Instructor>, { page?: number; search?: string; first_name?: string; last_name?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
+    "instructor/getInstructor", async ({ page = 1, search = "", first_name = "", last_name = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
         try {
-            return await fetchInstructor(page, search, name, description, ordering, status, startDate, endDate);
+            return await fetchInstructor(page, search, first_name, last_name, ordering, status, startDate, endDate);
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch instructors");
         }
@@ -43,8 +43,8 @@ export const addInstructor = createAsyncThunk<Instructor, any, { rejectValue: st
     }
 )
 
-export const editInstructor = createAsyncThunk<Instructor, any, { rejectValue: string }>(
-    "instructor/editInstructor",
+export const updateInstructor = createAsyncThunk<Instructor, any, { rejectValue: string }>(
+    "instructor/updateInstructor",
     async ({ id, instructorData }, { rejectWithValue }) => {
         try {
             const data = await updateInstructorApi(id, instructorData);
@@ -57,13 +57,25 @@ export const editInstructor = createAsyncThunk<Instructor, any, { rejectValue: s
 
 export const updateInstructorStatus = createAsyncThunk<Instructor, any, { rejectValue: string }>(
     "instructor/updateInstructorStatus",
-    async ({ id, is_active }, { rejectWithValue }) => {
+    async ({ id, instructorData }, { rejectWithValue }) => {
         try {
             // is_active parameter name based on api/Instructor interface
-            const data = await updateInstructorStatusApi(id, { is_active });
+            const data = await updateInstructorStatusApi(id, instructorData);
             return data?.data ? data.data : data;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to update instructor status");
+        }
+    }
+)
+
+export const deleteInstructor = createAsyncThunk<number | string, any, { rejectValue: string }>(
+    "tags/deleteTags",
+    async (id, { rejectWithValue }) => {
+        try {
+            await deleteInstructorApi(id);
+            return id;
+        } catch (err: any) {
+            return rejectWithValue(err.message || "Failed to delete tag");
         }
     }
 )
@@ -79,7 +91,11 @@ const instructorSlice = createSlice({
             state.data = state.data.filter((item) => item.id != action.payload);
         },
         StatusInstructor: (state, action: PayloadAction<Number | string>) => {
-            state.data = state.data.map((item) => item.id == action.payload ? { ...item, is_active: !item.is_active } : item);
+             state.data = state.data.map((item) =>
+                item.id.toString() === action.payload.toString()
+                    ? { ...item, status: !item.status }
+                    : item
+            );
         }
     }, extraReducers: (builder) => {
         builder
@@ -100,7 +116,7 @@ const instructorSlice = createSlice({
                 state.loading = false;
                 state.data.unshift(action.payload);
             })
-            .addCase(editInstructor.fulfilled, (state, action) => {
+            .addCase(updateInstructor.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
             })

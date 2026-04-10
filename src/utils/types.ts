@@ -641,6 +641,7 @@ export interface Instructor {
   pincode: string,
   dob: string,
   is_active: boolean,
+  status:boolean,
   role: number,
   created_at: string,
   actions?: any,

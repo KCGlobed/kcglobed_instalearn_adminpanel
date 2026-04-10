@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { addInstructor, editInstructor } from '../../store/slices/instructorSLice';
+import { addInstructor, updateInstructor } from '../../store/slices/instructorSlice';
 import toast from 'react-hot-toast';
 
 type InstructorFormValues = {
@@ -77,11 +77,33 @@ const InstructorForm = ({ instructorData }: Props) => {
     const onSubmit = async (data: InstructorFormValues) => {
         setIsSubmitting(true);
         try {
+            const payload={
+                first_name: data.first_name,
+                last_name: data.last_name,
+                email: data.email,
+                address: data.address,
+                city: data.city,
+                state: data.state,
+                country: data.country,
+                pincode: data.pincode,
+                dob: data.dob,
+            }
+
             if (instructorData?.id) {
-                await dispatch(editInstructor({ id: instructorData.id, instructorData: data })).unwrap();
+                const formdata= new FormData();
+                formdata.append("first_name", data.first_name);
+                formdata.append("last_name", data.last_name);
+                formdata.append("email", data.email);
+                formdata.append("address", data.address);
+                formdata.append("city", data.city);
+                formdata.append("state", data.state);
+                formdata.append("country", data.country);
+                formdata.append("pincode", data.pincode);
+                formdata.append("dob", data.dob);
+                await dispatch(updateInstructor({ id: instructorData.id, instructorData: formdata })).unwrap();
                 toast.success("Instructor updated successfully");
             } else {
-                await dispatch(addInstructor(data)).unwrap();
+                await dispatch(addInstructor(payload)).unwrap();
                 toast.success("Instructor added successfully");
             }
             reset();
@@ -110,8 +132,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                                 minLength: { value: 2, message: 'First Name must be at least 2 characters' },
                                 validate: value => value.trim().length > 0 || 'Cannot be empty'
                             })}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="First Name"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the First Name"
                         />
                         {errors.first_name && (
                             <p className="mt-1 text-sm text-red-600">{errors.first_name.message}</p>
@@ -130,8 +152,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                                 minLength: { value: 2, message: 'Last Name must be at least 2 characters' },
                                 validate: value => value.trim().length > 0 || 'Cannot be empty'
                             })}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="Last Name"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the Last Name"
                         />
                         {errors.last_name && (
                             <p className="mt-1 text-sm text-red-600">{errors.last_name.message}</p>
@@ -152,8 +174,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                                     message: 'Invalid email address'
                                 }
                             })}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="Email Address"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the Email Address"
                             disabled={!!instructorData?.id} // Usually email cant be changed easily
                         />
                         {errors.email && (
@@ -169,7 +191,7 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="date"
                             {...register('dob')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
                         />
                     </div>
 
@@ -181,8 +203,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="text"
                             {...register('address')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="Street Address"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the Street Address"
                         />
                     </div>
 
@@ -194,8 +216,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="text"
                             {...register('city')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="City"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the City"
                         />
                     </div>
 
@@ -207,8 +229,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="text"
                             {...register('state')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="State"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the State"
                         />
                     </div>
 
@@ -220,8 +242,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="text"
                             {...register('country')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="Country"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the Country"
                         />
                     </div>
 
@@ -233,8 +255,8 @@ const InstructorForm = ({ instructorData }: Props) => {
                         <input
                             type="text"
                             {...register('pincode')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md transition-colors"
-                            placeholder="Pincode/Zipcode"
+                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                            placeholder="Enter the Pincode"
                         />
                     </div>
                 </div>

@@ -3,7 +3,7 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getInstructor, removeInstructor, updateInstructorStatus } from '../../store/slices/instructorSLice';
+import { getInstructor, removeInstructor, updateInstructorStatus } from '../../store/slices/instructorSlice';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
 import InstructorForm from '../../components/Forms/InstructorForm';
@@ -12,12 +12,13 @@ import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteInstructor, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
+import { deleteInstructorApi, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
+import { instructorFilterConfig } from '../../utils/filterConfiguration';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -28,17 +29,6 @@ interface ColumnDef {
     align?: 'left' | 'center' | 'right';
     sortable?: boolean;
 }
-
-const filterConfig = [
-    { name: 'name', label: 'Name', type: 'text' as const, placeholder: 'Filter by name...' },
-    {
-        name: 'status', label: 'Status', type: 'select' as const, options: [
-            { label: 'All', value: 'all' },
-            { label: 'Active', value: 'active' },
-            { label: 'Inactive', value: 'deactive' }
-        ]
-    }
-];
 
 const ManageInstructors: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -51,7 +41,8 @@ const ManageInstructors: React.FC = () => {
 
     // Filter states
     const [filters, setFilters] = useState({
-        name: '',
+        first_name: '',
+        last_name: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -62,7 +53,7 @@ const ManageInstructors: React.FC = () => {
 
     const dispatch = useAppDispatch();
     const { data, loading, pagination } = useAppSelector((state) => state.instructor);
-    const pageSize = 10;
+    const pageSize = 5;
 
     // Refs for clicking outside to close
     const sortRef = useRef<HTMLDivElement>(null);
@@ -82,7 +73,8 @@ const ManageInstructors: React.FC = () => {
         dispatch(getInstructor({
             page: currentPage,
             search: debouncedSearchTerm,
-            name: debouncedFilters.name,
+            first_name: debouncedFilters.first_name,
+            last_name: debouncedFilters.last_name,
             ordering,
             status: debouncedFilters.status,
             startDate,
@@ -95,13 +87,16 @@ const ManageInstructors: React.FC = () => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
 
+
+
     const handleFilterChange = (name: string, value: any) => {
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
     const clearFilters = () => {
         setFilters({
-            name: '',
+            first_name: '',
+            last_name: '',
             status: 'all',
         });
     };
@@ -125,14 +120,9 @@ const ManageInstructors: React.FC = () => {
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm"
-                        style={{
-                            backgroundColor: '#eef2ff',
-                            color: '#4f46e5',
-                            border: '1px solid #e0e7ff'
-                        }}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100"
                     >
-                        {row.first_name ? row.first_name.charAt(0).toUpperCase() : '?'}
+                        {row.first_name ? row.first_name.charAt(0).toUpperCase() : '#'}
                     </div>
                     <div className="flex flex-col">
                         <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.first_name} {row.last_name}</span>
@@ -166,17 +156,17 @@ const ManageInstructors: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '180px',
         },
         {
-            key: 'is_active',
+            key: 'status',
             title: 'Status',
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateInstructorStatus({ id: row.id, is_active: !value }))
+                        dispatch(updateInstructorStatus({ id: row.id, status: !value }))
                             .unwrap()
-                            .then(() => toast.success(`Instructor ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
                             .catch((err) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
@@ -184,7 +174,7 @@ const ManageInstructors: React.FC = () => {
                     {value ? 'Active' : 'Inactive'}
                 </button>
             ),
-            width: '100px',
+            width: '120px',
             align: 'center',
             sortable: true,
         },
@@ -202,7 +192,7 @@ const ManageInstructors: React.FC = () => {
                                 title: 'Edit Instructor',
                                 content: <InstructorForm instructorData={row} />,
                                 type: 'success',
-                                size: 'xl',
+                                size: 'md',
                             })
                         }
                     />
@@ -216,8 +206,9 @@ const ManageInstructors: React.FC = () => {
                                 content: <DeleteConfirmationModal
                                     id={row}
                                     name={`${row.first_name} ${row.last_name}`}
-                                    onDelete={async (id) => {
-                                        await deleteInstructor(row.id);
+                                    onDelete={async () => {
+
+                                        await deleteInstructorApi(row.id);
                                         dispatch(removeInstructor(row.id));
                                     }}
                                 />,
@@ -281,14 +272,16 @@ const ManageInstructors: React.FC = () => {
                         <ExportFile
                             pdfApi={() => downloadInstructorPdfApi({
                                 search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
+                                first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
                             excelApi={() => downloadInstructorExcelApi({
                                 search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
+                                first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
@@ -301,7 +294,7 @@ const ManageInstructors: React.FC = () => {
                                     title: "Add Instructor",
                                     content: <InstructorForm />,
                                     type: 'custom',
-                                    size: 'lg',
+                                    size: 'md',
                                 })
                             }
                         >
@@ -314,7 +307,7 @@ const ManageInstructors: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={filterConfig}
+                    config={instructorFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}

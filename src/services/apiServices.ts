@@ -161,28 +161,43 @@ export const markVideoCompleteApi = async (id: string | number, payload: { statu
 
 
 // ----------------ebook service start------- //
-export async function fetchEbookViewData(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchEbook(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `course/get-ebook-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  let query = `course/get-book-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   return await apiRequest(query, "GET");
 }
 
 export const createEbook = async (payload: any): Promise<any> => {
-  return await apiRequest(`course/create-ebook/`, 'POST', payload);
+  return await apiRequest(`course/create-book/`, 'POST', payload);
 };
 
 export const updateEbookApi = async (id: string | number, payload: any): Promise<any> => {
-  return await apiRequest(`course/edit-ebook/${id}`, 'POST', payload);
+  return await apiRequest(`course/edit-book/${id}`, 'POST', payload);
 }
 
 export const deleteEbook = async (id: string | number): Promise<any> => {
-  return await apiRequest(`course/delete-ebook/${id}`, 'DELETE');
+  return await apiRequest(`course/delete-book/${id}`, 'DELETE');
 }
 
 export const updateEbookStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
-  return await apiRequest(`course/update-ebook-status/${id}`, 'POST', payload);
+  return await apiRequest(`course/update-book-status/${id}`, 'POST', payload);
+}
+
+export const downloadEbookPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-ebook-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadEbookExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-ebook-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export async function fetchEbookViewData(id: string | number): Promise<any> {
+  const res: any = await apiRequest(`course/view-book-detail/${id}`, "GET");
+  return res; // returns { count, next, previous, results } or array
 }
 // ----------------ebook service end------- //
 
@@ -192,9 +207,9 @@ export const updateEbookStatusApi = async (id: string | number, payload: { statu
 
 //-----------------------Abhishek Manage Instructor start ------------//
 
-export async function fetchInstructor(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchInstructor(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `user/get-user-listing/instructor?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  let query = `user/get-user-listing/instructor?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   return await apiRequest(query, "GET");
@@ -208,7 +223,7 @@ export const updateInstructorApi = async (id: string | number, payload: any): Pr
   return await apiRequest(`user/update-user/instructor/${id}`, 'POST', payload);
 };
 
-export const deleteInstructor = async (id: string | number): Promise<any> => {
+export const deleteInstructorApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`user/delete-user/instructor/${id}`, 'DELETE');
 };
 
@@ -216,12 +231,15 @@ export const updateInstructorStatusApi = async (id: string | number, payload: { 
   return await apiRequest(`user/update-user-status/instructor/${id}`, 'POST', payload);
 };
 
-export const downloadInstructorPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadInstructorPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`user/export-user-listing-pdf/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`user/export-user-listing-pdf/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
-export const downloadInstructorExcelApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadInstructorExcelApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`user/export-user-listing-excel/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`user/export-user-listing-excel/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+
+

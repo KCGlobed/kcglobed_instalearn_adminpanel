@@ -34,3 +34,34 @@ export const ebookFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const instructorFilterConfig:FilterField[]=[
+   {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: 'last_name',
+        label: 'Last Name',
+        type: 'text',
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: 'location',
+        label: 'Location',
+        type: 'text',
+        placeholder: 'Filter by location...',
+    },
+    {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Inactive', value: 'deactive' },
+        ],
+    },
+]
