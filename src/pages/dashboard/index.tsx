@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -37,6 +37,7 @@ const Dashboard: React.FC = () => {
       ]
     },
     { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
+    { name: 'Manage FAQ Topics', icon: <FaQuestionCircle className="mr-2" />, path: '/dashboard/faq-topics' },
   ].filter(Boolean);
 
 

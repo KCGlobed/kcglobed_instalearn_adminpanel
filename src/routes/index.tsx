@@ -15,6 +15,7 @@ import ManageTags from "../pages/course/ManageTags";
 import ManageVideo from "../pages/course/ManageVideo";
 import ManageInstructor from "../pages/instructor";
 import ManageEbook from "../pages/course/ManageEbook";
+import ManageFaqTopics from "../pages/ManageFaqTopics";
 
 export default function AppRoutes() {
   return (
@@ -38,7 +39,11 @@ export default function AppRoutes() {
           {/* //-----------------------Abhishek Manage Instructor start ------------// */}
           <Route path="/dashboard/instructor" element={<ManageInstructor />} />
           {/* //-----------------------Abhishek Manage Instructor end ------------// */}
-          
+
+          {/* //-----------------------Abhishek Manage Faq Topics start ------------// */}
+          <Route path="/dashboard/faq-topics" element={<ManageFaqTopics />} />
+          {/* //-----------------------Abhishek Manage Faq Topics end ------------// */}
+
 
         </Route>
       </Route>

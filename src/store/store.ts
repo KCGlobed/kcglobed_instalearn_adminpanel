@@ -7,7 +7,7 @@ import videoReducer from "./slices/videoSlice";
 import tagReducer from "./slices/tagSlice"
 import ebookReducer from "./slices/ebookSlice";
 import instructorReducer from "./slices/instructorSlice";
-
+import faqReducer from "./slices/faqSlice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -16,7 +16,8 @@ export const store = configureStore({
     video: videoReducer,
     tags: tagReducer,
     ebook: ebookReducer,
-    instructor: instructorReducer
+    instructor: instructorReducer,
+    faq: faqReducer
   },
 });
 

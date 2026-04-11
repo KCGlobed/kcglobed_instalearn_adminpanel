@@ -649,3 +649,15 @@ export interface Instructor {
 
 
 //--------Abhishek Manage Instructor end------------//
+
+
+//--------Abhishek Manage Faq Topics start------------//
+export interface FaqTopics {
+  id: number;
+  title: string;
+  description: string;
+  status: boolean;
+  created_at: string;
+  actions?: any;
+}
+//--------Abhishek Manage Faq Topics end------------//
