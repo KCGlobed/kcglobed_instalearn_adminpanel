@@ -15,7 +15,8 @@ import ManageTags from "../pages/course/ManageTags";
 import ManageVideo from "../pages/course/ManageVideo";
 import ManageInstructor from "../pages/instructor";
 import ManageEbook from "../pages/course/ManageEbook";
-import ManageFaqTopics from "../pages/ManageFaqTopics";
+import ManageFaq from "../pages/Faq/ManageFaq";
+import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
 
 export default function AppRoutes() {
   return (
@@ -44,7 +45,9 @@ export default function AppRoutes() {
           <Route path="/dashboard/faq-topics" element={<ManageFaqTopics />} />
           {/* //-----------------------Abhishek Manage Faq Topics end ------------// */}
 
-
+         {/* //-----------------------Abhishek Manage Faq start ------------// */}
+         <Route path="/dashboard/faq" element={<ManageFaq />} />
+         {/* //-----------------------Abhishek Manage Faq end ------------// */}
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

@@ -1,5 +1,5 @@
 import { toast } from 'react-hot-toast';
-import { addFaqTopic, updateFaqTopic } from '../../store/slices/faqSlice';
+import { addFaqTopic, updateFaqTopic } from '../../store/slices/faqTopicSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useModal } from '../../context/ModalContext';
 import { useEffect, useState } from 'react';

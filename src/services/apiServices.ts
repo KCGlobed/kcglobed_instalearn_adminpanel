@@ -247,8 +247,8 @@ export const downloadInstructorExcelApi = async ({ search = "", first_name = "",
 //==============================Abhishek Manage Faq Topics ===================
 
 export async function fetchFaqTopicsApi(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", start_date: string = "", end_date: string = "", status: string = ""): Promise<any> {
-  const statusVal = status === "active" ? "true" : status === "deactive" ? "false" : "";
-  let query = `cms/get-faq-topic-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&title__icontains=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}&description__icontains=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${encodeURIComponent(ordering)}` : ""}${statusVal ? `&status=${encodeURIComponent(statusVal)}` : ""}`;
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  let query = `cms/get-faq-topic-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${encodeURIComponent(ordering)}` : ""}${statusVal ? `&status=${encodeURIComponent(statusVal)}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   return await apiRequest(query, "GET");
@@ -281,3 +281,38 @@ export const downloadFaqTopicsExcelApi = async ({ search = "", title = "", descr
 };
 
 
+// ----------------------------- Abhishek manage Faq --------------------------------------------//
+
+export const fetchFaqApi=async(page:number=1,search:string="",title:string="",description:string="",ordering:string="",status:string="",start_date:string="",end_date:string=""):Promise<any>=>{
+  const statusVal= status==="active"?"1" : status==='deactive'?'0': "";
+  let query = `cms/get-faq-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${encodeURIComponent(ordering)}` : ""}${statusVal ? `&status=${encodeURIComponent(statusVal)}` : ""}`;
+  if(start_date) query+=`&start_date=${start_date}`;
+  if(end_date) query+=`&end_date=${end_date}`;
+  return apiRequest(query,'GET')
+}
+
+export const addFaqApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-faq/`, 'POST', payload);
+};
+
+export const updateFaqApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-faq/${id}`, 'POST', payload);
+};
+
+export const deleteFaqApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-faq/${id}`, 'DELETE');
+};
+
+export const updateFaqStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-faq-status/${id}`, 'POST', payload);
+};
+
+export const downloadFaqPdfApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  return await apiRequest(`cms/export-faq-listing-pdf?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};
+
+export const downloadFaqExcelApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  return await apiRequest(`cms/export-faq-listing-excel?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};

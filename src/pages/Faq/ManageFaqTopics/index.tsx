@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Filter, Plus, Calendar } from 'lucide-react';
-import DynamicServerTable from '../../components/Table/Table';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { useAppSelector } from '../../hooks/useRedux';
-import { getFaqTopics, removeFaq, updateFaqTopicStatus } from '../../store/slices/faqSlice';
-import useDebounce from '../../hooks/useDebounce';
+import { useModal } from '../../../context/ModalContext';
+import useDebounce from '../../../hooks/useDebounce';
+import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
+import { getFaqTopics, removeFaq, updateFaqTopicStatus } from '../../../store/slices/faqTopicSlice';
 import moment from 'moment';
-import FaqFrom from '../../components/Forms/FaqForm';
-import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
-import GlassButton from '../../components/Button/Button';
+import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteFaqTopicApi, downloadFaqTopicsPdfApi, downloadFaqTopicsExcelApi } from '../../services/apiServices';
-import ExportFile from '../../components/Forms/ExportFile';
-import InlineDateFilter from '../../components/common/InlineDateFilter';
-import SortDropdown from '../../components/common/SortDropdown';
-import SearchInput from '../../components/common/SearchInput';
-import DynamicFilter from '../../components/common/DynamicFilter';
-import { faqFilterConfig } from '../../utils/filterConfiguration';
+import FaqFrom from '../../../components/Forms/FaqTopicForm';
+import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
+import { deleteFaqTopicApi, downloadFaqTopicsExcelApi, downloadFaqTopicsPdfApi } from '../../../services/apiServices';
+import SortDropdown from '../../../components/common/SortDropdown';
+import SearchInput from '../../../components/common/SearchInput';
+import ExportFile from '../../../components/Forms/ExportFile';
+import DynamicFilter from '../../../components/common/DynamicFilter';
+import { faqFilterConfig } from '../../../utils/filterConfiguration';
+import InlineDateFilter from '../../../components/common/InlineDateFilter';
+import DynamicServerTable from '../../../components/Table/Table';
+
 
 interface ColumnDef {
     key: string;
@@ -51,7 +51,7 @@ const ManageFaqTopics: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.faq);
+    const { data, loading, pagination } = useAppSelector((state) => state.faqTopic);
     const pageSize = 5;
 
     const sortRef = useRef<HTMLDivElement>(null);
@@ -255,7 +255,7 @@ const ManageFaqTopics: React.FC = () => {
                     <div className="flex items-center gap-4">
                         <ExportFile
                             pdfApi={() => downloadFaqTopicsPdfApi({
-                                
+
                             })}
                             excelApi={() => downloadFaqTopicsExcelApi({
 

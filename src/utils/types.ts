@@ -660,4 +660,6 @@ export interface FaqTopics {
   created_at: string;
   actions?: any;
 }
+
+export interface Faq extends FaqTopics {}
 //--------Abhishek Manage Faq Topics end------------//
