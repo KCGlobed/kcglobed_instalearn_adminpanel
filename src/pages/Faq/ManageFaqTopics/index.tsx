@@ -10,7 +10,7 @@ import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import FaqFrom from '../../../components/Forms/FaqTopicForm';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteFaqTopicApi, downloadFaqTopicsExcelApi, downloadFaqTopicsPdfApi } from '../../../services/apiServices';
+import { deleteFaqTopicApi, } from '../../../services/apiServices';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import ExportFile from '../../../components/Forms/ExportFile';
@@ -254,13 +254,6 @@ const ManageFaqTopics: React.FC = () => {
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadFaqTopicsPdfApi({
-
-                            })}
-                            excelApi={() => downloadFaqTopicsExcelApi({
-
-                            })}
-                            fileNamePrefix="faq-topics"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>

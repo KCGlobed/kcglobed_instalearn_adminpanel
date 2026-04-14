@@ -10,7 +10,7 @@ import GlassButton from '../../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import ManageFaqForm from '../../../components/Forms/FaqForm';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteFaqApi, downloadFaqExcelApi, downloadFaqPdfApi } from '../../../services/apiServices';
+import { deleteFaqApi } from '../../../services/apiServices';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import ExportFile from '../../../components/Forms/ExportFile';
@@ -257,22 +257,7 @@ const ManageFaq: React.FC = () => {
 
           <div className="flex items-center gap-4">
             <ExportFile
-              pdfApi={() => downloadFaqPdfApi({
-                search: debouncedSearchTerm,
-                title: debouncedFilters.title,
-                description: debouncedFilters.description,
-                status: debouncedFilters.status,
-                start_date: startDate,
-                end_date: endDate
-              })}
-              excelApi={() => downloadFaqExcelApi({
-                search: debouncedSearchTerm,
-                title: debouncedFilters.title,
-                description: debouncedFilters.description,
-                status: debouncedFilters.status,
-                start_date: startDate,
-                end_date: endDate
-              })}
+
               fileNamePrefix="faq"
             />
             <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
