@@ -34,10 +34,19 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Videos', path: '/dashboard/videos' },
         { name: 'Manage Ebooks', path: '/dashboard/ebooks' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
+        { name: 'Manage Courses', path: '/dashboard/courses' },
       ]
     },
     { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
-    { name: 'Manage FAQ Topics', icon: <FaQuestionCircle className="mr-2" />, path: '/dashboard/faq-topics' },
+    {
+      name: 'Manage FAQ',
+      icon: <FaQuestionCircle className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage FAQ Topics', path: '/dashboard/faq-topics' },
+        { name: 'Manage FAQ', path: '/dashboard/faq' },
+      ]
+    },
   ].filter(Boolean);
 
 

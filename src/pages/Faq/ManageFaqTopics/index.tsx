@@ -129,7 +129,7 @@ const ManageFaqTopics: React.FC = () => {
             key: 'description',
             title: 'Description',
             render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2">
+                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
                     {value || 'N/A'}
                 </div>
             ),

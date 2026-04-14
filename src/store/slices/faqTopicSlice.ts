@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { FaqTopics, Pagination } from "../../utils/types";
-import {addFaqTopicApi, deleteFaqTopicApi, fetchFaqTopicsApi, updateFaqTopicApi, updateFaqTopicStatusApi} from '../../services/apiServices'
+import { addFaqTopicApi, deleteFaqTopicApi, fetchFaqTopicsApi, updateFaqTopicApi, updateFaqTopicStatusApi } from '../../services/apiServices'
 
 interface FaqTopic extends Pagination<FaqTopics> { };
 
@@ -22,13 +22,13 @@ const initialState: FaqTopic = {
 }
 
 
-export const getFaqTopics = createAsyncThunk<Pagination<FaqTopics>,{page?:number,search?:string,title?:string,description?:string,ordering?:string,start_date?:string,end_date?:string,status?:string}>(
+export const getFaqTopics = createAsyncThunk<Pagination<FaqTopics>, { page?: number, search?: string, title?: string, description?: string, ordering?: string, start_date?: string, end_date?: string, status?: string }>(
     "faq/getFaqTopic",
-    async({page=1,search="",title="",description="",ordering="",start_date="",end_date="",status=""},{rejectWithValue})=>{
+    async ({ page = 1, search = "", title = "", description = "", ordering = "", start_date = "", end_date = "", status = "" }, { rejectWithValue }) => {
         try {
-            return await fetchFaqTopicsApi(page,search,title,description,ordering,start_date,end_date,status);
-            
-        } catch (err:any) {
+            return await fetchFaqTopicsApi(page, search, title, description, ordering, start_date, end_date, status);
+
+        } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch the Faq");
         }
     }
@@ -83,15 +83,15 @@ export const updateFaqTopicStatus = createAsyncThunk<{ id: number | string, stat
 )
 
 
-const faqSlice= createSlice({
-    name:"FaqTopic",
+const faqTopicSlice = createSlice({
+    name: "FaqTopic",
     initialState,
-    reducers:{
-        setPage(state,action:PayloadAction<number>){
-            state.page=action.payload;
+    reducers: {
+        setPage(state, action: PayloadAction<number>) {
+            state.page = action.payload;
         },
-        removeFaq(state,action: PayloadAction<Number | string>){
-            state.data=state.data.filter((item)=>item.id !==action.payload)
+        removeFaq(state, action: PayloadAction<Number | string>) {
+            state.data = state.data.filter((item) => item.id !== action.payload)
         },
         statusFaq: (state, action: PayloadAction<number | string>) => {
             state.data = state.data.map((item) =>
@@ -101,46 +101,46 @@ const faqSlice= createSlice({
             );
         }
     },
-    extraReducers:(builder)=>{
+    extraReducers: (builder) => {
         builder
-        .addCase(getFaqTopics.pending,(state)=>{
-            state.loading=true;
-            state.error=null;
-        })
-        .addCase(getFaqTopics.fulfilled,(state,action)=>{
-            state.loading=false;
-            state.data=action.payload.data;
-            state.pagination=action.payload.pagination;
-        })
-       .addCase(getFaqTopics.rejected, (state, action) => {
-         state.loading = false;
-         state.error = action.payload as string;
-        })
-        .addCase(addFaqTopic.fulfilled,(state,action)=>{
-            state.loading=false;
-            state.data.unshift(action.payload);
-        })
-        .addCase(updateFaqTopic.fulfilled, (state, action) => {
-            state.loading = false;
-            state.data = state.data.map((item) =>
-                item.id === action.payload.id ? action.payload : item
-            );
-        })
-        .addCase(deleteFaqTopic.fulfilled, (state, action) => {
-            state.loading = false;
-            state.data = state.data.filter((item) => item.id !== action.payload);
-        })
-        .addCase(updateFaqTopicStatus.fulfilled, (state, action) => {
-            state.data = state.data.map((item) =>
-                item.id.toString() === action.payload.id.toString()
-                    ? { ...item, status: action.payload.status }
-                    : item
-            );
-        })
+            .addCase(getFaqTopics.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getFaqTopics.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload.data;
+                state.pagination = action.payload.pagination;
+            })
+            .addCase(getFaqTopics.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(addFaqTopic.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data.unshift(action.payload);
+            })
+            .addCase(updateFaqTopic.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.map((item) =>
+                    item.id === action.payload.id ? action.payload : item
+                );
+            })
+            .addCase(deleteFaqTopic.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.filter((item) => item.id !== action.payload);
+            })
+            .addCase(updateFaqTopicStatus.fulfilled, (state, action) => {
+                state.data = state.data.map((item) =>
+                    item.id.toString() === action.payload.id.toString()
+                        ? { ...item, status: action.payload.status }
+                        : item
+                );
+            })
     }
 
 })
 
 
-export const { setPage, removeFaq, statusFaq } = faqSlice.actions;
-export default faqSlice.reducer;
+export const { setPage, removeFaq, statusFaq } = faqTopicSlice.actions;
+export default faqTopicSlice.reducer;

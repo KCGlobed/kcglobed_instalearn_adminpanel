@@ -661,5 +661,16 @@ export interface FaqTopics {
   actions?: any;
 }
 
-export interface Faq extends FaqTopics {}
-//--------Abhishek Manage Faq Topics end------------//
+export interface Faq extends FaqTopics {
+  faq_topic_id: number;
+  faq_topic?: {
+    id: number;
+    title: string;
+  };
+}
+
+//--------------Faq End------------//
+
+
+//---------------Abhishek Manage Courses start------------//
+
