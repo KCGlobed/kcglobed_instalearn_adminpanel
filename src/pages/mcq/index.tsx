@@ -9,7 +9,7 @@ import moment from 'moment';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 import { deleteMcqApi, downloadMcqExcelApi, downloadMcqPdfApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
@@ -18,6 +18,9 @@ import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
 import { filterConfig } from '../../utils/filterConfiguration';
+import { useNavigate } from 'react-router-dom';
+import McqView from '../../components/View/McqView';
+import ImportMcq from '../../components/Forms/ImportMcq';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -37,6 +40,7 @@ const ManageMcq: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate()
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -131,24 +135,28 @@ const ManageMcq: React.FC = () => {
         },
         {
             key: 'question',
-            title: 'Question',
+            title: 'Question Content',
             render: (_: any, row: any) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={row.question_detail?.question}>
-                    {row.question_detail?.question || 'No question provided.'}
-                </div>
+                <div
+                    className="text-gray-600 text-xs w-full max-w-xs line-clamp-2"
+                    title={row.question_detail?.question}
+                    dangerouslySetInnerHTML={{
+                        __html: row.question_detail?.question || 'No question provided.',
+                    }}
+                />
             ),
-            width: '300px',
+            width: '100px',
         },
         {
-            key: 'level',
-            title: 'Level',
+            key: 'pass_percentage',
+            title: 'Pass %',
             render: (value: number) => (
                 <span className="px-2 py-1 rounded-lg bg-blue-50 text-blue-600 font-bold text-[10px] uppercase">
-                    Level {value}
+                    {value}%
                 </span>
             ),
             sortable: true,
-            width: '100px',
+            width: '150px',
             align: 'center',
         },
         {
@@ -161,7 +169,7 @@ const ManageMcq: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '150px',
         },
         {
             key: 'status',
@@ -189,17 +197,23 @@ const ManageMcq: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View MCQ',
+                                content: <McqView mcqData={row} />,
+                                type: 'success',
+                                size: 'xl',
+                            });
+                        }}
+                    />
+                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
-                        onClick={() =>
-                            showModal({
-                                title: 'Edit MCQ',
-                                content: <div>Edit MCQ Form Placeholder</div>, // User might need a McqForm later
-                                type: 'success',
-                                size: 'xl',
-                            })
-                        }
+                        onClick={() => navigate(`/dashboard/mcq/form/${row.id}`)}
                     />
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
@@ -231,7 +245,7 @@ const ManageMcq: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6 w-full min-w-0 animate-in fade-in duration-500 overflow-hidden">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
@@ -294,16 +308,24 @@ const ManageMcq: React.FC = () => {
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
-                                showModal({
-                                    title: "Add MCQ",
-                                    content: "",
-                                    type: 'custom',
-                                    size: 'lg',
-                                })
+                                navigate("/dashboard/mcq/form")
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
                             Add MCQ
+                        </button>
+                        <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
+                            onClick={() =>
+                                showModal({
+                                    title: 'Import MCQ',
+                                    content: <ImportMcq />,
+                                    type: 'custom',
+                                    size: 'md',
+                                })
+                            }
+                        >
+                            <Plus size={18} strokeWidth={3} />
+                            Import MCQ
                         </button>
                     </div>
                 </div>
@@ -332,19 +354,17 @@ const ManageMcq: React.FC = () => {
             </div>
 
             {/* Main Table Content */}
-            <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
-                <DynamicServerTable
-                    data={data}
-                    columns={columns as any}
-                    currentPage={currentPage}
-                    pageSize={pagination?.page_size || pageSize}
-                    totalCount={pagination?.total_results || 0}
-                    loading={loading}
-                    onPageChange={(page) => setCurrentPage(page)}
-                    onSort={handleSort}
-                    className="rounded-none border-none shadow-none"
-                />
-            </div>
+            <DynamicServerTable
+                data={data}
+                columns={columns as any}
+                currentPage={currentPage}
+                pageSize={pagination?.page_size || pageSize}
+                totalCount={pagination?.total_results || 0}
+                loading={loading}
+                onPageChange={(page) => setCurrentPage(page)}
+                onSort={handleSort}
+                className=" shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
+            />
         </div >
     );
 };

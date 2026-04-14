@@ -205,18 +205,13 @@ export async function fetchEbookViewData(id: string | number): Promise<any> {
 export async function fetchMcq(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   let query = `questions/get-mcqs-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
-}
-
-
-
-//-----------------------Abhishek Manage Instructor start ------------//
-
-export async function fetchInstructor(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
-  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `user/get-user-listing/instructor?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   return await apiRequest(query, "GET");
+}
+
+export async function fetchMcqDetailApi(id: string | number): Promise<any> {
+  return await apiRequest(`questions/view-mcq-detail/${id}`, "GET");
 }
 
 export const createMcq = async (payload: any): Promise<any> => {
@@ -228,11 +223,11 @@ export const updateMcqApi = async (id: string | number, payload: any): Promise<a
 }
 
 export const deleteMcqApi = async (id: string | number): Promise<any> => {
-  return await apiRequest(`course/delete-mcq/${id}`, 'DELETE');
+  return await apiRequest(`questions/delete-mcq/${id}`, 'DELETE');
 }
 
 export const updateMcqStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
-  return await apiRequest(`course/update-mcq-status/${id}`, 'POST', payload);
+  return await apiRequest(`questions/update-mcq-status/${id}`, 'POST', payload);
 }
 
 export const downloadMcqPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
@@ -244,7 +239,25 @@ export const downloadMcqExcelApi = async ({ search = "", name = "", status = "",
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   return await apiRequest(`course/export-mcq-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+export async function fetchChapterListApi(): Promise<any> {
+  const res: any = await apiRequest(`course/get-chapters-list/`, "GET");
+  return res; // returns { count, next, previous, results } or array
+}
+export const importMcq = async (payload: any): Promise<any> => {
+  return await apiRequest(`questions/import-mcqs/`, 'POST', payload);
+};
+
 // ----------------mcq service end------- //
+//-----------------------Abhishek Manage Instructor start ------------//
+
+export async function fetchInstructor(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/instructor?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  return await apiRequest(query, "GET");
+}
 export const createInstructor = async (payload: any): Promise<any> => {
   return await apiRequest(`user/create-user/instructor`, 'POST', payload);
 };

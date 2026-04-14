@@ -69,8 +69,13 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
-import { $getRoot } from 'lexical';
-import { $generateNodesFromDOM } from '@lexical/html'
+import {
+  $getRoot,
+  $isElementNode,
+  $isDecoratorNode,
+  $createParagraphNode
+} from 'lexical';
+import { $generateNodesFromDOM, $generateHtmlFromNodes } from '@lexical/html'
 import TableCellResizer from './plugins/TableCellResizer';
 import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
@@ -135,26 +140,32 @@ export default function Editor({ value }: any): JSX.Element {
 
   useEffect(() => {
     if (typeof value === 'string') {
-      try {
-        editor.update(() => {
-          // In the browser you can use the native DOMParser API to parse the HTML string.
-          const parser = new DOMParser()
-
-          const dom = parser.parseFromString(value, 'text/html')
-
-          // Once you have the DOM instance it's easy to generate LexicalNodes.
-          const nodes: any = $generateNodesFromDOM(editor, dom)
-
-          // Select the root
-          const root = $getRoot()
-          root.clear()
-          root.append(...nodes)
-        })
-      } catch (error) {
-        console.error('Failed to parse editor state:', error)
-      }
+      editor.getEditorState().read(() => {
+        const currentHtml = $generateHtmlFromNodes(editor);
+        if (value !== currentHtml) {
+          editor.update(() => {
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(value, 'text/html');
+            const nodes = $generateNodesFromDOM(editor, dom);
+            const root = $getRoot();
+            root.clear();
+            
+            // RootNode only accepts ElementNode or DecoratorNode.
+            // Raw TextNodes must be wrapped in a Paragraph.
+            nodes.forEach((node) => {
+              if ($isElementNode(node) || $isDecoratorNode(node)) {
+                root.append(node);
+              } else {
+                const paragraph = $createParagraphNode();
+                paragraph.append(node);
+                root.append(paragraph);
+              }
+            });
+          });
+        }
+      });
     }
-  }, [])
+  }, [value, editor]);
 
   return (
     <>

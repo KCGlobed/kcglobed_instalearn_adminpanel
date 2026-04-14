@@ -40,8 +40,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/ebooks" element={<ManageEbook />} />
           <Route path="/dashboard/mcq" element={<ManageMcq />} />
           <Route path="/dashboard/mcq/form" element={<McqForm />} />
-
-
+          <Route path="/dashboard/mcq/form/:id" element={<McqForm />} />
           {/* //-----------------------Abhishek Manage Instructor start ------------// */}
           <Route path="/dashboard/instructor" element={<ManageInstructor />} />
           {/* //-----------------------Abhishek Manage Instructor end ------------// */}

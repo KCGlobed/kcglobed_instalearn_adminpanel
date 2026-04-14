@@ -111,21 +111,21 @@ function DynamicServerTable<T extends object>({
                       onClick={() => col.sortable && handleSort(col.key)}
                     >
                       <div className={`flex items-center gap-2 ${col.align === 'right' ? 'justify-end' :
-                          col.align === 'center' ? 'justify-center' : 'justify-start'
+                        col.align === 'center' ? 'justify-center' : 'justify-start'
                         }`}>
                         <span>{col.title}</span>
                         {col.sortable && (
                           <div className="flex flex-col -space-y-1.5 translate-y-[1px]">
                             <FiChevronUp
                               className={`h-3.5 w-3.5 transition-all duration-200 ${activeSort.key === col.key && activeSort.direction === 'asc'
-                                  ? 'text-blue-400 scale-110'
-                                  : 'text-white/30'
+                                ? 'text-blue-400 scale-110'
+                                : 'text-white/30'
                                 }`}
                             />
                             <FiChevronDown
                               className={`h-3.5 w-3.5 transition-all duration-200 ${activeSort.key === col.key && activeSort.direction === 'desc'
-                                  ? 'text-blue-400 scale-110'
-                                  : 'text-white/30'
+                                ? 'text-blue-400 scale-110'
+                                : 'text-white/30'
                                 }`}
                             />
                           </div>
@@ -220,8 +220,8 @@ function DynamicServerTable<T extends object>({
                     key={pageNum}
                     onClick={() => onPageChange(pageNum)}
                     className={`min-w-[34px] h-[34px] rounded-lg text-xs font-bold transition-all ${currentPage === pageNum
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                       }`}
                   >
                     {pageNum}
@@ -235,8 +235,8 @@ function DynamicServerTable<T extends object>({
                   <button
                     onClick={() => onPageChange(totalPages)}
                     className={`min-w-[34px] h-[34px] rounded-lg text-xs font-bold transition-all ${currentPage === totalPages
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                       }`}
                   >
                     {totalPages}
