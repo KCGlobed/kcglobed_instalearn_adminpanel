@@ -300,15 +300,7 @@ export const updateFaqTopicStatusApi = async (id: string | number, payload: { st
   return await apiRequest(`cms/update-faq-topic-status/${id}`, 'POST', payload);
 };
 
-export const downloadFaqTopicsPdfApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
-  return await apiRequest(`cms/export-faq-topic-listing-pdf?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-};
 
-export const downloadFaqTopicsExcelApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
-  return await apiRequest(`cms/export-faq-topic-listing-excel?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-};
 
 
 // ----------------------------- Abhishek manage Faq --------------------------------------------//
@@ -337,12 +329,3 @@ export const updateFaqStatusApi = async (id: string | number, payload: { status:
   return await apiRequest(`cms/update-faq-status/${id}`, 'POST', payload);
 };
 
-export const downloadFaqPdfApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
-  return await apiRequest(`cms/export-faq-listing-pdf?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-};
-
-export const downloadFaqExcelApi = async ({ search = "", title = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
-  return await apiRequest(`cms/export-faq-listing-excel?${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}&name=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-};
