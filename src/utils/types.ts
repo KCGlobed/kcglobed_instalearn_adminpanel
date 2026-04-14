@@ -175,43 +175,7 @@ export interface GlossaryState {
 }
 
 /*--------glossary types----*/
-/*--------chapter types Start----*/
-export interface Chapter {
-  id: number,
-  name: string,
-  description?: string,
-  created_at?: string,
-  status?: boolean,
-  actions?: any,
-}
 
-
-export interface ChapterPagination {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  pagination: {
-    total_results: number | null, total_pages: number | null, current_page: number | null, next_page: number | null, page_size: number | null, previous_page: number | null
-  }
-  data: Chapter[];
-}
-
-
-export interface ChapterState {
-  data: Chapter[];
-  count?: number;
-  pagination: {
-    total_results: number | null, total_pages: number | null, current_page: number | null, next_page: number | null, page_size: number | null, previous_page: number | null
-  },
-  next: string | null;
-  previous: string | null;
-  page: number;
-  loading: boolean;
-  error: string | null;
-}
-
-
-/*--------chapter types End----*/
 
 /*-----------Tags Start-----*/
 export interface Tag {
@@ -339,32 +303,7 @@ export interface Category {
 export interface Subcategory extends Category { }
 /*-------category End ----*/
 
-/*-------Course Start ----*/
 
-type CategoryInfo = {
-  id: number;
-  name: string;
-  description: string;
-};
-
-type CategoryItem = {
-  id: number;
-  category_info: CategoryInfo | null; // 👈 can be null sometimes
-  created_at: string; // ISO date string
-};
-
-export interface Courses {
-  id: number;
-  name: string;
-  description: string;
-  categories: CategoryItem[];
-  duration: string;
-  status?: boolean;
-  created_at?: string;
-  actions?: any,
-}
-
-/*-------Course End ----*/
 
 export interface ChapterDetail {
   id: number;
@@ -669,4 +608,73 @@ export interface Faq extends FaqTopics {
 
 
 //---------------Abhishek Manage Courses start------------//
+
+
+type CategoryInfo = {
+  id: number;
+  name: string;
+  description: string;
+  bg_code?: string | null;
+  text_code?: string | null;
+  icon?: string | null;
+};
+
+type CategoryItem = {
+  id: number;
+  category_info: CategoryInfo | null; // 👈 can be null sometimes
+  created_at: string; // ISO date string
+};
+
+type TagsInfo = {
+  id: number;
+  name: string;
+};
+
+type TagItem = {
+  id: number;
+  tags: TagsInfo;
+};
+
+export interface Courses {
+  id: number;
+  name: string;
+  level:number;
+  short_description:string;
+  description: string;
+  categories: CategoryItem[];
+  tags:TagItem[];
+  duration: string;
+  status: boolean;
+  price:number;
+  discount:number;
+  objective_summary:string[];
+  feature_json:string[];
+  image:string;
+  banner_image:string;
+  created_at?: string;
+  actions?: any,
+}
+
+
+//--------------------------Abhishek Manage Courses end------------//
+
+
+
+
+
+// ----------------------------Abhishek Manage Chapter start-------------//
+
+
+
+export interface Chapter {
+  id: number,
+  name: string,
+  description?: string,
+  created_at?: string,
+  status?: boolean,
+  actions?: any,
+}
+
+
+//---------------------Abhishek Manage Chapter end------------//
 

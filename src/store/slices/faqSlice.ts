@@ -2,36 +2,36 @@ import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/tool
 import type { Faq, Pagination } from "../../utils/types";
 import { fetchFaqApi, addFaqApi, updateFaqApi, deleteFaqApi, updateFaqStatusApi } from "../../services/apiServices";
 
-interface faqState extends Pagination<Faq>{}
+interface faqState extends Pagination<Faq> { }
 
 
-const initialState:faqState={
-    data:[],
-    next:null,
-    previous:null,
-    page:1,
-    pagination:{
-        total_results:null,
-        total_pages:null,
-        current_page:null,
-        next_page:null,
-        page_size:null,
-        previous_page:null,
+const initialState: faqState = {
+    data: [],
+    next: null,
+    previous: null,
+    page: 1,
+    pagination: {
+        total_results: null,
+        total_pages: null,
+        current_page: null,
+        next_page: null,
+        page_size: null,
+        previous_page: null,
     },
-    loading:false,
-    error:null
+    loading: false,
+    error: null
 }
 
-export const getFaq = createAsyncThunk<Pagination<Faq>,{ page?: number;search?: string;title?: string;ordering?: string;description?: string;start_date?: string;end_date?: string;status?: string;}>(
-  "faq/getFaq",
-  async (
-    { page = 1, title = "",description = "",search = "",ordering = "",start_date = "",end_date = "",status = "",},{ rejectWithValue }) => {
-    try {
-      return await fetchFaqApi(page,search,title,description,ordering,start_date,end_date,status);
-    } catch (err: any) {
-      return rejectWithValue(err?.message || "Failed to fetch FAQ");
+export const getFaq = createAsyncThunk<Pagination<Faq>, { page?: number; search?: string; title?: string; ordering?: string; description?: string; start_date?: string; end_date?: string; status?: string; }>(
+    "faq/getFaq",
+    async (
+        { page = 1, title = "", description = "", search = "", ordering = "", start_date = "", end_date = "", status = "", }, { rejectWithValue }) => {
+        try {
+            return await fetchFaqApi(page, search, title, description, ordering, status, start_date, end_date);
+        } catch (err: any) {
+            return rejectWithValue(err?.message || "Failed to fetch FAQ");
+        }
     }
-  }
 );
 
 export const addFaq = createAsyncThunk<Faq, any, { rejectValue: string }>(
@@ -46,11 +46,11 @@ export const addFaq = createAsyncThunk<Faq, any, { rejectValue: string }>(
     }
 );
 
-export const updateFaq = createAsyncThunk<Faq, { id: number | string, payload: any }, { rejectValue: string }>(
+export const updateFaq = createAsyncThunk<Faq, { id: number | string, faqData: any }, { rejectValue: string }>(
     "faq/updateFaq",
-    async ({ id, payload }, { rejectWithValue }) => {
+    async ({ id, faqData }, { rejectWithValue }) => {
         try {
-            const data = await updateFaqApi(id, payload);
+            const data = await updateFaqApi(id, faqData);
             return data?.data ? data.data : data;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to update the Faq");
