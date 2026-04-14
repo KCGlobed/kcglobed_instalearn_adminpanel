@@ -1,6 +1,6 @@
 import { toast } from 'react-hot-toast';
 import { addFaq, updateFaq } from '../../store/slices/faqSlice';
-import { fetchFaqTopicsApi } from '../../services/apiServices';
+import { fetchParentFaqApi } from '../../services/apiServices';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useModal } from '../../context/ModalContext';
 import { useEffect, useState } from 'react';
@@ -23,7 +23,11 @@ type Props = {
         id: number;
         title: string;
         description: string;
-        faq_topic_id: number;
+        faq_topic_id?: number;
+        faq_topic?: {
+            id: number;
+            title: string;
+        };
         icon: string;
     };
 }
@@ -38,16 +42,17 @@ const ManageFaqForm = ({ faqData }: Props) => {
 
     const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<FaqFormValue>({
         defaultValues: {
-            title: faqData?.title || "",
-            description: faqData?.description || "",
-            faq_topic_id: faqData?.faq_topic_id || "",
+            title: "",
+            description: "",
+            faq_topic_id: "",
             icon: null,
         },
     });
 
     const iconFile = watch('icon');
-    const [previewUrl, setPreviewUrl] = useState<string | null>(faqData?.icon || null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+    // Set preview URL and handle cleanup
     useEffect(() => {
         if (iconFile && iconFile.length > 0) {
             const url = URL.createObjectURL(iconFile[0]);
@@ -59,9 +64,26 @@ const ManageFaqForm = ({ faqData }: Props) => {
         }
     }, [iconFile, faqData]);
 
+    // Handle initial data loading/reset
+    useEffect(() => {
+        if (faqData) {
+            reset({
+                title: faqData.title || "",
+                description: faqData.description || "",
+                faq_topic_id: (typeof (faqData as any).faq_topic === 'object'
+                    ? (faqData as any).faq_topic?.id
+                    : (faqData as any).faq_topic_id) || "",
+                icon: null,
+            });
+            if (faqData.icon) {
+                setPreviewUrl(faqData.icon);
+            }
+        }
+    }, [faqData, reset]);
+
     const handleFetchParentTopic = async () => {
         try {
-            const res = await fetchFaqTopicsApi(1, "", "", "", "", "", "", "active");
+            const res = await fetchParentFaqApi();
             if (res && res.data) {
                 setParentTopics(res.data);
             } else if (res && res.results) {
@@ -78,9 +100,13 @@ const ManageFaqForm = ({ faqData }: Props) => {
         handleFetchParentTopic();
     }, []);
 
+    // Ensure parent field is synced once parentTopics are loaded
     useEffect(() => {
         if (parentTopics.length > 0 && faqData) {
-            setValue('faq_topic_id', faqData.faq_topic_id || '');
+            const topicId = (typeof (faqData as any).faq_topic === 'object'
+                ? (faqData as any).faq_topic?.id
+                : (faqData as any).faq_topic_id) || '';
+            setValue('faq_topic_id', topicId);
         }
     }, [parentTopics, faqData, setValue]);
 
@@ -92,12 +118,14 @@ const ManageFaqForm = ({ faqData }: Props) => {
             formData.append('description', data.description.trim());
             formData.append('faq_topic_id', String(data.faq_topic_id));
 
+            // Only append icon if a new file was selected
             if (data.icon && data.icon.length > 0) {
                 formData.append('icon', data.icon[0]);
             }
 
             if (faqData?.id) {
-                await dispatch(updateFaq({ id: faqData.id, payload: formData })).unwrap();
+                // Corrected property name from 'payload' to 'faqData' to match slice
+                await dispatch(updateFaq({ id: faqData.id, faqData: formData })).unwrap();
                 toast.success('FAQ updated successfully');
             } else {
                 await dispatch(addFaq(formData)).unwrap();
@@ -106,7 +134,7 @@ const ManageFaqForm = ({ faqData }: Props) => {
             hideModal();
             reset();
         } catch (error: any) {
-            toast.error(error || "Failed to save FAQ Topic");
+            toast.error(error || "Failed to save FAQ");
         } finally {
             setIsSubmitting(false);
         }

@@ -20,6 +20,7 @@ import McqForm from "../components/Forms/McqForm";
 import ManageFaq from "../pages/Faq/ManageFaq";
 import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
 import ManageCourses from "../pages/course/ManageCourses";
+import ManageChapter from "../pages/course/ManageChapter";
 
 export default function AppRoutes() {
   return (
@@ -56,6 +57,9 @@ export default function AppRoutes() {
 
           {/* ------------------------------Abhishek Manage Courses----------------------  */}
           <Route path="/dashboard/courses" element={<ManageCourses />} />
+
+          {/* ------------------------------Abhishek Manage Chapter----------------------  */}
+          <Route path="/dashboard/chapter" element={<ManageChapter />} />
 
         </Route>
       </Route>
