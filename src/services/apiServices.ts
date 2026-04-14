@@ -202,9 +202,9 @@ export async function fetchEbookViewData(id: string | number): Promise<any> {
 // ----------------ebook service end------- //
 
 // ----------------mcq service start------- //
-export async function fetchMcq(page = 1, search: string = "", name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchMcq(page = 1, search: string = "", id_number: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `questions/get-mcqs-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  let query = `questions/get-mcqs-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${id_number ? `&id_number=${encodeURIComponent(id_number)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   return await apiRequest(query, "GET");
@@ -232,12 +232,12 @@ export const updateMcqStatusApi = async (id: string | number, payload: { status:
 
 export const downloadMcqPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`course/export-mcq-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`questions/export-mcqs-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
 export const downloadMcqExcelApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`course/export-mcq-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`questions/export-mcqs-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
 export async function fetchChapterListApi(): Promise<any> {

@@ -35,8 +35,8 @@ export const ebookFilterConfig: FilterField[] = [
     }
 ];
 
-export const instructorFilterConfig:FilterField[]=[
-   {
+export const instructorFilterConfig: FilterField[] = [
+    {
         name: 'first_name',
         label: 'First Name',
         type: 'text',
@@ -93,3 +93,24 @@ export const faqFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+
+//----himanshu mcq filter config start------------//
+
+export const mcqFilterConfig: FilterField[] = [
+    { type: 'text', label: 'MCQ ID', name: 'id_number', placeholder: 'Filter by MCQ ID...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+
+
+//----himanshu mcq filter config end------------//

@@ -17,7 +17,7 @@ import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
-import { filterConfig } from '../../utils/filterConfiguration';
+import { mcqFilterConfig } from '../../utils/filterConfiguration';
 import { useNavigate } from 'react-router-dom';
 import McqView from '../../components/View/McqView';
 import ImportMcq from '../../components/Forms/ImportMcq';
@@ -44,8 +44,7 @@ const ManageMcq: React.FC = () => {
 
     // Filter states
     const [filters, setFilters] = useState({
-        name: '',
-        description: '',
+        id_number: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -76,7 +75,7 @@ const ManageMcq: React.FC = () => {
         dispatch(getMcq({
             page: currentPage,
             search: debouncedSearchTerm,
-            name: debouncedFilters.name,
+            id_number: debouncedFilters.id_number,
             ordering,
             status: debouncedFilters.status,
             startDate,
@@ -95,8 +94,7 @@ const ManageMcq: React.FC = () => {
 
     const clearFilters = () => {
         setFilters({
-            name: '',
-            description: '',
+            id_number: '',
             status: 'all',
         });
     };
@@ -284,22 +282,16 @@ const ManageMcq: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search categories..."
+                        placeholder="Search MCQ..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadMcqPdfApi({
-                                search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
-                                status: debouncedFilters.status,
-                                start_date: startDate,
-                                end_date: endDate
-                            })}
+
                             excelApi={() => downloadMcqExcelApi({
                                 search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
+                                id_number: debouncedFilters.id_number,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
@@ -333,7 +325,7 @@ const ManageMcq: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={filterConfig}
+                    config={mcqFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
