@@ -8,6 +8,9 @@ import tagReducer from "./slices/tagSlice"
 import ebookReducer from "./slices/ebookSlice";
 import mcqReducer from "./slices/mcqSlice";
 
+import instructorReducer from "./slices/instructorSlice";
+import faqTopicReducer from "./slices/faqTopicSlice";
+import faqReducer from "./slices/faqSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -16,7 +19,10 @@ export const store = configureStore({
     video: videoReducer,
     tags: tagReducer,
     ebook: ebookReducer,
-    mcq: mcqReducer
+    mcq: mcqReducer,
+    instructor: instructorReducer,
+    faqTopic: faqTopicReducer,
+    faq: faqReducer
   },
 });
 

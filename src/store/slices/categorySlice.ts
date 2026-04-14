@@ -39,7 +39,6 @@ export const addCategory = createAsyncThunk<Category, any, { rejectValue: string
     async (categoryData, { rejectWithValue }) => {
         try {
             const data = await createCategory(categoryData);
-            // the API response might be direct object or wrapped in `data`
             return data?.data ? data.data : data;
 
         } catch (error: any) {

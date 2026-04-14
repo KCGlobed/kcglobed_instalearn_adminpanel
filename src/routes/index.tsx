@@ -13,9 +13,13 @@ import ManageCategories from "../pages/course/ManageCategories";
 import ManageSubCategories from "../pages/course/ManageSubCategories";
 import ManageTags from "../pages/course/ManageTags";
 import ManageVideo from "../pages/course/ManageVideo";
+import ManageInstructor from "../pages/instructor";
 import ManageEbook from "../pages/course/ManageEbook";
 import ManageMcq from "../pages/mcq";
 import McqForm from "../components/Forms/McqForm";
+import ManageFaq from "../pages/Faq/ManageFaq";
+import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
+import ManageCourses from "../pages/course/ManageCourses";
 
 export default function AppRoutes() {
   return (
@@ -36,6 +40,23 @@ export default function AppRoutes() {
           <Route path="/dashboard/ebooks" element={<ManageEbook />} />
           <Route path="/dashboard/mcq" element={<ManageMcq />} />
           <Route path="/dashboard/mcq/form" element={<McqForm />} />
+
+
+          {/* //-----------------------Abhishek Manage Instructor start ------------// */}
+          <Route path="/dashboard/instructor" element={<ManageInstructor />} />
+          {/* //-----------------------Abhishek Manage Instructor end ------------// */}
+
+          {/* //-----------------------Abhishek Manage Faq Topics start ------------// */}
+          <Route path="/dashboard/faq-topics" element={<ManageFaqTopics />} />
+          {/* //-----------------------Abhishek Manage Faq Topics end ------------// */}
+
+          {/* //-----------------------Abhishek Manage Faq start ------------// */}
+          <Route path="/dashboard/faq" element={<ManageFaq />} />
+          {/* //-----------------------Abhishek Manage Faq end ------------// */}
+
+          {/* ------------------------------Abhishek Manage Courses----------------------  */}
+          <Route path="/dashboard/courses" element={<ManageCourses />} />
+
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

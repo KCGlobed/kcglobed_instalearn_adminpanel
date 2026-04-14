@@ -5,8 +5,8 @@ export interface LoginCred {
   email: string;
   password: string;
   role: string; // Optional, if you want to include user role in login
-  device_id:string,
-  device_type:string
+  device_id: string,
+  device_type: string
 }
 
 export interface RoleName {
@@ -336,7 +336,7 @@ export interface Category {
   actions?: any;
 }
 
-export interface Subcategory extends Category {}
+export interface Subcategory extends Category { }
 /*-------category End ----*/
 
 /*-------Course Start ----*/
@@ -555,7 +555,7 @@ export interface TrailChapter {
 
 /*-------Free trail Chapter End -----*/
 /*-------IRS Publication Type Start -----*/
-export interface IRSType{
+export interface IRSType {
   id: number;
   name: string;
   status: boolean;
@@ -563,7 +563,7 @@ export interface IRSType{
   actions?: any,
 }
 
-export interface IRSFile{
+export interface IRSFile {
   id: number;
   name: string;
   irs_type: {
@@ -613,11 +613,60 @@ export interface ManagerUser {
   city: string;
   state: string;
   country: string;
-  dob:string;
+  dob: string;
   role: string;
   pincode: string;
   is_active: boolean;
   actions?: any,
 }
 /*-------Manager User Start -----*/
+
+
+
+//--------Abhishek Manage Instructor start------------//
+
+export interface Instructor {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  address: string,
+  city: string,
+  state: string,
+  country: string,
+  pincode: string,
+  dob: string,
+  is_active: boolean,
+  status:boolean,
+  role: number,
+  created_at: string,
+  actions?: any,
+}
+
+
+//--------Abhishek Manage Instructor end------------//
+
+
+//--------Abhishek Manage Faq Topics start------------//
+export interface FaqTopics {
+  id: number;
+  title: string;
+  description: string;
+  status: boolean;
+  created_at: string;
+  actions?: any;
+}
+
+export interface Faq extends FaqTopics {
+  faq_topic_id: number;
+  faq_topic?: {
+    id: number;
+    title: string;
+  };
+}
+
+//--------------Faq End------------//
+
+
+//---------------Abhishek Manage Courses start------------//
 
