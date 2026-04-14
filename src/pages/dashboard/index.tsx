@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestion, FaClipboardList } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -35,7 +35,8 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Ebooks', path: '/dashboard/ebooks' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
       ]
-    }
+    },
+    { name: 'Manage MCQ', icon: <FaClipboardList className="mr-2" />, path: '/dashboard/mcq' },
   ].filter(Boolean);
 
 

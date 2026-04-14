@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Filter, Plus, Calendar } from 'lucide-react';
-import DynamicServerTable from '../../../components/Table/Table';
-import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { useAppSelector } from '../../../hooks/useRedux';
-import { getEbooks, removeEbook, updateEbookStatus } from '../../../store/slices/ebookSlice';
-import useDebounce from '../../../hooks/useDebounce';
+import DynamicServerTable from '../../components/Table/Table';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useRedux';
+import { getMcq, removeMcq, updateMcqStatus } from '../../store/slices/mcqSlice';
+import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
-import { useModal } from '../../../context/ModalContext';
+import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
-import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteEbook, downloadEbookExcelApi, downloadEbookPdfApi } from '../../../services/apiServices';
-import ExportFile from '../../../components/Forms/ExportFile';
-import InlineDateFilter from '../../../components/common/InlineDateFilter';
-import SortDropdown from '../../../components/common/SortDropdown';
-import SearchInput from '../../../components/common/SearchInput';
-import DynamicFilter from '../../../components/common/DynamicFilter';
-import { ebookFilterConfig } from '../../../utils/filterConfiguration';
-import EbookForm from '../../../components/Forms/EbookForm';
-import EbookView from '../../../components/View/EbookView';
+import GlassButton from '../../components/Button/Button';
+import { FiEdit, FiTrash } from 'react-icons/fi';
+import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
+import { deleteMcqApi, downloadMcqExcelApi, downloadMcqPdfApi } from '../../services/apiServices';
+import ExportFile from '../../components/Forms/ExportFile';
+import InlineDateFilter from '../../components/common/InlineDateFilter';
+import SortDropdown from '../../components/common/SortDropdown';
+import SearchInput from '../../components/common/SearchInput';
+import DynamicFilter from '../../components/common/DynamicFilter';
+import { filterConfig } from '../../utils/filterConfiguration';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -31,7 +29,7 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageEbook: React.FC = () => {
+const ManageMcq: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -43,6 +41,7 @@ const ManageEbook: React.FC = () => {
     // Filter states
     const [filters, setFilters] = useState({
         name: '',
+        description: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -52,8 +51,8 @@ const ManageEbook: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.ebook);
-    const pageSize = 10;
+    const { data, loading, pagination } = useAppSelector((state) => state.mcq);
+    const pageSize = 5;
 
     // Refs for clicking outside to close
     const sortRef = useRef<HTMLDivElement>(null);
@@ -70,7 +69,7 @@ const ManageEbook: React.FC = () => {
 
     // Fetch data whenever page, search, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getEbooks({
+        dispatch(getMcq({
             page: currentPage,
             search: debouncedSearchTerm,
             name: debouncedFilters.name,
@@ -93,6 +92,7 @@ const ManageEbook: React.FC = () => {
     const clearFilters = () => {
         setFilters({
             name: '',
+            description: '',
             status: 'all',
         });
     };
@@ -103,7 +103,7 @@ const ManageEbook: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'name';
+        const currentKey = ordering.replace(/^-/, '') || 'id_number';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
@@ -111,25 +111,49 @@ const ManageEbook: React.FC = () => {
     // Column definitions
     const columns: ColumnDef[] = [
         {
-            key: 'name',
-            title: 'Ebook Title',
-            render: (_: any, row: any) => (
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
-                        {row.name ? row.name.charAt(0).toUpperCase() : '?'}
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.name}</span>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">ID: #{row.id}</span>
-                    </div>
-                </div>
+            key: 'id_number',
+            title: 'MCQ ID',
+            render: (value: string) => (
+                <span className="font-semibold text-gray-900 text-sm">{value}</span>
             ),
             sortable: true,
-            width: '250px',
+            width: '120px',
+        },
+        {
+            key: 'chapter',
+            title: 'Chapter',
+            render: (_: any, row: any) => (
+                <div className="flex flex-col">
+                    <span className="font-medium text-gray-700 text-xs">{row.chapter?.name || '-'}</span>
+                </div>
+            ),
+            width: '150px',
+        },
+        {
+            key: 'question',
+            title: 'Question',
+            render: (_: any, row: any) => (
+                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={row.question_detail?.question}>
+                    {row.question_detail?.question || 'No question provided.'}
+                </div>
+            ),
+            width: '300px',
+        },
+        {
+            key: 'level',
+            title: 'Level',
+            render: (value: number) => (
+                <span className="px-2 py-1 rounded-lg bg-blue-50 text-blue-600 font-bold text-[10px] uppercase">
+                    Level {value}
+                </span>
+            ),
+            sortable: true,
+            width: '100px',
+            align: 'center',
         },
         {
             key: 'created_at',
-            title: 'Date Created',
+            title: 'Created On',
             render: (value: string) => (
                 <div className="flex flex-col">
                     <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
@@ -145,10 +169,10 @@ const ManageEbook: React.FC = () => {
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateEbookStatus({ id: row.id, status: !value }))
+                        dispatch(updateMcqStatus({ id: row.id, status: !value }))
                             .unwrap()
-                            .then(() => toast.success(`Ebook ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err) => toast.error(err || "Failed to update status"));
+                            .then(() => toast.success(`MCQ ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .catch((err: any) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
@@ -165,30 +189,17 @@ const ManageEbook: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
-                        icon={<FiEye />}
-                        color="blue"
-                        title="View"
-                        onClick={() => {
-                            showModal({
-                                title: 'View Ebook',
-                                content: <EbookView ebookData={row} />,
-                                type: 'success',
-                                size: 'lg',
-                            });
-                        }}
-                    />
-                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
-                        onClick={() => {
+                        onClick={() =>
                             showModal({
-                                title: 'Edit Ebook',
-                                content: <EbookForm ebookData={row} />,
+                                title: 'Edit MCQ',
+                                content: <div>Edit MCQ Form Placeholder</div>, // User might need a McqForm later
                                 type: 'success',
-                                size: 'lg',
-                            });
-                        }}
+                                size: 'xl',
+                            })
+                        }
                     />
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
@@ -196,13 +207,13 @@ const ManageEbook: React.FC = () => {
                         title="Delete"
                         onClick={() => {
                             showModal({
-                                title: 'Delete Ebook',
+                                title: 'Delete MCQ',
                                 content: <DeleteConfirmationModal
-                                    id={row.id}
-                                    name={row.name}
+                                    id={row}
+                                    name={row.id_number}
                                     onDelete={async () => {
-                                        await deleteEbook(row.id);
-                                        dispatch(removeEbook(row.id));
+                                        await deleteMcqApi(row.id);
+                                        dispatch(removeMcq(row.id));
                                     }}
                                 />,
                                 type: 'custom',
@@ -216,6 +227,8 @@ const ManageEbook: React.FC = () => {
             align: 'right',
         },
     ];
+
+
 
     return (
         <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
@@ -257,39 +270,40 @@ const ManageEbook: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search ebooks..."
+                        placeholder="Search categories..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadEbookPdfApi({
+                            pdfApi={() => downloadMcqPdfApi({
                                 search: debouncedSearchTerm,
                                 name: debouncedFilters.name,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            excelApi={() => downloadEbookExcelApi({
+                            excelApi={() => downloadMcqExcelApi({
                                 search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            fileNamePrefix="ebooks"
+                            fileNamePrefix="mcqs"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
-                            onClick={() => {
+                            onClick={() =>
                                 showModal({
-                                    title: 'Add Ebook',
-                                    content: <EbookForm />,
+                                    title: "Add MCQ",
+                                    content: "",
                                     type: 'custom',
                                     size: 'lg',
-                                });
-                            }}
+                                })
+                            }
                         >
                             <Plus size={18} strokeWidth={3} />
-                            Add Ebook
+                            Add MCQ
                         </button>
                     </div>
                 </div>
@@ -297,7 +311,7 @@ const ManageEbook: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={ebookFilterConfig}
+                    config={filterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -331,8 +345,8 @@ const ManageEbook: React.FC = () => {
                     className="rounded-none border-none shadow-none"
                 />
             </div>
-        </div>
+        </div >
     );
 };
 
-export default ManageEbook;
+export default ManageMcq;

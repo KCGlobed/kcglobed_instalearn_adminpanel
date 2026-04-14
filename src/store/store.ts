@@ -6,6 +6,7 @@ import videoReducer from "./slices/videoSlice";
 
 import tagReducer from "./slices/tagSlice"
 import ebookReducer from "./slices/ebookSlice";
+import mcqReducer from "./slices/mcqSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,7 +15,8 @@ export const store = configureStore({
     subcategory: subcategoryReducer,
     video: videoReducer,
     tags: tagReducer,
-    ebook: ebookReducer
+    ebook: ebookReducer,
+    mcq: mcqReducer
   },
 });
 

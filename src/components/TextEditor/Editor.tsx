@@ -6,30 +6,30 @@
  *
  */
 
-import type {JSX} from 'react';
+import type { JSX } from 'react';
 
-import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
-import {CharacterLimitPlugin} from '@lexical/react/LexicalCharacterLimitPlugin';
-import {CheckListPlugin} from '@lexical/react/LexicalCheckListPlugin';
-import {ClearEditorPlugin} from '@lexical/react/LexicalClearEditorPlugin';
-import {ClickableLinkPlugin} from '@lexical/react/LexicalClickableLinkPlugin';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
-import {HashtagPlugin} from '@lexical/react/LexicalHashtagPlugin';
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {HorizontalRulePlugin} from '@lexical/react/LexicalHorizontalRulePlugin';
-import {ListPlugin} from '@lexical/react/LexicalListPlugin';
-import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
-import {SelectionAlwaysOnDisplay} from '@lexical/react/LexicalSelectionAlwaysOnDisplay';
-import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
-import {TablePlugin} from '@lexical/react/LexicalTablePlugin';
-import {useLexicalEditable} from '@lexical/react/useLexicalEditable';
-import {CAN_USE_DOM} from '@lexical/utils';
-import {useEffect, useState} from 'react';
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
+import { CharacterLimitPlugin } from '@lexical/react/LexicalCharacterLimitPlugin';
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
+import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { SelectionAlwaysOnDisplay } from '@lexical/react/LexicalSelectionAlwaysOnDisplay';
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
+import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
+import { CAN_USE_DOM } from '@lexical/utils';
+import { useEffect, useState } from 'react';
 
-import {useSettings} from './context/SettingContext';
-import {useSharedHistoryContext} from './context/SharedHistoryContext';
+import { useSettings } from './context/SettingContext';
+import { useSharedHistoryContext } from './context/SharedHistoryContext';
 import AutocompletePlugin from './plugins/AutocompletePlugin';
 import AutoEmbedPlugin from './plugins/AutoEmbedPlugin';
 // import AutoLinkPlugin from './plugins/AutoLinkPlugin';
@@ -50,7 +50,7 @@ import FigmaPlugin from './plugins/FigmaPlugin';
 // import ImagesPlugin from './plugins/ImagesPlugin';
 import InlineImagePlugin from './plugins/InlineImagePlugin';
 // import KeywordsPlugin from './plugins/KeywordsPlugin';
-import {LayoutPlugin} from './plugins/LayoutPlugin/LayoutPlugin';
+import { LayoutPlugin } from './plugins/LayoutPlugin/LayoutPlugin';
 import LinkPlugin from './plugins/LinkPlugin';
 // import MarkdownShortcutPlugin from './plugins/MarkdownShortcutPlugin';
 // import {MaxLengthPlugin} from './plugins/MaxLengthPlugin';
@@ -75,9 +75,9 @@ import TableCellResizer from './plugins/TableCellResizer';
 import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
 
-export default function Editor({value}:any): JSX.Element {
+export default function Editor({ value }: any): JSX.Element {
 
-  const {historyState} = useSharedHistoryContext();
+  const { historyState } = useSharedHistoryContext();
 
   const {
     settings: {
@@ -99,8 +99,8 @@ export default function Editor({value}:any): JSX.Element {
   const placeholder = isCollab
     ? 'Enter some collaborative rich text...'
     : isRichText
-    ? 'Enter some rich text...'
-    : 'Enter some plain text...';
+      ? 'Enter some rich text...'
+      : 'Enter some plain text...';
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] =
@@ -139,11 +139,11 @@ export default function Editor({value}:any): JSX.Element {
         editor.update(() => {
           // In the browser you can use the native DOMParser API to parse the HTML string.
           const parser = new DOMParser()
-          
+
           const dom = parser.parseFromString(value, 'text/html')
 
           // Once you have the DOM instance it's easy to generate LexicalNodes.
-          const nodes:any = $generateNodesFromDOM(editor, dom)
+          const nodes: any = $generateNodesFromDOM(editor, dom)
 
           // Select the root
           const root = $getRoot()
@@ -154,7 +154,7 @@ export default function Editor({value}:any): JSX.Element {
         console.error('Failed to parse editor state:', error)
       }
     }
-  },[])
+  }, [])
 
   return (
     <>
@@ -173,9 +173,8 @@ export default function Editor({value}:any): JSX.Element {
         />
       )}
       <div
-        className={`editor-container ${showTreeView ? 'tree-view' : ''} ${
-          !isRichText ? 'plain-text' : ''
-        }`}>
+        className={`editor-container ${showTreeView ? 'tree-view' : ''} ${!isRichText ? 'plain-text' : ''
+          }`}>
         {/* {isMaxLength && <MaxLengthPlugin maxLength={30} />} */}
         {/* <DragDropPaste /> */}
         <AutoFocusPlugin />

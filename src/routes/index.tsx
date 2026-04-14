@@ -14,6 +14,8 @@ import ManageSubCategories from "../pages/course/ManageSubCategories";
 import ManageTags from "../pages/course/ManageTags";
 import ManageVideo from "../pages/course/ManageVideo";
 import ManageEbook from "../pages/course/ManageEbook";
+import ManageMcq from "../pages/mcq";
+import McqForm from "../components/Forms/McqForm";
 
 export default function AppRoutes() {
   return (
@@ -32,6 +34,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/videos" element={<ManageVideo />} />
           <Route path="/dashboard/tags" element={<ManageTags />} />
           <Route path="/dashboard/ebooks" element={<ManageEbook />} />
+          <Route path="/dashboard/mcq" element={<ManageMcq />} />
+          <Route path="/dashboard/mcq/form" element={<McqForm />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

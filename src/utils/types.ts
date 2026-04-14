@@ -446,16 +446,12 @@ export interface Option {
   id: number;
   option: string;
 }
-export interface Right_Option {
-  id: number;
-  option: string;
-}
 
 export interface Mcq {
   id: number;
   id_number: string;
   level: number;
-  topic: {
+  chapter: {
     id: number;
     name: string;
   };
@@ -467,7 +463,7 @@ export interface Mcq {
   }
   pass_percentage: number;
   options: Option[];
-  right_option: Right_Option[],
+  right_option: Option;
   created_at: string;
   actions?: any;
 }
