@@ -130,8 +130,7 @@ export const mcqFilterConfig: FilterField[] = [
         ]
     }
 ];
-
-
+//----himanshu mcq filter config end------------//
 
 export const courseFilterConfig: FilterField[] = [
     { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by name...' },
@@ -141,7 +140,7 @@ export const courseFilterConfig: FilterField[] = [
         label: 'Description ',
         name: 'description',
         placeholder: 'Filter by description...',
-        // gridCols: "col-span-2"
+        gridCols: "col-span-2"
     },
     {
         type: 'status',
@@ -155,6 +154,30 @@ export const courseFilterConfig: FilterField[] = [
     }
 ];
 
+export const chapterFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Chapter Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+//----------------------------Abhishek Manage Course End---------------------------//
 
 
-//----himanshu mcq filter config end------------//
+
+
+
+

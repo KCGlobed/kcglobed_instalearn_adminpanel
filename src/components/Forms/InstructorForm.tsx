@@ -41,10 +41,12 @@ const InstructorForm = ({ instructorData }: Props) => {
         register,
         handleSubmit,
         formState: { errors },
+        watch,
+        setValue,
         reset
     } = useForm<InstructorFormValues>({
         defaultValues: {
-            first_name: '',
+            first_name: " ",
             last_name: '',
             email: '',
             address: '',
@@ -56,6 +58,7 @@ const InstructorForm = ({ instructorData }: Props) => {
         },
     });
 
+    
     // Set default values on edit
     useEffect(() => {
         if (instructorData) {
@@ -77,20 +80,7 @@ const InstructorForm = ({ instructorData }: Props) => {
     const onSubmit = async (data: InstructorFormValues) => {
         setIsSubmitting(true);
         try {
-            const payload={
-                first_name: data.first_name,
-                last_name: data.last_name,
-                email: data.email,
-                address: data.address,
-                city: data.city,
-                state: data.state,
-                country: data.country,
-                pincode: data.pincode,
-                dob: data.dob,
-            }
-
-            if (instructorData?.id) {
-                const formdata= new FormData();
+           const formdata= new FormData();
                 formdata.append("first_name", data.first_name);
                 formdata.append("last_name", data.last_name);
                 formdata.append("email", data.email);
@@ -100,10 +90,13 @@ const InstructorForm = ({ instructorData }: Props) => {
                 formdata.append("country", data.country);
                 formdata.append("pincode", data.pincode);
                 formdata.append("dob", data.dob);
+
+            if (instructorData?.id) {
+                
                 await dispatch(updateInstructor({ id: instructorData.id, instructorData: formdata })).unwrap();
                 toast.success("Instructor updated successfully");
             } else {
-                await dispatch(addInstructor(payload)).unwrap();
+                await dispatch(addInstructor(formdata)).unwrap();
                 toast.success("Instructor added successfully");
             }
             reset();

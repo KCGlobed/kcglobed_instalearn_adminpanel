@@ -136,7 +136,7 @@ const ManageFaq: React.FC = () => {
           {value || 'N/A'}
         </div>
       ),
-      sortable: false,
+      sortable: true,
       width: '300px',
     },
     {
