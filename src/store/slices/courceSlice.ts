@@ -22,13 +22,13 @@ const initialState: CourseState = {
 
 }
 
-export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string, }>(
+export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string, chapter?: string }>(
     "course/getCource",
     async ({
-        page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }
+        page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "", chapter = "" }, { rejectWithValue }
     ) => {
         try {
-            return await fetchCourseApi(page, search, ordering, status, startDate, endDate, name, description)
+            return await fetchCourseApi(page, search, name, chapter, description, ordering, status, startDate, endDate)
         } catch (error: any) {
             return rejectWithValue(error.message)
         }

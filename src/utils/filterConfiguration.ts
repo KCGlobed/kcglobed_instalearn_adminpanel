@@ -1,4 +1,5 @@
 import type { FilterField } from "../components/common/DynamicFilter";
+import { fetchChapterOptionsApi } from "../services/apiServices";
 
 export const filterConfig: FilterField[] = [
     { type: 'text', label: 'Category Name', name: 'name', placeholder: 'Filter by name...' },
@@ -97,8 +98,51 @@ export const faqFilterConfig: FilterField[] = [
 
 //----himanshu mcq filter config start------------//
 
+const chapterOption = async () => {
+    try {
+        const res = await fetchChapterOptionsApi()
+        const options = res.data.map((item: any) => ({
+            label: item.name,
+            value: item.id
+        }));
+        return [{ label: 'All', value: 'all' }, ...options];
+    } catch {
+        return [{ label: 'All', value: 'all' }];
+    }
+}
+
 export const mcqFilterConfig: FilterField[] = [
     { type: 'text', label: 'MCQ ID', name: 'id_number', placeholder: 'Filter by MCQ ID...' },
+    {
+        type: "select",
+        label: "Chapter",
+        name: "chapter",
+        getOptions: chapterOption
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+
+
+export const courseFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by name...' },
+
+    {
+        type: 'text',
+        label: 'Description ',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        // gridCols: "col-span-2"
+    },
     {
         type: 'status',
         label: 'Status',

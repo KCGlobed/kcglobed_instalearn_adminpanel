@@ -10,7 +10,7 @@ import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
-import { filterConfig } from "../../../utils/filterConfiguration";
+import { courseFilterConfig, filterConfig } from "../../../utils/filterConfiguration";
 import { Calendar, Filter, Plus } from "lucide-react";
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
@@ -41,6 +41,7 @@ const ManageCourses: React.FC = () => {
         name: '',
         description: '',
         status: 'all' as 'all' | 'active' | 'deactive',
+        chapter: 'all',
     });
 
 
@@ -77,10 +78,11 @@ const ManageCourses: React.FC = () => {
             description: debouncedFilters.description,
             ordering,
             status: debouncedFilters.status,
+            chapter: debouncedFilters.chapter,
             startDate,
             endDate
         }))
-    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters.name, ordering, debouncedFilters.status, startDate, endDate])
+    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters.name, ordering, debouncedFilters.status, debouncedFilters.chapter, startDate, endDate])
 
     useEffect(() => {
         setCurrentPage(1);
@@ -94,6 +96,7 @@ const ManageCourses: React.FC = () => {
             name: '',
             description: '',
             status: 'all',
+            chapter: 'all',
         })
     }
 
@@ -113,13 +116,11 @@ const ManageCourses: React.FC = () => {
             title: 'Course',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
-                    {row.image ? (
-                        <img src={row.image} alt={row.name} className="w-12 h-12 rounded-lg object-cover bg-gray-50 border border-gray-100 shadow-sm" />
-                    ) : (
-                        <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
-                            {row.name ? row.name.charAt(0).toUpperCase() : '?'}
-                        </div>
-                    )}
+
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
+                        {row.name ? row.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+
                     <div className="flex flex-col max-w-[200px]">
                         <span className="font-semibold text-gray-900 text-sm truncate" title={row.name}>{row.name}</span>
                         {row.categories && row.categories.length > 0 && (
@@ -368,7 +369,7 @@ const ManageCourses: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={filterConfig}
+                    config={courseFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}

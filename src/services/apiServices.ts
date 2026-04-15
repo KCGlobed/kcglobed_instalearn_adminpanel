@@ -348,15 +348,11 @@ export const fetchParentFaqApi = async () => {
 }
 
 
-
-
-
-
 // ----------------course service start------- //
 
-export async function fetchCourseApi(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchCourseApi(page = 1, search: string = "", name: string = "", chapter: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `course/get-course-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  let query = `course/get-course-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
   if (end_date) query += `&end_date=${end_date}`;
   const res: any = await apiRequest(query, "GET");
@@ -366,6 +362,11 @@ export async function fetchCourseApi(page = 1, search: string = "", name: string
 export const deleteCourseApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`course/delete-course/${id}`, 'DELETE');
 };
+
+export const fetchChapterOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-chapters-list/`, 'GET');
+  return res;
+}
 
 // ----------------course service end------- //
 
