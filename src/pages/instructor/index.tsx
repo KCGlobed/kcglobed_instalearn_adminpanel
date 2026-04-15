@@ -143,7 +143,7 @@ const ManageInstructors: React.FC = () => {
                     {row.city && row.country ? `${row.city}, ${row.country}` : row.city || row.country || 'N/A'}
                 </div>
             ),
-            sortable: false,
+            sortable: true,
             width: '200px',
         },
         {

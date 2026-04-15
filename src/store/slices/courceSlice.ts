@@ -28,7 +28,7 @@ export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; 
         page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }
     ) => {
         try {
-            return await fetchCourseApi(page, search, ordering, status, startDate, endDate, name, description)
+            return await fetchCourseApi(page, search, ordering, description, startDate, endDate, name, status)
         } catch (error: any) {
             return rejectWithValue(error.message)
         }

@@ -219,32 +219,6 @@ export async function fetchInstructor(page = 1, search: string = "", first_name:
   return await apiRequest(query, "GET");
 }
 
-export const createMcq = async (payload: any): Promise<any> => {
-  return await apiRequest(`questions/create-mcq/`, 'POST', payload);
-};
-
-export const updateMcqApi = async (id: string | number, payload: any): Promise<any> => {
-  return await apiRequest(`questions/edit-mcq/${id}`, 'POST', payload);
-}
-
-export const deleteMcqApi = async (id: string | number): Promise<any> => {
-  return await apiRequest(`course/delete-mcq/${id}`, 'DELETE');
-}
-
-export const updateMcqStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
-  return await apiRequest(`course/update-mcq-status/${id}`, 'POST', payload);
-}
-
-export const downloadMcqPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`course/export-mcq-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-}
-
-export const downloadMcqExcelApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
-  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`course/export-mcq-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
-}
-// ----------------mcq service end------- //
 export const createInstructor = async (payload: any): Promise<any> => {
   return await apiRequest(`user/create-user/instructor`, 'POST', payload);
 };
@@ -270,6 +244,45 @@ export const downloadInstructorExcelApi = async ({ search = "", first_name = "",
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   return await apiRequest(`user/export-user-listing-excel/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+
+
+//----------------------------------------Abhishek Manage Instructor end ---------------------------------------------------------//
+
+
+
+
+
+export const createMcq = async (payload: any): Promise<any> => {
+  return await apiRequest(`questions/create-mcq/`, 'POST', payload);
+};
+
+export const updateMcqApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`questions/edit-mcq/${id}`, 'POST', payload);
+}
+
+export const deleteMcqApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-mcq/${id}`, 'DELETE');
+}
+
+export const updateMcqStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-mcq-status/${id}`, 'POST', payload);
+}
+
+export const downloadMcqPdfApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-mcq-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadMcqExcelApi = async ({ search = "", name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-mcq-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+
+
+// ----------------mcq service end------- //
 
 
 
@@ -341,7 +354,7 @@ export const fetchParentFaqApi = async () => {
 
 // ----------------course service start------- //
 
-export async function fetchCourseApi(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+export async function fetchCourseApi(page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", start_date: string = "", end_date: string = "", status: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   let query = `course/get-course-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (start_date) query += `&start_date=${start_date}`;
@@ -360,3 +373,37 @@ export const deleteCourseApi = async (id: string | number): Promise<any> => {
 
 
 //-------------------chapter service start------------------//
+export const getChapterApi = async (page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : "";
+  let query = `course/get-chapter-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createChapter = async (payload: any): Promise<any> => {
+  return apiRequest(`course/create-chapter/`, 'POST', payload)
+}
+
+export const updateChapterApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-chapter/${id}`, 'POST', payload);
+};
+
+export const deleteChapterApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-chapter/${id}`, 'DELETE');
+};
+
+export const updateChapterStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-chapter-status/${id}`, 'POST', payload);
+};
+
+export const downloadChapterPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-chapter-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadChapterExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-chapter-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}

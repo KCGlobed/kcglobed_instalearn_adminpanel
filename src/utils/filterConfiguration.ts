@@ -93,3 +93,57 @@ export const faqFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+
+//----------------------------Abhishek Manage Course ---------------------------//
+
+export const courseFilterConfig: FilterField[] = [
+    { type: 'text', label: ' Course Name', name: 'name', placeholder: 'Filter by Course...' },
+    {
+        type: 'text',
+        label: 'Description ',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const chapterFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Chapter Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+
+//----------------------------Abhishek Manage Course End---------------------------//
+
+
+
+
+
+
