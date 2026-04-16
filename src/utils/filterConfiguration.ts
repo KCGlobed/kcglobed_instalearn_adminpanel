@@ -1,4 +1,5 @@
 import type { FilterField } from "../components/common/DynamicFilter";
+import { fetchChapterOptionsApi } from "../services/apiServices";
 
 export const filterConfig: FilterField[] = [
     { type: 'text', label: 'Category Name', name: 'name', placeholder: 'Filter by name...' },
@@ -34,3 +35,149 @@ export const ebookFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const instructorFilterConfig: FilterField[] = [
+    {
+        name: 'first_name',
+        label: 'First Name',
+        type: 'text',
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: 'last_name',
+        label: 'Last Name',
+        type: 'text',
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: 'location',
+        label: 'Location',
+        type: 'text',
+        placeholder: 'Filter by location...',
+    },
+    {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Inactive', value: 'deactive' },
+        ],
+    },
+]
+
+//------------------------------Abhishek Faq Topics Start------------//
+
+
+
+//------------------------------Abhishek Faq Topics End------------//
+
+
+export const faqFilterConfig: FilterField[] = [
+    { type: 'text', label: 'FAQ Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+
+//----himanshu mcq filter config start------------//
+
+const chapterOption = async () => {
+    try {
+        const res = await fetchChapterOptionsApi()
+        const options = res.data.map((item: any) => ({
+            label: item.name,
+            value: item.id
+        }));
+        return [{ label: 'All', value: 'all' }, ...options];
+    } catch {
+        return [{ label: 'All', value: 'all' }];
+    }
+}
+
+export const mcqFilterConfig: FilterField[] = [
+    { type: 'text', label: 'MCQ ID', name: 'id_number', placeholder: 'Filter by MCQ ID...' },
+    {
+        type: "select",
+        label: "Chapter",
+        name: "chapter",
+        getOptions: chapterOption
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+//----himanshu mcq filter config end------------//
+
+export const courseFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by name...' },
+
+    {
+        type: 'text',
+        label: 'Description ',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const chapterFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Chapter Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+//----------------------------Abhishek Manage Course End---------------------------//
+
+
+
+
+
+

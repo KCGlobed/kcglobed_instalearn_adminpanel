@@ -23,11 +23,11 @@ const initialState: McqState = {
 };
 
 // Async thunk to fetch paginated MCQ data
-export const getMcq = createAsyncThunk<Pagination<Mcq>, { page?: number; search?: string; name?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
+export const getMcq = createAsyncThunk<Pagination<Mcq>, { page?: number; search?: string; id_number?: string; ordering?: string; status?: string; startDate?: string; endDate?: string }>(
     "mcq/getMcq",
-    async ({ page = 1, search = "", name = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
+    async ({ page = 1, search = "", id_number = "", ordering = "", status = "", startDate = "", endDate = "" }, { rejectWithValue }) => {
         try {
-            return await fetchMcq(page, search, name, ordering, status, startDate, endDate);
+            return await fetchMcq(page, search, id_number, ordering, status, startDate, endDate);
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch MCQs");
         }

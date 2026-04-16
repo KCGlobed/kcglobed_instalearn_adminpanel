@@ -107,7 +107,7 @@ const ManageCategories: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'name';
+        const currentKey = ordering.replace(/^-/, '') || 'title';
         handleSort(currentKey, direction);
         setShowSort(false);
     };

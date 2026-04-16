@@ -3,24 +3,22 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getMcq, removeMcq, updateMcqStatus } from '../../store/slices/mcqSlice';
+import { getInstructor, removeInstructor, updateInstructorStatus } from '../../store/slices/instructorSlice';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
+import InstructorForm from '../../components/Forms/InstructorForm';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteMcqApi, downloadMcqExcelApi, downloadMcqPdfApi } from '../../services/apiServices';
+import { deleteInstructorApi, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
-import { mcqFilterConfig } from '../../utils/filterConfiguration';
-import { useNavigate } from 'react-router-dom';
-import McqView from '../../components/View/McqView';
-import ImportMcq from '../../components/Forms/ImportMcq';
+import { instructorFilterConfig } from '../../utils/filterConfiguration';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -32,7 +30,7 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageMcq: React.FC = () => {
+const ManageInstructors: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -40,11 +38,11 @@ const ManageMcq: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
-    const navigate = useNavigate()
 
     // Filter states
     const [filters, setFilters] = useState({
-        id_number: '',
+        first_name: '',
+        last_name: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -54,7 +52,7 @@ const ManageMcq: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.mcq);
+    const { data, loading, pagination } = useAppSelector((state) => state.instructor);
     const pageSize = 5;
 
     // Refs for clicking outside to close
@@ -72,10 +70,11 @@ const ManageMcq: React.FC = () => {
 
     // Fetch data whenever page, search, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getMcq({
+        dispatch(getInstructor({
             page: currentPage,
             search: debouncedSearchTerm,
-            id_number: debouncedFilters.id_number,
+            first_name: debouncedFilters.first_name,
+            last_name: debouncedFilters.last_name,
             ordering,
             status: debouncedFilters.status,
             startDate,
@@ -88,13 +87,16 @@ const ManageMcq: React.FC = () => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
 
+
+
     const handleFilterChange = (name: string, value: any) => {
         setFilters(prev => ({ ...prev, [name]: value }));
     };
 
     const clearFilters = () => {
         setFilters({
-            id_number: '',
+            first_name: '',
+            last_name: '',
             status: 'all',
         });
     };
@@ -105,7 +107,7 @@ const ManageMcq: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'id_number';
+        const currentKey = ordering.replace(/^-/, '') || 'first_name';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
@@ -113,49 +115,36 @@ const ManageMcq: React.FC = () => {
     // Column definitions
     const columns: ColumnDef[] = [
         {
-            key: 'id_number',
-            title: 'MCQ ID',
-            render: (value: string) => (
-                <span className="font-semibold text-gray-900 text-sm">{value}</span>
-            ),
-            sortable: true,
-            width: '120px',
-        },
-        {
-            key: 'chapter',
-            title: 'Chapter',
+            key: 'first_name',
+            title: 'Instructor',
             render: (_: any, row: any) => (
-                <div className="flex flex-col">
-                    <span className="font-medium text-gray-700 text-xs">{row.chapter?.name || '-'}</span>
+                <div className="flex items-center gap-3">
+                    <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100"
+                    >
+                        {row.first_name ? row.first_name.charAt(0).toUpperCase() : '#'}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.first_name} {row.last_name}</span>
+                        {row.email && (
+                            <span className="text-[11px] text-gray-500 font-medium whitespace-nowrap">{row.email}</span>
+                        )}
+                    </div>
                 </div>
             ),
-            width: '150px',
+            sortable: true,
+            width: '250px',
         },
         {
-            key: 'question',
-            title: 'Question Content',
+            key: 'location',
+            title: 'Location',
             render: (_: any, row: any) => (
-                <div
-                    className="text-gray-600 text-xs w-full max-w-xs line-clamp-2"
-                    title={row.question_detail?.question}
-                    dangerouslySetInnerHTML={{
-                        __html: row.question_detail?.question || 'No question provided.',
-                    }}
-                />
-            ),
-            width: '100px',
-        },
-        {
-            key: 'pass_percentage',
-            title: 'Pass %',
-            render: (value: number) => (
-                <span className="px-2 py-1 rounded-lg bg-blue-50 text-blue-600 font-bold text-[10px] uppercase">
-                    {value}%
-                </span>
+                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2">
+                    {row.city && row.country ? `${row.city}, ${row.country}` : row.city || row.country || 'N/A'}
+                </div>
             ),
             sortable: true,
-            width: '150px',
-            align: 'center',
+            width: '200px',
         },
         {
             key: 'created_at',
@@ -167,7 +156,7 @@ const ManageMcq: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '150px',
+            width: '180px',
         },
         {
             key: 'status',
@@ -175,17 +164,17 @@ const ManageMcq: React.FC = () => {
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateMcqStatus({ id: row.id, status: !value }))
+                        dispatch(updateInstructorStatus({ id: row.id, status: !value }))
                             .unwrap()
-                            .then(() => toast.success(`MCQ ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err: any) => toast.error(err || "Failed to update status"));
+                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .catch((err) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
                     {value ? 'Active' : 'Inactive'}
                 </button>
             ),
-            width: '100px',
+            width: '120px',
             align: 'center',
             sortable: true,
         },
@@ -195,23 +184,17 @@ const ManageMcq: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
-                        icon={<FiEye />}
-                        color="blue"
-                        title="View"
-                        onClick={() => {
-                            showModal({
-                                title: 'View MCQ',
-                                content: <McqView mcqData={row} />,
-                                type: 'success',
-                                size: 'xl',
-                            });
-                        }}
-                    />
-                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
-                        onClick={() => navigate(`/dashboard/mcq/form/${row.id}`)}
+                        onClick={() =>
+                            showModal({
+                                title: 'Edit Instructor',
+                                content: <InstructorForm instructorData={row} />,
+                                type: 'success',
+                                size: 'md',
+                            })
+                        }
                     />
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
@@ -219,13 +202,14 @@ const ManageMcq: React.FC = () => {
                         title="Delete"
                         onClick={() => {
                             showModal({
-                                title: 'Delete MCQ',
+                                title: 'Delete Instructor',
                                 content: <DeleteConfirmationModal
                                     id={row}
-                                    name={row.id_number}
+                                    name={`${row.first_name} ${row.last_name}`}
                                     onDelete={async () => {
-                                        await deleteMcqApi(row.id);
-                                        dispatch(removeMcq(row.id));
+
+                                        await deleteInstructorApi(row.id);
+                                        dispatch(removeInstructor(row.id));
                                     }}
                                 />,
                                 type: 'custom',
@@ -240,10 +224,8 @@ const ManageMcq: React.FC = () => {
         },
     ];
 
-
-
     return (
-        <div className="flex flex-col gap-6 w-full min-w-0 animate-in fade-in duration-500 overflow-hidden">
+        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
@@ -282,42 +264,42 @@ const ManageMcq: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search MCQ..."
+                        placeholder="Search instructors..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-
-                            excelApi={() => downloadMcqExcelApi({
+                            pdfApi={() => downloadInstructorPdfApi({
                                 search: debouncedSearchTerm,
-                                id_number: debouncedFilters.id_number,
+                                first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            fileNamePrefix="mcqs"
+                            excelApi={() => downloadInstructorExcelApi({
+                                search: debouncedSearchTerm,
+                                first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
+                            fileNamePrefix="instructors"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
-                                navigate("/dashboard/mcq/form")
-                            }
-                        >
-                            <Plus size={18} strokeWidth={3} />
-                            Add MCQ
-                        </button>
-                        <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
-                            onClick={() =>
                                 showModal({
-                                    title: 'Import MCQ',
-                                    content: <ImportMcq />,
+                                    title: "Add Instructor",
+                                    content: <InstructorForm />,
                                     type: 'custom',
                                     size: 'md',
                                 })
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
-                            Import MCQ
+                            Add Instructor
                         </button>
                     </div>
                 </div>
@@ -325,7 +307,7 @@ const ManageMcq: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={mcqFilterConfig}
+                    config={instructorFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -346,19 +328,21 @@ const ManageMcq: React.FC = () => {
             </div>
 
             {/* Main Table Content */}
-            <DynamicServerTable
-                data={data}
-                columns={columns as any}
-                currentPage={currentPage}
-                pageSize={pagination?.page_size || pageSize}
-                totalCount={pagination?.total_results || 0}
-                loading={loading}
-                onPageChange={(page) => setCurrentPage(page)}
-                onSort={handleSort}
-                className=" shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
-            />
-        </div >
+            <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
+                <DynamicServerTable
+                    data={data}
+                    columns={columns as any}
+                    currentPage={currentPage}
+                    pageSize={pagination?.page_size || pageSize}
+                    totalCount={pagination?.total_results || 0}
+                    loading={loading}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    onSort={handleSort}
+                    className="rounded-none border-none shadow-none"
+                />
+            </div>
+        </div>
     );
 };
 
-export default ManageMcq;
+export default ManageInstructors;

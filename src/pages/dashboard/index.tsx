@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestion, FaClipboardList } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -34,9 +34,21 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Videos', path: '/dashboard/videos' },
         { name: 'Manage Ebooks', path: '/dashboard/ebooks' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
+        { name: 'Manage Courses', path: '/dashboard/courses' },
+        {name:"Manage Chapter", path:"/dashboard/chapter"}
       ]
     },
     { name: 'Manage MCQ', icon: <FaClipboardList className="mr-2" />, path: '/dashboard/mcq' },
+    { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
+    {
+      name: 'Manage FAQ',
+      icon: <FaQuestionCircle className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage FAQ Topics', path: '/dashboard/faq-topics' },
+        { name: 'Manage FAQ', path: '/dashboard/faq' },
+      ]
+    },
   ].filter(Boolean);
 
 
