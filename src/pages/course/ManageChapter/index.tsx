@@ -19,7 +19,6 @@ import DynamicServerTable from '../../../components/Table/Table';
 import ChapterForm from '../../../components/Forms/ChapterForm';
 import { downloadChapterExcelApi, downloadChapterPdfApi } from '../../../services/apiServices';
 
-
 interface ColumnDef {
     key: string;
     title: string;
