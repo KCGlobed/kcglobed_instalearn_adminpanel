@@ -5,17 +5,25 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { getCource, deleteCourse } from "../../../store/slices/courceSlice";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { FiEdit, FiSettings, FiTrash } from "react-icons/fi";
 import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
 import { courseFilterConfig } from "../../../utils/filterConfiguration";
+<<<<<<< HEAD
 import { Calendar, Filter, Plus } from "lucide-react";
+=======
+import { Calendar, Filter, Plus, BookOpen, UserCheck, Video } from "lucide-react";
+>>>>>>> 6609292b6537edf9e0c47d1ec091a7496ac86b53
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
 import SortDropdown from "../../../components/common/SortDropdown";
 import { useModal } from "../../../context/ModalContext";
+import TabsModal from "../../../components/Modal/TabsModal";
+import AssignChapterForm from "../../../components/Forms/AssignChapterForm";
+import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm";
+import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
 
 interface ColumnDef {
     key: string,
@@ -276,6 +284,44 @@ const ManageCourses: React.FC = () => {
                                 />,
                                 type: 'custom',
                                 size: 'md',
+                            });
+                        }}
+                    />
+                    <GlassButton
+                        icon={<FiSettings />}
+                        color="gray"
+                        title="Assign"
+                        onClick={() => {
+                            showModal({
+                                title: `Manage: ${row.name}`,
+                                content: (
+                                    <TabsModal
+                                        defaultActiveKey="chapter"
+                                        onTabChange={(key) => console.log('Active tab:', key)}
+                                        tabs={[
+                                            {
+                                                key: 'chapter',
+                                                label: 'Assign Chapter',
+                                                icon: <BookOpen size={15} />,
+                                                component: <AssignChapterForm courseId={row.id} />,
+                                            },
+                                            {
+                                                key: 'instructor',
+                                                label: 'Assign Instructor',
+                                                icon: <UserCheck size={15} />,
+                                                component: <AssignInstructorForm courseId={row.id} />,
+                                            },
+                                            {
+                                                key: 'video',
+                                                label: 'Sample Video',
+                                                icon: <Video size={15} />,
+                                                component: <AssignSampleVideoForm courseId={row.id} />,
+                                            },
+                                        ]}
+                                    />
+                                ),
+                                type: 'custom',
+                                size: 'xl',
                             });
                         }}
                     />
