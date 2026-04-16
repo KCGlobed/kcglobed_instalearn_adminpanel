@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
-import { createVideo, updateVideoApi, markVideoCompleteApi } from '../../services/apiServices';
+import { createVideo, updateVideoApi, markVideoCompleteApi, videoDetailApi } from '../../services/apiServices';
 import { getVideoListing } from '../../store/slices/videoSlice';
 import toast from 'react-hot-toast';
 import { UploadCloud, CheckCircle2, Clock } from 'lucide-react';
@@ -23,6 +23,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStep, setUploadStep] = useState<'idle' | 'creating' | 'uploading' | 'finalizing'>('idle');
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const { hideModal } = useModal();
     const dispatch = useAppDispatch();
 
@@ -32,6 +33,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
         formState: { errors },
         watch,
         setValue,
+        reset,
     } = useForm<VideoFormValues>({
         defaultValues: {
             name: videoData?.name || '',
@@ -43,14 +45,72 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
 
     const videoFile = watch('video');
 
+    // Fetch full data from view video api
+    const fetchFullData = async () => {
+        if (videoData?.id) {
+            try {
+                const response = await videoDetailApi(videoData.id);
+                if (response.data) {
+                    reset({
+                        name: response.data.name || '',
+                        description: response.data.description || '',
+                        duration: Number(response.data.video_duration) || 0,
+                        video: null
+                    });
+                    if (response.data.video_file) {
+                        setPreviewUrl(response.data.video_file);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch video details:", error);
+            }
+        }
+    }
+
+    React.useEffect(() => {
+        fetchFullData();
+        return () => {
+            if (previewUrl && previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        }
+    }, [videoData?.id]);
+
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        setValue('video', files);
+
+        if (previewUrl && previewUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        if (files && files.length > 0) {
+            const file = files[0];
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+            const videoEl = document.createElement('video');
+            videoEl.preload = 'metadata';
+            videoEl.onloadedmetadata = () => {
+                const durationInSeconds = Math.round(videoEl.duration);
+                setValue('duration', durationInSeconds);
+            };
+            videoEl.src = url;
+        } else {
+            setValue('duration', 0);
+            setPreviewUrl(null);
+        }
+    };
+
     const onSubmit = async (data: VideoFormValues) => {
-        // Validation: If creating, video is required. If editing, it can be optional if not changing.
+        // Validation: If creating, video is required.
         if (!videoData && (!data.video || data.video.length === 0)) {
             toast.error("Please select a video file");
             return;
         }
 
         const file = data.video && data.video.length > 0 ? data.video[0] : null;
+        const update_video = videoData ? !!file : true;
+
         setIsSubmitting(true);
         setUploadStep('creating');
 
@@ -58,27 +118,29 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
             const payload = {
                 name: data.name.trim(),
                 description: data.description.trim(),
-                duration: data.duration
+                duration: data.duration,
+                update_video: update_video
             };
 
             if (videoData) {
                 // Editing existing video
-                if (file) {
+                if (update_video) {
                     // Step 1: Update metadata and get signed URL for new file
                     const response = await updateVideoApi(videoData.id, payload);
                     const { signed_url } = response.data;
                     
-                    if (signed_url) {
+                    if (signed_url && file) {
                         setUploadStep('uploading');
                         await performUpload(signed_url, file);
                         setUploadStep('finalizing');
                         await markVideoCompleteApi(videoData.id, { status: true });
+                        toast.success("Video and details updated successfully");
                     }
                 } else {
-                    // Just updating metadata
+                    // update_video = false: Just updating metadata
                     await updateVideoApi(videoData.id, payload);
+                    toast.success("Video details updated successfully");
                 }
-                toast.success("Video updated successfully");
             } else {
                 // Creating new video
                 const response = await createVideo(payload);
@@ -151,7 +213,8 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
                         {/* Duration */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                                Duration (seconds) <span className="text-red-500">*</span>
+                                Duration (seconds)
+                                <span className="ml-1.5 text-[10px] font-medium text-indigo-500 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded-md">Auto-detected</span>
                             </label>
                             <input
                                 type="number"
@@ -159,8 +222,9 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
                                     required: 'Duration is required',
                                     min: { value: 1, message: 'Duration must be positive' }
                                 })}
-                                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
-                                placeholder="300"
+                                disabled
+                                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none bg-gray-100 text-gray-500 cursor-not-allowed select-none"
+                                placeholder="Auto-filled on video selection"
                             />
                             {errors.duration && <p className="mt-1 text-xs text-red-500">{errors.duration.message}</p>}
                         </div>
@@ -174,7 +238,7 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
                                 <input
                                     type="file"
                                     accept="video/*"
-                                    onChange={(e) => setValue('video', e.target.files)}
+                                    onChange={handleVideoChange}
                                     className="hidden"
                                     id="video-upload"
                                 />
@@ -197,6 +261,24 @@ const VideoForm: React.FC<VideoFormProps> = ({ videoData }) => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Video Preview Section */}
+                    {previewUrl && (
+                        <div className="flex justify-center">
+                            <div className="bg-gray-900 rounded-2xl overflow-hidden border-4 border-white shadow-lg aspect-video relative group max-w-sm w-full h-48">
+                                <video 
+                                    src={previewUrl} 
+                                    className="w-full h-full object-contain"
+                                    controls
+                                />
+                                <div className="absolute top-2 left-2 flex items-center gap-2">
+                                    <span className="bg-indigo-600/90 text-white text-[8px] font-bold px-2 py-1 rounded-full backdrop-blur-sm border border-white/10">
+                                        Preview
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Description */}
                     <div>

@@ -140,7 +140,7 @@ export const createVideo = async (payload: any): Promise<any> => {
 };
 
 export const updateVideoApi = async (id: string | number, payload: any): Promise<any> => {
-  return await apiRequest(`course/edit-video/${id}`, 'POST', payload);
+  return await apiRequest(`course/update-video/${id}`, 'POST', payload);
 }
 
 export const deleteVideo = async (id: string | number): Promise<any> => {
@@ -316,8 +316,6 @@ export const updateFaqTopicStatusApi = async (id: string | number, payload: { st
 };
 
 
-
-
 // ----------------------------- Abhishek manage Faq --------------------------------------------//
 
 export const fetchFaqApi = async (page: number = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> => {
@@ -410,3 +408,24 @@ export const downloadChapterExcelApi = async ({ search = "", name = "", descript
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   return await apiRequest(`course/export-chapter-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+
+//----- video api start -------//
+export const downloadVideoPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-video-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadVideoExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-video-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+export const videoDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-video-detail/${id}`, 'GET');
+};
+
+
+
+//-----video api end -------------//

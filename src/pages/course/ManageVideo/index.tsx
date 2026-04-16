@@ -9,16 +9,17 @@ import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteVideo, downloadSubCategoryExcelApi, downloadSubCategoryPdfApi } from '../../../services/apiServices';
+import { deleteVideo, downloadVideoExcelApi, downloadVideoPdfApi } from '../../../services/apiServices';
 import ExportFile from '../../../components/Forms/ExportFile';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
-import { filterConfig } from '../../../utils/filterConfiguration';
+import { filterConfig, videoFilterConfig } from '../../../utils/filterConfiguration';
 import VideoForm from '../../../components/Forms/VideoForm';
+import VideoView from '../../../components/View/VideoView';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -119,7 +120,7 @@ const ManageVideo: React.FC = () => {
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
                     <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.name}</span>
-                    <span className="text-[11px] text-gray-500 font-medium">Duration: {row.video_duration} mins</span>
+                    <span className="text-[11px] text-gray-500 font-medium"> Duration: {moment.utc(row.video_duration * 1000).format("mm:ss")} min</span>
                 </div>
             ),
             sortable: true,
@@ -134,7 +135,7 @@ const ManageVideo: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '280px',
+            width: '150px',
         },
         {
             key: 'is_uploaded',
@@ -197,6 +198,20 @@ const ManageVideo: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() =>
+                            showModal({
+                                title: 'View Video',
+                                content: <VideoView id={row.id} />,
+                                type: 'success',
+                                size: 'xl',
+                            })
+                        }
+                    />
+
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"
@@ -292,7 +307,7 @@ const ManageVideo: React.FC = () => {
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadSubCategoryPdfApi({
+                            pdfApi={() => downloadVideoPdfApi({
                                 search: debouncedSearchTerm,
                                 name: debouncedFilters.name,
                                 description: debouncedFilters.description,
@@ -300,7 +315,7 @@ const ManageVideo: React.FC = () => {
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            excelApi={() => downloadSubCategoryExcelApi({
+                            excelApi={() => downloadVideoExcelApi({
                                 search: debouncedSearchTerm,
                                 name: debouncedFilters.name,
                                 description: debouncedFilters.description,
@@ -329,7 +344,7 @@ const ManageVideo: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={filterConfig}
+                    config={videoFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
