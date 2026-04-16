@@ -11,11 +11,7 @@ import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
 import { courseFilterConfig } from "../../../utils/filterConfiguration";
-<<<<<<< HEAD
-import { Calendar, Filter, Plus } from "lucide-react";
-=======
 import { Calendar, Filter, Plus, BookOpen, UserCheck, Video } from "lucide-react";
->>>>>>> 6609292b6537edf9e0c47d1ec091a7496ac86b53
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
 import SortDropdown from "../../../components/common/SortDropdown";

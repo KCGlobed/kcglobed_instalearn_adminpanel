@@ -410,3 +410,8 @@ export const downloadChapterExcelApi = async ({ search = "", name = "", descript
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   return await apiRequest(`course/export-chapter-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+export const fetchChapterViewData=async(id:string|number):Promise<any>=>{
+   const res= await apiRequest(`course/view-chapter-detail/${id}`,'GET');
+   return res;
+}
