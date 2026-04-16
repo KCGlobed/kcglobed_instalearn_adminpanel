@@ -22,7 +22,7 @@ const initialState: CourseState = {
 
 }
 
-export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string, chapter?: string }>(
+export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; chapter?: string,description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string,  }>(
     "course/getCource",
     async ({
         page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "", chapter = "" }, { rejectWithValue }

@@ -10,7 +10,7 @@ import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
-import { courseFilterConfig, filterConfig } from "../../../utils/filterConfiguration";
+import { courseFilterConfig } from "../../../utils/filterConfiguration";
 import { Calendar, Filter, Plus } from "lucide-react";
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
