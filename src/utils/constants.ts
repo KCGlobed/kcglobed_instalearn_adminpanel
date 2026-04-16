@@ -6,6 +6,7 @@ const DEV_URL = 'https://instalearn-610747130982.asia-south1.run.app/api/';
 // const PROD_URL = 'https://backend-prod-254015706580.asia-south2.run.app/api/';
 const PROD_URL = 'https://prodlmsbackend-254015706580.asia-south1.run.app/api/';
 
+
 const savedMode = localStorage.getItem('app_mode');
 if (savedMode === 'production') {
   BASE_URL = PROD_URL;
