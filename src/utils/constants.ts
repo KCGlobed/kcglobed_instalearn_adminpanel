@@ -2,7 +2,7 @@
 
 let BASE_URL: string;
 
-const DEV_URL = 'https://instalearnnewbackend-114109844441.asia-south1.run.app/api/';
+const DEV_URL = 'https://instalearn-610747130982.asia-south1.run.app/api/';
 // const PROD_URL = 'https://backend-prod-254015706580.asia-south2.run.app/api/';
 const PROD_URL = 'https://prodlmsbackend-254015706580.asia-south1.run.app/api/';
 
