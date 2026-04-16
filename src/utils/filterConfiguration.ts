@@ -174,7 +174,34 @@ export const chapterFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+
 //----------------------------Abhishek Manage Course End---------------------------//
+
+//------------himanshu manage video start------------//
+
+export const videoFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Video Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+//------------himanshu manage video end------------//
 
 
 
