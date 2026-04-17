@@ -59,7 +59,6 @@ export const updateInstructorStatus = createAsyncThunk<Instructor, any, { reject
     "instructor/updateInstructorStatus",
     async ({ id, instructorData }, { rejectWithValue }) => {
         try {
-            // is_active parameter name based on api/Instructor interface
             const data = await updateInstructorStatusApi(id, instructorData);
             return data?.data ? data.data : data;
         } catch (error: any) {

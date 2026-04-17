@@ -409,6 +409,10 @@ export const downloadChapterExcelApi = async ({ search = "", name = "", descript
   return await apiRequest(`course/export-chapter-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+export const fetchChapterViewData = async (id: string | number): Promise<any> => {
+  const res = await apiRequest(`course/view-chapter-detail/${id}`, 'GET');
+  return res;
+}
 
 //----- video api start -------//
 export const downloadVideoPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
@@ -427,5 +431,24 @@ export const videoDetailApi = async (id: string | number): Promise<any> => {
 };
 
 
-
 //-----video api end -------------//
+
+
+// ---Assign chapter Himanshu Start ---//
+
+export const getEbookListApi = async () => {
+  const res: any = await apiRequest(`course/get-ebook-list/`, 'GET');
+  return res;
+}
+
+export const getVideoListApi = async () => {
+  const res: any = await apiRequest(`course/get-video-list/`, 'GET');
+  return res;
+}
+
+export const createAssignChapterLecture = async (payload: any): Promise<any> => {
+  return apiRequest(`course/assign-chapter-lecture/`, 'POST', payload)
+}
+
+
+// ---Assign chapter Himanshu End ---//

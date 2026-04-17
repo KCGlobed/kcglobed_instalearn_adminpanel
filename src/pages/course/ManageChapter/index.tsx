@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar } from 'lucide-react';
+import { Filter, Plus, Calendar, BookOpen, UserCheck, Video } from 'lucide-react';
 import { useModal } from '../../../context/ModalContext';
 import useDebounce from '../../../hooks/useDebounce';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
 import { chapterFilterConfig } from '../../../utils/filterConfiguration';
-import { getChapter, removeChapter, statusChapter } from '../../../store/slices/chapterSlice';
+import { getChapter, removeChapter, updateChapterStatus, } from '../../../store/slices/chapterSlice';
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiEye, FiSettings, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
@@ -17,7 +17,9 @@ import DynamicFilter from '../../../components/common/DynamicFilter';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../../components/Table/Table';
 import ChapterForm from '../../../components/Forms/ChapterForm';
-import { downloadChapterExcelApi, downloadChapterPdfApi } from '../../../services/apiServices';
+import { deleteChapterApi, downloadChapterExcelApi, downloadChapterPdfApi } from '../../../services/apiServices';
+import ChapterView from '../../../components/View/ChapterView';
+import { useNavigate } from 'react-router-dom';
 
 interface ColumnDef {
     key: string;
@@ -36,6 +38,7 @@ const ManageChapter: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate()
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -153,8 +156,10 @@ const ManageChapter: React.FC = () => {
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(statusChapter(row.id));
-                        toast.success(`Chapter status updated successfully`);
+                        dispatch(updateChapterStatus({ id: row.id, status: !value }))
+                            .unwrap()
+                            .then(() => toast.success(`Chapter ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .catch((err) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
@@ -170,6 +175,19 @@ const ManageChapter: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() =>
+                            showModal({
+                                title: 'View Chapter',
+                                content: <ChapterView chapterData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            })
+                        }
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"
@@ -194,13 +212,26 @@ const ManageChapter: React.FC = () => {
                                     id={row}
                                     name={row.name}
                                     onDelete={async () => {
-                                        dispatch(removeChapter(row.id));
-                                        toast.success("Chapter removed from list");
+                                        try {
+                                            await deleteChapterApi(row.id);
+                                            dispatch(removeChapter(row.id));
+                                            toast.success("Chapter removed from list");
+                                        } catch (error) {
+                                            toast.error("Failed to delete chapter");
+                                        }
                                     }}
                                 />,
                                 type: 'custom',
                                 size: 'md',
                             });
+                        }}
+                    />
+                    <GlassButton
+                        icon={<FiSettings />}
+                        color="gray"
+                        title="Assign"
+                        onClick={() => {
+                            navigate(`/dashboard/chapter/assign-lecture/${row.id}`);
                         }}
                     />
                 </div>

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { addChapter, updateChapter } from '../../store/slices/chapterSlice';
 
 type chapterFormValue = {
-    title: string,
+    name: string,
     description: string,
     icon: FileList | null;
 };
@@ -26,9 +26,9 @@ const ChapterForm = ({ chapterData }: Props) => {
     const dispatch = useAppDispatch();
     const { hideModal } = useModal();
 
-    const { register, handleSubmit, formState: { errors }, reset, watch,setValue } = useForm<chapterFormValue>({
+    const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<chapterFormValue>({
         defaultValues: {
-            title: chapterData?.name || "",
+            name: chapterData?.name || "",
             description: chapterData?.description || "",
             icon: null,
         },
@@ -47,23 +47,13 @@ const ChapterForm = ({ chapterData }: Props) => {
             setPreviewUrl(chapterData.icon);
         }
     }, [iconFile, chapterData]);
-    
-    
-  useEffect(()=>{
-    if(chapterData){
-        reset({
-            title:chapterData.name,
-            description:chapterData.description
-        });
-    }
-  })
 
 
     const onSubmit = async (data: chapterFormValue) => {
         setIsSubmitting(true);
         try {
             const formData = new FormData();
-            formData.append('title', data.title.trim());
+            formData.append('name', data.name.trim());
             formData.append('description', data.description);
 
             if (data.icon && data.icon.length > 0) {
@@ -71,7 +61,7 @@ const ChapterForm = ({ chapterData }: Props) => {
             }
 
             if (chapterData?.id) {
-                await dispatch(updateChapter({ id: chapterData.id, payload: formData })).unwrap();
+                await dispatch(updateChapter({ id: chapterData.id, chapterData: formData })).unwrap();
                 toast.success('Chapter updated successfully');
             } else {
                 await dispatch(addChapter(formData)).unwrap();
@@ -92,20 +82,20 @@ const ChapterForm = ({ chapterData }: Props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Chapter Title <span className="text-red-500">*</span>
+                            Chapter name <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
-                            {...register('title', {
-                                required: 'Title is required',
-                                minLength: { value: 2, message: 'Title must be at least 2 characters' },
-                                validate: value => value.trim().length > 0 || 'Title cannot be empty or only spaces'
+                            {...register('name', {
+                                required: 'name is required',
+                                minLength: { value: 2, message: 'name must be at least 2 characters' },
+                                validate: value => value.trim().length > 0 || 'name cannot be empty or only spaces'
                             })}
                             className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
-                            placeholder="Enter Chapter title"
+                            placeholder="Enter Chapter name"
                         />
-                        {errors.title && (
-                            <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                        {errors.name && (
+                            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
                         )}
                     </div>
 
