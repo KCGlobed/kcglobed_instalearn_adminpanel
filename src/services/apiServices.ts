@@ -432,3 +432,23 @@ export const videoDetailApi = async (id: string | number): Promise<any> => {
 
 
 //-----video api end -------------//
+
+
+// ---Assign chapter Himanshu Start ---//
+
+export const getEbookListApi = async () => {
+  const res: any = await apiRequest(`course/get-ebook-list/`, 'GET');
+  return res;
+}
+
+export const getVideoListApi = async () => {
+  const res: any = await apiRequest(`course/get-video-list/`, 'GET');
+  return res;
+}
+
+export const createAssignChapterLecture = async (payload: any): Promise<any> => {
+  return apiRequest(`course/assign-chapter-lecture/`, 'POST', payload)
+}
+
+
+// ---Assign chapter Himanshu End ---//

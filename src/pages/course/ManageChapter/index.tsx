@@ -19,10 +19,7 @@ import DynamicServerTable from '../../../components/Table/Table';
 import ChapterForm from '../../../components/Forms/ChapterForm';
 import { deleteChapterApi, downloadChapterExcelApi, downloadChapterPdfApi } from '../../../services/apiServices';
 import ChapterView from '../../../components/View/ChapterView';
-import TabsModal from '../../../components/Modal/TabsModal';
-import AssignChapterForm from '../../../components/Forms/AssignChapterForm';
-import AssignInstructorForm from '../../../components/Forms/AssignInstructorForm';
-import AssignSampleVideoForm from '../../../components/Forms/AssignSampleVideoForm';
+import { useNavigate } from 'react-router-dom';
 
 interface ColumnDef {
     key: string;
@@ -41,6 +38,7 @@ const ManageChapter: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate()
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -186,7 +184,7 @@ const ManageChapter: React.FC = () => {
                                 title: 'View Chapter',
                                 content: <ChapterView chapterData={row} />,
                                 type: 'success',
-                                size: 'lg',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -228,42 +226,12 @@ const ManageChapter: React.FC = () => {
                             });
                         }}
                     />
-                     <GlassButton
+                    <GlassButton
                         icon={<FiSettings />}
                         color="gray"
                         title="Assign"
                         onClick={() => {
-                            showModal({
-                                title: `Manage: ${row.name}`,
-                                content: (
-                                    <TabsModal
-                                        defaultActiveKey="chapter"
-                                        onTabChange={(key) => console.log('Active tab:', key)}
-                                        tabs={[
-                                            {
-                                                key: 'chapter',
-                                                label: 'Assign Chapter',
-                                                icon: <BookOpen size={15} />,
-                                                component: <AssignChapterForm courseId={row.id} />,
-                                            },
-                                            {
-                                                key: 'instructor',
-                                                label: 'Assign Instructor',
-                                                icon: <UserCheck size={15} />,
-                                                component: <AssignInstructorForm courseId={row.id} />,
-                                            },
-                                            {
-                                                key: 'video',
-                                                label: 'Sample Video',
-                                                icon: <Video size={15} />,
-                                                component: <AssignSampleVideoForm courseId={row.id} />,
-                                            },
-                                        ]}
-                                    />
-                                ),
-                                type: 'custom',
-                                size: 'xl',
-                            });
+                            navigate(`/dashboard/chapter/assign-lecture/${row.id}`);
                         }}
                     />
                 </div>
