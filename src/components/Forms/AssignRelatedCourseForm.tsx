@@ -65,10 +65,10 @@ const AssignRelatedCourseForm: React.FC<AssignRelatedCourseFormProps> = ({ cours
         try {
             const res = await courseDetailApi(id);
             // Based on pattern, we check for related_courses_info
-            if (res.data.related_courses_info) {
-                setValue('related_courses', res.data.related_courses_info.map((item: any) => ({
-                    label: item.related_course_info?.name,
-                    value: item.related_course_info?.id
+            if (res.data.related_courses) {
+                setValue('related_courses', res.data.related_courses.map((item: any) => ({
+                    label: item.course_info?.name,
+                    value: item.course_info?.id
                 })));
             }
         } catch {

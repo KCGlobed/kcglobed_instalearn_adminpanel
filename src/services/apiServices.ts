@@ -498,6 +498,25 @@ export const fetchRelatedCourseOptionsApi = async () => {
   return res;
 }
 
+export const assignSampleVideoApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/upload-course-sample-video/`, 'POST', payload);
+};
+
+export const deleteSampleVideoApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-courses-sample-video/${id}`, 'DELETE');
+};
+
+export const fetchInstructorOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-instructor-list/`, 'GET');
+  return res;
+}
+
+export const assignInstructorApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/add-course-instructor/`, 'POST', payload);
+};
+
+
+
 // ---Course Himanshu End ---//
 
 
