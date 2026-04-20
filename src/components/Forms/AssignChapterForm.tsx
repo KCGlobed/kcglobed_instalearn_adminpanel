@@ -44,6 +44,7 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
         const load = async () => {
             try {
                 const res = await fetchChapterOptionsApi();
+                console.log(res, "chec")
                 setOptions(
                     res.data.map((item: any) => ({ label: item.name, value: item.id }))
                 );
@@ -63,10 +64,10 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
             // await assignChaptersApi(courseId, data.chapters.map(c => c.value));
             console.log('Assigning chapters:', {
                 courseId,
-                chapters: data.chapters.map((c) => c.value),
+                chapter_id: data.chapters.map((c) => c.value),
             });
             let payload = {
-                chapters: data.chapters.map((c) => c.value)
+                chapter_id: data.chapters.map((c) => c.value)
             }
             const res = await assignChapterApi(courseId, payload);
             if (res.status) {
