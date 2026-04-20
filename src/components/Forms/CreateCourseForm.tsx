@@ -143,6 +143,7 @@ const CreateCourseForm = () => {
     const onSubmit = async (data: CourseFormValues) => {
         console.log(data.category_id);
         let category: any[] = data.category_id.map((item: any) => item.value);
+        let tag: any[] = data.tags.map((item: any) => item.value);
         try {
             setLoading(true);
             const formData = new FormData();
@@ -158,7 +159,7 @@ const CreateCourseForm = () => {
             // Transform lists into JSON strings to maintain structure in FormData
             formData.append("feature_json", JSON.stringify(data.feature_json.map(f => f.value)));
             formData.append("objectives_summary", JSON.stringify(data.objectives_summary.map(o => o.value)));
-            formData.append("tags", JSON.stringify(data.tags.map(t => t.value)));
+            formData.append("tags", tag.join(","));
             formData.append("category_id", category.join(","));
 
             if (data.image) {
