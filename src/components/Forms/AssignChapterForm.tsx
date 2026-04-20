@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
-<<<<<<< HEAD
-import { fetchChapterOptionsApi, fetchCourseDetailApi } from '../../services/apiServices';
-=======
-import { assignChapterApi, courseDetailApi, fetchChapterOptionsApi } from '../../services/apiServices';
->>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
+import { assignChapterApi, courseDetailApi, fetchChapterOptionsApi, fetchCourseDetailApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
 import { BookOpen, Loader2, AlertCircle } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -87,14 +83,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
 
     const onSubmit = async (data: AssignChapterFormValues) => {
         try {
-<<<<<<< HEAD
-            const payload = {
-                id: courseId,
-                chapter_id: data.chapters.map(c => c.value),
-            };
-            toast.success('Chapters assigned successfully!');
-            hideModal();
-=======
             // TODO: call your assign-chapter API here
             // await assignChaptersApi(courseId, data.chapters.map(c => c.value));
             console.log('Assigning chapters:', {
@@ -112,7 +100,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
             } else {
                 toast.error(res.message);
             }
->>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
         } catch {
             toast.error('Failed to assign chapters. Please try again.');
         }
