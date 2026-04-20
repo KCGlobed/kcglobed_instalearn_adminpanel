@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Courses, Pagination } from "../../utils/types";
-import { fetchCourseApi, deleteCourseApi, fetchCourseDetailApi } from "../../services/apiServices";
+import { fetchCourseApi, deleteCourseApi, fetchCourseDetailApi, uploadCourseSampleVideoApi } from "../../services/apiServices";
 
 interface CourseState extends Pagination<Courses> { }
 
@@ -44,6 +44,20 @@ export const deleteCourse = createAsyncThunk<number | string, number | string, {
             return id;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to delete course");
+        }
+    }
+);
+
+
+
+
+export const uploadCourseSampleVideo = createAsyncThunk<any, FormData, { rejectValue: string }>(
+    "course/uploadCourseSampleVideo",
+    async (payload, { rejectWithValue }) => {
+        try {
+            return await uploadCourseSampleVideoApi(payload);
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to upload course sample video");
         }
     }
 );

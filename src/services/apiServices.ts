@@ -420,11 +420,11 @@ export async function fetchRolesListingApi(page = 1, search: string = "", orderi
 // ----------------role service end------- //
 
 export const fetchRolePermissionsApi = async (roleName: string): Promise<any> => {
-    return await apiRequest<any>(`user/get-roles-permissions/${roleName}`, 'GET');
+  return await apiRequest<any>(`user/get-roles-permissions/${roleName}`, 'GET');
 };
 
 export const updateRolePermissionApi = async (payload: { role_name: string; code: string; status: boolean }): Promise<any> => {
-    return await apiRequest<any>('user/update-roles-permissions/', 'POST', payload);
+  return await apiRequest<any>('user/update-roles-permissions/', 'POST', payload);
 };
 export const fetchChapterViewData = async (id: string | number): Promise<any> => {
   const res = await apiRequest(`course/view-chapter-detail/${id}`, 'GET');
@@ -507,6 +507,11 @@ export const assignChapterApi = async (id: string | number, payload: any): Promi
 
 export const fetchCourseDetailApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
+
+
+export const uploadCourseSampleVideoApi = async (payload: FormData): Promise<any> => {
+  return await apiRequest(`course/upload-course-sample-video/`, 'POST', payload);
 };
 
 // ---Course Himanshu End ---//
