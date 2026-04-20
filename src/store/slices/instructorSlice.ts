@@ -57,9 +57,9 @@ export const updateInstructor = createAsyncThunk<Instructor, any, { rejectValue:
 
 export const updateInstructorStatus = createAsyncThunk<Instructor, any, { rejectValue: string }>(
     "instructor/updateInstructorStatus",
-    async ({ id, instructorData }, { rejectWithValue }) => {
+    async ({ id, is_active }, { rejectWithValue }) => {
         try {
-            const data = await updateInstructorStatusApi(id, instructorData);
+            const data = await updateInstructorStatusApi(id, { status: is_active });
             return data?.data ? data.data : data;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to update instructor status");
@@ -68,13 +68,13 @@ export const updateInstructorStatus = createAsyncThunk<Instructor, any, { reject
 )
 
 export const deleteInstructor = createAsyncThunk<number | string, any, { rejectValue: string }>(
-    "tags/deleteTags",
+    "instructor/deleteInstructor",
     async (id, { rejectWithValue }) => {
         try {
             await deleteInstructorApi(id);
             return id;
         } catch (err: any) {
-            return rejectWithValue(err.message || "Failed to delete tag");
+            return rejectWithValue(err.message || "Failed to delete instructor");
         }
     }
 )
@@ -90,9 +90,9 @@ const instructorSlice = createSlice({
             state.data = state.data.filter((item) => item.id != action.payload);
         },
         StatusInstructor: (state, action: PayloadAction<Number | string>) => {
-             state.data = state.data.map((item) =>
+            state.data = state.data.map((item) =>
                 item.id.toString() === action.payload.toString()
-                    ? { ...item, status: !item.status }
+                    ? { ...item, is_active: !item.is_active }
                     : item
             );
         }
@@ -121,7 +121,23 @@ const instructorSlice = createSlice({
             })
             .addCase(updateInstructorStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
+                state.data = state.data.map(item => item.id == action.payload.id ? { ...item, ...action.payload } : item);
+            })
+            .addCase(deleteInstructor.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteInstructor.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.filter((item) => item.id != action.payload);
+                if (state.count && state.count > 0) state.count -= 1;
+                if (state.pagination.total_results && state.pagination.total_results > 0) {
+                    state.pagination.total_results -= 1;
+                }
+            })
+            .addCase(deleteInstructor.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
 
     }

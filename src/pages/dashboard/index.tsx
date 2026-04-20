@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaShieldAlt } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -40,6 +40,7 @@ const Dashboard: React.FC = () => {
     },
     { name: 'Manage MCQ', icon: <FaClipboardList className="mr-2" />, path: '/dashboard/mcq' },
     { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
+    { name: 'Manage Roles', icon: <FaShieldAlt className="mr-2" />, path: '/dashboard/roles' },
     {
       name: 'Manage FAQ',
       icon: <FaQuestionCircle className="mr-2" />,

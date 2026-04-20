@@ -271,8 +271,8 @@ export const deleteInstructorApi = async (id: string | number): Promise<any> => 
   return await apiRequest(`user/delete-user/instructor/${id}`, 'DELETE');
 };
 
-export const updateInstructorStatusApi = async (id: string | number, payload: { is_active: boolean }): Promise<any> => {
-  return await apiRequest(`user/update-user-status/instructor/${id}`, 'POST', payload);
+export const updateInstructorStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/instructor/${id}`, 'POST', payload);
 };
 
 export const downloadInstructorPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
@@ -415,3 +415,19 @@ export const fetchChapterViewData=async(id:string|number):Promise<any>=>{
    const res= await apiRequest(`course/view-chapter-detail/${id}`,'GET');
    return res;
 }
+
+// ----------------role service start------- //
+export async function fetchRolesListingApi(page = 1, search: string = "", ordering: string = ""): Promise<any> {
+  let query = `user/get-roles-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${ordering ? `&ordering=${ordering}` : ""}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+// ----------------role service end------- //
+
+export const fetchRolePermissionsApi = async (roleName: string): Promise<any> => {
+    return await apiRequest<any>(`user/get-roles-permissions/${roleName}`, 'GET');
+};
+
+export const updateRolePermissionApi = async (payload: { role_name: string; code: string; status: boolean }): Promise<any> => {
+    return await apiRequest<any>('user/update-roles-permissions/', 'POST', payload);
+};

@@ -21,6 +21,7 @@ import ManageFaq from "../pages/Faq/ManageFaq";
 import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
 import ManageCourses from "../pages/course/ManageCourses";
 import ManageChapter from "../pages/course/ManageChapter";
+import ManageRole from "../pages/Roles";
 
 export default function AppRoutes() {
   return (
@@ -59,6 +60,7 @@ export default function AppRoutes() {
 
           {/* ------------------------------Abhishek Manage Chapter----------------------  */}
           <Route path="/dashboard/chapter" element={<ManageChapter />} />
+          <Route path="/dashboard/roles" element={<ManageRole />} />
 
         </Route>
       </Route>

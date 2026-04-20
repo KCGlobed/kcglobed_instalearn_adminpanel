@@ -3,7 +3,7 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getInstructor, removeInstructor, updateInstructorStatus } from '../../store/slices/instructorSlice';
+import { deleteInstructor, getInstructor, updateInstructorStatus } from '../../store/slices/instructorSlice';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
 import InstructorForm from '../../components/Forms/InstructorForm';
@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteInstructorApi, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
+import { downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
@@ -159,14 +159,14 @@ const ManageInstructors: React.FC = () => {
             width: '180px',
         },
         {
-            key: 'status',
+            key: 'is_active',
             title: 'Status',
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateInstructorStatus({ id: row.id, status: !value }))
+                        dispatch(updateInstructorStatus({ id: row.id, is_active: !value }))
                             .unwrap()
-                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .then(() => toast.success(`Instructor ${!value ? 'activated' : 'deactivated'} successfully`))
                             .catch((err) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
@@ -208,8 +208,10 @@ const ManageInstructors: React.FC = () => {
                                     name={`${row.first_name} ${row.last_name}`}
                                     onDelete={async () => {
 
-                                        await deleteInstructorApi(row.id);
-                                        dispatch(removeInstructor(row.id));
+                                        dispatch(deleteInstructor(row.id))
+                                            .unwrap()
+                                            .then(() => toast.success("Instructor deleted successfully"))
+                                            .catch((err) => toast.error(err || "Failed to delete instructor"));
                                     }}
                                 />,
                                 type: 'custom',
