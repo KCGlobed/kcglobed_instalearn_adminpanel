@@ -5,7 +5,7 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { getCource, deleteCourse } from "../../../store/slices/courceSlice";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
-import { FiEdit, FiSettings, FiTrash } from "react-icons/fi";
+import { FiEdit, FiSettings, FiTrash, FiEye } from "react-icons/fi";
 import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
@@ -156,8 +156,8 @@ const ManageCourses: React.FC = () => {
             title: 'Pricing',
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
-                    <span className="font-bold text-gray-800">${row.price}</span>
-                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: ${row.discount}</span>}
+                    <span className="font-bold text-gray-800">Rs {row.price}</span>
+                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: Rs {row.discount}</span>}
                 </div>
             ),
             sortable: true,
@@ -175,7 +175,7 @@ const ManageCourses: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '100px',
         },
 
         // {
@@ -254,6 +254,12 @@ const ManageCourses: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => navigate(`/dashboard/course/view/${row.id}`)}
+                    />
+                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
@@ -290,7 +296,6 @@ const ManageCourses: React.FC = () => {
                                 content: (
                                     <TabsModal
                                         defaultActiveKey="chapter"
-                                        onTabChange={(key) => console.log('Active tab:', key)}
                                         tabs={[
                                             {
                                                 key: 'chapter',

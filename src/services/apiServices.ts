@@ -485,8 +485,14 @@ export const assignChapterApi = async (id: string | number, payload: any): Promi
   return await apiRequest(`course/assign-chapter-course/${id}`, 'POST', payload);
 };
 
-// ---Course Himanshu End ---//
 
+
+
+export const fetchCourseDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
+
+// ---Course Himanshu End ---//
 
 
 

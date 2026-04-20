@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { assignChapterApi, courseDetailApi, fetchChapterOptionsApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
 import { BookOpen, Loader2, AlertCircle } from 'lucide-react';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,19 +28,18 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
     const [options, setOptions] = useState<Option[]>([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
     const { hideModal } = useModal();
+    const dispatch = useAppDispatch();
 
-    // ── React Hook Form setup ──
     const {
         control,
         handleSubmit,
-        formState: { errors, isSubmitting, isDirty },
+        formState: { errors, isSubmitting },
         reset,
         setValue,
     } = useForm<AssignChapterFormValues>({
         defaultValues: { chapters: [] },
     });
 
-    // ── Load chapter options ──
     useEffect(() => {
         const load = async () => {
             try {
@@ -55,9 +55,8 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
             }
         };
         load();
-    }, [courseId]);
+    }, [courseId, setValue]);
 
-    // ── Submit handler ──
     const onSubmit = async (data: AssignChapterFormValues) => {
         try {
             // TODO: call your assign-chapter API here
@@ -103,7 +102,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
 
-            {/* ── Header Banner ── */}
             <div className="flex items-center gap-3 p-4 rounded-xl bg-indigo-50 border border-indigo-100">
                 <span className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
                     <BookOpen size={18} />
@@ -116,7 +114,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
                 </div>
             </div>
 
-            {/* ── Chapter Select ── */}
             <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
                     Chapters <span className="text-red-500">*</span>
@@ -214,7 +211,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
                     />
                 )}
 
-                {/* ── Field Error Message ── */}
                 {errors.chapters && (
                     <p className="flex items-center gap-1.5 mt-2 text-xs font-medium text-red-500">
                         <AlertCircle size={13} />
@@ -222,7 +218,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
                     </p>
                 )}
 
-                {/* ── Helper text ── */}
                 {!errors.chapters && !loadingOptions && (
                     <p className="mt-1.5 text-[11px] text-gray-400">
                         You can select multiple chapters. They will be linked to this course immediately.
@@ -230,7 +225,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
                 )}
             </div>
 
-            {/* ── Action Buttons ── */}
             <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
                 <button
                     type="button"
@@ -242,7 +236,7 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
                 </button>
                 <button
                     type="submit"
-                    disabled={isSubmitting || loadingOptions || !isDirty}
+                    disabled={isSubmitting || loadingOptions}
                     className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm flex items-center gap-2"
                 >
                     {isSubmitting && <Loader2 size={14} className="animate-spin" />}
