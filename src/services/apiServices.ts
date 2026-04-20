@@ -473,9 +473,20 @@ export const fetchTagOptionsApi = async () => {
   return res;
 }
 
+export const courseDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
 
+export const updateCourseApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-course/${id}`, 'POST', payload);
+};
+
+export const assignChapterApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/assign-chapter-course/${id}`, 'POST', payload);
+};
 
 // ---Course Himanshu End ---//
+
 
 
 
