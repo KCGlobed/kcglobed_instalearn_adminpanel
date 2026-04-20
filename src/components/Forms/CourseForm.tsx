@@ -593,7 +593,7 @@ const CoursePreviewModal = ({ data, imagePreview, onClose }: { data: any, imageP
                                 <span className="w-8 h-1 bg-indigo-600 rounded-full"></span>
                                 Short Description
                             </h3>
-                            <div className="prose prose-indigo max-w-none text-slate-600 font-medium leading-relaxedlexical-preview"
+                            <div className="prose prose-indigo max-w-none text-slate-600 font-medium leading-relaxed lexical-preview"
                                 dangerouslySetInnerHTML={{ __html: data.short_description }} />
                         </section>
 

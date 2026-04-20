@@ -485,12 +485,18 @@ export const assignChapterApi = async (id: string | number, payload: any): Promi
   return await apiRequest(`course/assign-chapter-course/${id}`, 'POST', payload);
 };
 
-
-
-
 export const fetchCourseDetailApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`course/view-course-detail/${id}`, 'GET');
 };
+
+export const assignRelatedCourseApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/add-related-courses/`, 'POST', payload);
+};
+
+export const fetchRelatedCourseOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-course-list/`, 'GET');
+  return res;
+}
 
 // ---Course Himanshu End ---//
 

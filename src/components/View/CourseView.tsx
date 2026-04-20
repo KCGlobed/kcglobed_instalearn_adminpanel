@@ -150,17 +150,43 @@ const CourseView = ({ courseId }: { courseId?: number | string }) => {
                 <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column: Info */}
                     <div className="lg:col-span-2 space-y-10">
+                        {/* Short Description */}
+                        <div>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-4 flex items-center gap-2">
+                                <div className="w-6 h-[1px] bg-indigo-200"></div>
+                                Summary
+                            </h2>
+                            <div
+                                className="text-slate-600 text-[13px] leading-relaxed prose prose-sm max-w-none prose-p:my-2 bg-slate-50 p-6 rounded-2xl border border-slate-100"
+                                dangerouslySetInnerHTML={{ __html: course.short_description }}
+                            />
+                        </div>
+
                         {/* Description */}
                         <div>
                             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-4 flex items-center gap-2">
                                 <div className="w-6 h-[1px] bg-indigo-200"></div>
-                                Course Overview
+                                Full Course Details
                             </h2>
                             <div
                                 className="text-slate-600 text-[13px] leading-relaxed prose prose-sm max-w-none prose-p:my-2"
                                 dangerouslySetInnerHTML={{ __html: course.description }}
                             />
                         </div>
+
+                        {/* Requirements */}
+                        {course.requirements && (
+                            <div>
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-4 flex items-center gap-2">
+                                    <div className="w-6 h-[1px] bg-indigo-200"></div>
+                                    Prerequisites
+                                </h2>
+                                <div
+                                    className="text-slate-600 text-[13px] leading-relaxed prose prose-sm max-w-none prose-p:my-2 bg-amber-50/50 p-6 rounded-2xl border border-amber-100/50 italic"
+                                    dangerouslySetInnerHTML={{ __html: course.requirements }}
+                                />
+                            </div>
+                        )}
 
                         {/* Objectives */}
                         {course.objectives_summary && course.objectives_summary.length > 0 && (
@@ -214,7 +240,7 @@ const CourseView = ({ courseId }: { courseId?: number | string }) => {
                             <div className="absolute top-0 right-0 p-4">
                                 <DollarSign size={40} className="text-indigo-500/5 rotate-12" />
                             </div>
-                            
+
                             <div className="mb-6">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Investment</span>
                                 <div className="flex items-baseline gap-2 mt-1">

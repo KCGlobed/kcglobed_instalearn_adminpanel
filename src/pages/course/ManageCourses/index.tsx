@@ -11,7 +11,7 @@ import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
 import { courseFilterConfig } from "../../../utils/filterConfiguration";
-import { Calendar, Filter, Plus, BookOpen, UserCheck, Video } from "lucide-react";
+import { Calendar, Filter, Plus, BookOpen, UserCheck, Video, Layers } from "lucide-react";
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
 import SortDropdown from "../../../components/common/SortDropdown";
@@ -21,6 +21,7 @@ import AssignChapterForm from "../../../components/Forms/AssignChapterForm";
 import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm";
 import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
 import { useNavigate } from "react-router-dom";
+import AssignRelatedCourseForm from "../../../components/Forms/AssignRelatedCourseForm";
 
 interface ColumnDef {
     key: string,
@@ -217,7 +218,7 @@ const ManageCourses: React.FC = () => {
                     {(!row.tags || row.tags.length === 0) && <span className="text-gray-400 text-xs">-</span>}
                 </div>
             ),
-            width: '240px',
+            width: '200px',
         },
         {
             key: 'created_at',
@@ -229,7 +230,7 @@ const ManageCourses: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '100px',
         },
         {
             key: 'status',
@@ -314,6 +315,12 @@ const ManageCourses: React.FC = () => {
                                                 label: 'Sample Video',
                                                 icon: <Video size={15} />,
                                                 component: <AssignSampleVideoForm courseId={row.id} />,
+                                            },
+                                            {
+                                                key: 'related_course',
+                                                label: 'Related Course',
+                                                icon: <Layers size={15} />,
+                                                component: <AssignRelatedCourseForm courseId={row.id} />,
                                             },
                                         ]}
                                     />
