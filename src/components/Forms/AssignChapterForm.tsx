@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
+<<<<<<< HEAD
 import { fetchChapterOptionsApi, fetchCourseDetailApi } from '../../services/apiServices';
+=======
+import { assignChapterApi, courseDetailApi, fetchChapterOptionsApi } from '../../services/apiServices';
+>>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
 import { useModal } from '../../context/ModalContext';
 import { BookOpen, Loader2, AlertCircle } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -83,16 +87,54 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
 
     const onSubmit = async (data: AssignChapterFormValues) => {
         try {
+<<<<<<< HEAD
             const payload = {
                 id: courseId,
                 chapter_id: data.chapters.map(c => c.value),
             };
             toast.success('Chapters assigned successfully!');
             hideModal();
+=======
+            // TODO: call your assign-chapter API here
+            // await assignChaptersApi(courseId, data.chapters.map(c => c.value));
+            console.log('Assigning chapters:', {
+                courseId,
+                chapters: data.chapters.map((c) => c.value),
+            });
+            let payload = {
+                chapters: data.chapters.map((c) => c.value)
+            }
+            const res = await assignChapterApi(courseId, payload);
+            if (res.status) {
+                toast.success(res.message);
+                reset();
+                hideModal();
+            } else {
+                toast.error(res.message);
+            }
+>>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
         } catch {
             toast.error('Failed to assign chapters. Please try again.');
         }
     };
+
+    const fetchChapterOptions = async (courseId: number | string) => {
+        setLoadingOptions(true);
+        try {
+            const res = await courseDetailApi(courseId);
+            setValue('chapters', res.data.chapters_info?.map((item: any) => ({ label: item.chapter_info?.name, value: item.chapter_info?.id })));
+        } catch {
+            toast.error('Failed to load chapters.');
+        } finally {
+            setLoadingOptions(false);
+        }
+    };
+
+    useEffect(() => {
+        if (courseId) {
+            fetchChapterOptions(courseId);
+        }
+    }, [courseId])
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">

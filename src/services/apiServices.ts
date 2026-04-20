@@ -473,6 +473,7 @@ export const fetchTagOptionsApi = async () => {
   return res;
 }
 
+<<<<<<< HEAD
 
 
 
@@ -480,7 +481,25 @@ export const fetchCourseDetailApi = async (id: string | number): Promise<any> =>
   return await apiRequest(`course/view-course-detail/${id}`, 'GET');
 };
 
+=======
+export const courseDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
+
+export const updateCourseApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-course/${id}`, 'POST', payload);
+};
+
+export const assignChapterApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/assign-chapter-course/${id}`, 'POST', payload);
+};
+
+>>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
 // ---Course Himanshu End ---//
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068

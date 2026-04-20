@@ -264,12 +264,7 @@ const ManageCourses: React.FC = () => {
                         color="green"
                         title="Edit"
                         onClick={() =>
-                            showModal({
-                                title: 'Edit Course',
-                                content: <div className="p-8 text-center text-gray-500 font-medium">Edit form coming soon...</div>,
-                                type: 'success',
-                                size: 'xl',
-                            })
+                            navigate(`/dashboard/courses/edit/${row.id}`)
                         }
                     />
                     <GlassButton
@@ -401,7 +396,11 @@ const ManageCourses: React.FC = () => {
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
+<<<<<<< HEAD
                                 navigate("/dashboard/course/add")
+=======
+                                navigate("/dashboard/courses/add")
+>>>>>>> 741f4029ae150aa2d1c7a2a6373b60b271e39068
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
