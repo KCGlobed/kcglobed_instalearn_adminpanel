@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
-import { fetchInstructor } from '../../services/apiServices';
+import { assignInstructorApi, fetchInstructor, fetchInstructorOptionsApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
 import { UserCheck, Loader2 } from 'lucide-react';
 
@@ -21,11 +21,18 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await fetchInstructor();
+                const res = await fetchInstructorOptionsApi();
                 setOptions(
                     (res?.data || []).map((item: any) => ({
-                        label: `${item.first_name} ${item.last_name}`,
+                        label: item.text_1,
                         value: item.id,
+                        // Enhanced metadata for premium display
+                        meta: {
+                            qualification: item.text_2,
+                            company: item.text_3,
+                            experience: item.experience,
+                            avatar: item.image
+                        }
                     }))
                 );
             } catch {
@@ -47,9 +54,13 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
             setSaving(true);
             // TODO: call your assign-instructor API here
             // await assignInstructorApi(courseId, selected.value);
-            console.log('Assigning instructor:', { courseId, instructor: selected.value });
-            toast.success('Instructor assigned successfully!');
-            hideModal();
+            const res = await assignInstructorApi({ course_id: courseId, instructor_id: selected.value });
+            if (res?.status) {
+                toast.success(res?.message);
+                hideModal();
+            } else {
+                toast.error(res?.message);
+            }
         } catch {
             toast.error('Failed to assign instructor.');
         } finally {
@@ -83,23 +94,61 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
                     <Select
                         options={options}
                         value={selected}
-                        onChange={(val) => setSelected(val as Option)}
+                        onChange={(val) => setSelected(val as any)}
                         placeholder="Search and select instructor..."
                         classNamePrefix="react-select"
+                        formatOptionLabel={(option: any) => (
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-100">
+                                    {option.meta?.avatar ? (
+                                        <img src={option.meta.avatar} className="w-full h-full object-cover" alt="" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                            <UserCheck size={16} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <p className="text-sm font-bold text-slate-900 truncate">{option.label}</p>
+                                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                                            {option.meta?.experience}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <p className="text-[11px] font-medium text-slate-500 truncate">{option.meta?.qualification}</p>
+                                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                        <p className="text-[11px] font-medium text-slate-400 truncate">{option.meta?.company}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         styles={{
                             control: (base) => ({
                                 ...base,
-                                borderRadius: '12px',
-                                borderColor: '#e5e7eb',
+                                borderRadius: '16px',
+                                borderColor: '#e2e8f0',
                                 boxShadow: 'none',
+                                padding: '4px',
                                 fontSize: '14px',
-                                '&:hover': { borderColor: '#10b981' },
+                                transition: 'all 0.3s ease',
+                                '&:hover': { borderColor: '#10b981', boxShadow: '0 4px 12px -2px rgba(16, 185, 129, 0.1)' },
                             }),
                             option: (base, state) => ({
                                 ...base,
-                                backgroundColor: state.isSelected ? '#d1fae5' : state.isFocused ? '#f0fdf4' : 'white',
-                                color: state.isSelected ? '#065f46' : '#111827',
-                                fontWeight: state.isSelected ? 600 : 400,
+                                backgroundColor: state.isSelected ? '#10b981' : state.isFocused ? '#f8fafc' : 'white',
+                                color: state.isSelected ? 'white' : '#111827',
+                                transition: 'all 0.2s',
+                                padding: '10px 12px',
+                                cursor: 'pointer',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                borderRadius: '20px',
+                                overflow: 'hidden',
+                                marginTop: '8px',
+                                border: '1px solid #f1f5f9',
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                             }),
                         }}
                     />
