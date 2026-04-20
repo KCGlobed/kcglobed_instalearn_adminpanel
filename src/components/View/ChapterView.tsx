@@ -5,13 +5,13 @@ import {
     Clock,
     LayoutList,
     Search,
-    Info,
     X,
-    FileText
+    FileText,
+    Loader2
 } from "lucide-react";
 import moment from "moment";
 import { useEffect, useState, useMemo } from "react";
-import { fetchChapterViewData } from "../../services/apiServices";
+import { fetchChapterViewData, getBookSignedUrlApi } from "../../services/apiServices";
 
 type AssignedLecture = {
     assignedId: string;
@@ -37,6 +37,7 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [previewItem, setPreviewItem] = useState<AssignedLecture | null>(null);
+    const [fetchingUrl, setFetchingUrl] = useState(false);
 
     const handleFetchChapter = async (id: number) => {
         setLoading(true);
@@ -89,6 +90,25 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
             totalTime: `${Math.floor(totalSeconds / 3600)}h ${Math.floor((totalSeconds % 3600) / 60)}m`
         };
     }, [mappedLectures]);
+
+    const handleSelectItem = async (item: AssignedLecture) => {
+        if (item.type === 'ebook') {
+            try {
+                setFetchingUrl(true);
+                setPreviewItem(item); // Show modal immediately with loading
+                const res = await getBookSignedUrlApi(item.id);
+                if (res.status && res.data) {
+                    setPreviewItem({ ...item, fileUrl: res.data });
+                }
+            } catch (error) {
+                console.error("Failed to get signed URL", error);
+            } finally {
+                setFetchingUrl(false);
+            }
+        } else {
+            setPreviewItem(item);
+        }
+    }
 
     if (loading) {
         return (
@@ -179,7 +199,7 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
                             filteredLectures.map((item, idx) => (
                                 <div
                                     key={item.assignedId}
-                                    onClick={() => setPreviewItem(item)}
+                                    onClick={() => handleSelectItem(item)}
                                     className="group flex items-center gap-6 py-4 px-6 bg-white hover:bg-slate-50/50 transition-all duration-300 cursor-pointer"
                                 >
                                     <div className="w-8 text-[11px] font-mono text-slate-300 group-hover:text-slate-900">
@@ -187,8 +207,8 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
                                     </div>
 
                                     <div className={`p-1.5 rounded-lg border ${item.type === 'video'
-                                            ? 'bg-blue-50 text-blue-500 border-blue-100'
-                                            : 'bg-emerald-50 text-emerald-500 border-emerald-100'
+                                        ? 'bg-blue-50 text-blue-500 border-blue-100'
+                                        : 'bg-emerald-50 text-emerald-500 border-emerald-100'
                                         }`}>
                                         {item.type === 'video' ? <Video size={14} /> : <Book size={14} />}
                                     </div>
@@ -215,8 +235,7 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
                             ))
                         ) : (
                             <div className="py-24 text-center bg-white flex flex-col items-center justify-center gap-3">
-                                <Info size={32} className="text-slate-100" />
-                                <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No matching curriculum items</p>
+                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No matching curriculum items</span>
                             </div>
                         )}
                     </div>
@@ -237,7 +256,7 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
                             </div>
                         </div>
                         <button
-                            onClick={() => setPreviewItem(null)}
+                            onClick={() => { setPreviewItem(null); setFetchingUrl(false); }}
                             className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all"
                         >
                             <X size={20} />
@@ -245,7 +264,12 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
                     </div>
 
                     <div className="flex-1 flex items-center justify-center p-12 overflow-hidden">
-                        {previewItem.fileUrl ? (
+                        {fetchingUrl ? (
+                            <div className="flex flex-col items-center gap-4 text-white/60">
+                                <Loader2 size={32} className="animate-spin text-blue-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Generating Secure Access</span>
+                            </div>
+                        ) : previewItem.fileUrl ? (
                             <div className="w-full h-full max-w-6xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                                 {previewItem.type === 'video' ? (
                                     <video

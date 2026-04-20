@@ -15,16 +15,23 @@ const DashboardHeader: React.FC = () => {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  /** Derive a readable title from the URL path */
   const getPageTitle = (): string => {
     const segments = location.pathname.split('/').filter(Boolean);
     const last = segments[segments.length - 1];
+    
+    // 1. Specific check: If the last segment is an ID (detected by seeing 'view' before it)
+    const secondLast = segments[segments.length - 2];
+    if (secondLast === 'view') return 'Course Details';
+
+    // 2. Default dashboard title
     if (!last || last === 'dashboard') return 'Dashboard';
+
+    // 3. Convert path segments like 'manage-courses' to 'Manage Courses'
     return last
       .replace(/-/g, ' ')
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');;
+      .join(' ');
   };
 
   const handleLogout = () => {

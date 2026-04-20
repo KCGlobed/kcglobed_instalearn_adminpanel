@@ -22,6 +22,8 @@ import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
 import ManageCourses from "../pages/course/ManageCourses";
 import ManageChapter from "../pages/course/ManageChapter";
 import AssignChpaterLectureForm from "../components/Forms/AssignChpaterLectureForm";
+import CreateCourseForm from "../components/Forms/CreateCourseForm";
+import CourseView from "../components/View/CourseView";
 
 export default function AppRoutes() {
   return (
@@ -61,7 +63,12 @@ export default function AppRoutes() {
           {/* ------------------------------Abhishek Manage Chapter----------------------  */}
           <Route path="/dashboard/chapter" element={<ManageChapter />} />
           <Route path="/dashboard/chapter/assign-lecture/:id" element={<AssignChpaterLectureForm />} />
+          <Route path="/dashboard/course/add" element={<CreateCourseForm />} />
 
+          {/* //---------------Abhishek Manage Course View start ------------// */}
+          <Route path="/dashboard/course/view/:id" element={<CourseView />} />
+          {/* //---------------Abhishek Manage Course View end ------------// */}
+          
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
