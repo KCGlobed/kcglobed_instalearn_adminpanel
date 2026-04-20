@@ -20,6 +20,7 @@ import TabsModal from "../../../components/Modal/TabsModal";
 import AssignChapterForm from "../../../components/Forms/AssignChapterForm";
 import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm";
 import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
+import { useNavigate } from "react-router-dom";
 
 interface ColumnDef {
     key: string,
@@ -40,6 +41,7 @@ const ManageCourses: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate();
 
     const [filters, setFilters] = useState({
         name: '',
@@ -394,12 +396,7 @@ const ManageCourses: React.FC = () => {
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
-                                showModal({
-                                    title: "Add Course",
-                                    content: <div className="p-8 text-center text-gray-500 font-medium">Add form coming soon...</div>,
-                                    type: 'custom',
-                                    size: 'lg',
-                                })
+                                navigate("/dashboard/course/add")
                             }
                         >
                             <Plus size={18} strokeWidth={3} />

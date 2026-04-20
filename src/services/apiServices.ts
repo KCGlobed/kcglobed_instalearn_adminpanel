@@ -450,5 +450,32 @@ export const createAssignChapterLecture = async (payload: any): Promise<any> => 
   return apiRequest(`course/assign-chapter-lecture/`, 'POST', payload)
 }
 
+export const getBookSignedUrlApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/get-book-signed-url/${id}`, 'GET');
+};
 
 // ---Assign chapter Himanshu End ---//
+
+
+// ---Course Himanshu Start ---//
+
+export const createCourseApi = async (payload: any): Promise<any> => {
+  return apiRequest(`course/create-course/`, 'POST', payload)
+}
+
+export const fetchSubCategoryOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-sub-category-listing/`, 'GET');
+  return res;
+}
+
+export const fetchTagOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-tags-list/`, 'GET');
+  return res;
+}
+
+
+
+// ---Course Himanshu End ---//
+
+
+
