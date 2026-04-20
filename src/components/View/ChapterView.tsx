@@ -1,26 +1,50 @@
-import { FileText, Calendar, Info, CheckCircle, XCircle, Hash, Activity } from "lucide-react";
+import {
+    Calendar,
+    Video,
+    Book,
+    Clock,
+    LayoutList,
+    Search,
+    X,
+    FileText,
+    Loader2
+} from "lucide-react";
 import moment from "moment";
-import { useEffect, useState } from "react";
-import { fetchChapterViewData } from "../../services/apiServices";
+import { useEffect, useState, useMemo } from "react";
+import { fetchChapterViewData, getBookSignedUrlApi } from "../../services/apiServices";
+
+type AssignedLecture = {
+    assignedId: string;
+    id: number;
+    name: string;
+    type: 'video' | 'ebook';
+    duration?: number;
+    fileUrl?: string;
+    order?: number;
+};
 
 type Chapter = {
     id: number;
     name: string;
+    description?: string;
     status: boolean;
     created_at: string;
+    chapter_lectures: any[];
 };
 
 const ChapterView = ({ chapterData }: { chapterData: any }) => {
     const [chapter, setChapter] = useState<Chapter | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [previewItem, setPreviewItem] = useState<AssignedLecture | null>(null);
+    const [fetchingUrl, setFetchingUrl] = useState(false);
 
     const handleFetchChapter = async (id: number) => {
         setLoading(true);
         try {
             const res = await fetchChapterViewData(id);
-            if (res.success) {
-                setChapter(res.data);
-            }
+            const responseData = res.data || res;
+            setChapter(responseData);
         } catch (error) {
             console.error("Failed to fetch chapter data", error);
         } finally {
@@ -34,101 +58,244 @@ const ChapterView = ({ chapterData }: { chapterData: any }) => {
         }
     }, [chapterData]);
 
+    const mappedLectures = useMemo(() => {
+        if (!chapter) return [];
+        const raw = chapter.chapter_lectures || [];
+        return raw.map((item: any) => {
+            const isVideo = item.lecture_type === 1;
+            const asset = isVideo ? item.video : item.ebook;
+            return {
+                assignedId: `item-${item.id}`,
+                id: asset?.id || 0,
+                name: asset?.name || asset?.title || "Untitled Asset",
+                type: isVideo ? ('video' as const) : ('ebook' as const),
+                duration: isVideo ? (asset?.video_duration || asset?.duration) : undefined,
+                fileUrl: isVideo ? asset?.video_file : asset?.ebook_file,
+                order: item.order
+            };
+        }).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+    }, [chapter]);
+
+    const filteredLectures = useMemo(() => {
+        return mappedLectures.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }, [mappedLectures, searchTerm]);
+
+    const stats = useMemo(() => {
+        const videos = mappedLectures.filter(l => l.type === 'video');
+        const totalSeconds = videos.reduce((acc, v) => acc + (v.duration || 0), 0);
+        return {
+            total: mappedLectures.length,
+            videoCount: videos.length,
+            ebookCount: mappedLectures.length - videos.length,
+            totalTime: `${Math.floor(totalSeconds / 3600)}h ${Math.floor((totalSeconds % 3600) / 60)}m`
+        };
+    }, [mappedLectures]);
+
+    const handleSelectItem = async (item: AssignedLecture) => {
+        if (item.type === 'ebook') {
+            try {
+                setFetchingUrl(true);
+                setPreviewItem(item); // Show modal immediately with loading
+                const res = await getBookSignedUrlApi(item.id);
+                if (res.status && res.data) {
+                    setPreviewItem({ ...item, fileUrl: res.data });
+                }
+            } catch (error) {
+                console.error("Failed to get signed URL", error);
+            } finally {
+                setFetchingUrl(false);
+            }
+        } else {
+            setPreviewItem(item);
+        }
+    }
+
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 min-h-[300px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-                <p className="text-gray-500 font-medium animate-pulse text-sm">Loading details...</p>
+            <div className="flex flex-col items-center justify-center p-20 min-h-[500px]">
+                <div className="w-5 h-5 border-2 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
             </div>
         );
     }
 
-    if (!chapter) {
-        return (
-            <div className="flex flex-col items-center justify-center p-12 text-center text-red-500 min-h-[300px] bg-red-50 rounded-2xl border border-red-100">
-                <Info size={40} className="mb-3 opacity-30" />
-                <p className="font-bold text-lg">No Chapter Information Available</p>
-                <p className="text-sm opacity-70 mt-1">Please try again or contact support if the issue persists.</p>
-            </div>
-        );
-    }
+    if (!chapter) return null;
 
     return (
-        <div className="flex flex-col gap-5 p-1 max-h-[85vh] overflow-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {/* Main Information Card */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-gray-900/5">
-                <div className="flex items-start gap-4 mb-8">
-                    <div className="p-3 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-200">
-                        <FileText size={22} strokeWidth={2.2} />
-                    </div>
+        <div className="bg-white min-h-[600px] max-h-[85vh] flex overflow-hidden font-sans text-slate-900 border border-slate-100 rounded-3xl animate-in fade-in duration-500 relative">
 
-                    <div className="flex-1 pt-0.5">
-                        <div className="flex items-center gap-2 mb-1">
-                            <Hash size={12} className="text-indigo-400" />
-                            <span className="text-[10px] text-indigo-500 font-black uppercase tracking-widest">
-                                Chapter ID: {chapter.id}
-                            </span>
-                        </div>
-                        <h2 className="text-xl font-black text-gray-900 leading-tight tracking-tight">
-                            {chapter.name}
-                        </h2>
+            {/* Sidebar (Left) */}
+            <div className="w-[320px] border-r border-slate-100 p-8 flex flex-col bg-slate-50/30">
+                <div className="mb-10">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Asset ID: {chapter.id}</span>
+                    </div>
+                    <h1 className="text-xl font-semibold tracking-tight leading-tight mb-2">{chapter.name}</h1>
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase border ${chapter.status ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'
+                        }`}>
+                        <div className={`w-1 h-1 rounded-full ${chapter.status ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
+                        {chapter.status ? "Status: Live" : "Status: Draft"}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Status Box */}
-                    <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-2.5 group transition-all hover:bg-white hover:shadow-md">
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <Activity size={14} />
-                            <p className="text-[9px] font-black uppercase tracking-widest">Account Status</p>
+                <div className="space-y-6 mb-10">
+                    <div>
+                        <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Metrics Overview</span>
+                        <div className="space-y-3">
+                            {[
+                                { label: "Total Asset", val: stats.total, icon: LayoutList },
+                                { label: "Video Count", val: stats.videoCount, icon: Video },
+                                { label: "Ebook Count", val: stats.ebookCount, icon: Book },
+                                { label: "Est. Time", val: stats.totalTime, icon: Clock }
+                            ].map((s, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-2 text-slate-500">
+                                        <s.icon size={13} />
+                                        <span className="text-[10px] font-medium">{s.label}</span>
+                                    </div>
+                                    <span className="text-[11px] font-bold text-slate-900">{s.val}</span>
+                                </div>
+                            ))}
                         </div>
-                        
-                        {chapter.status ? (
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 border border-green-200">
-                                    <CheckCircle size={16} fill="currentColor" className="text-white" />
+                    </div>
+                </div>
+
+                <div className="mt-auto space-y-4">
+                    <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                        <span className="block text-[9px] text-slate-400 font-bold uppercase mb-2">Timeline Metadata</span>
+                        <div className="flex items-center gap-2 text-[11px] font-medium text-slate-700">
+                            <Calendar size={13} className="text-blue-500" />
+                            Registered {moment(chapter.created_at).format("MMM DD, YYYY")}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content (Right) */}
+            <div className="flex-1 flex flex-col">
+                {/* Search / Filter Bar */}
+                <div className="h-[72px] border-b border-slate-100 px-10 flex items-center justify-between bg-white sticky top-0 z-10">
+                    <div className="flex items-center gap-3 flex-1 max-w-md">
+                        <Search size={14} className="text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Filter curriculum by name..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="bg-transparent border-none outline-none text-[11px] placeholder:text-slate-300 w-full"
+                        />
+                    </div>
+                </div>
+
+                {/* List Area */}
+                <div className="flex-1 overflow-y-auto p-10 bg-white">
+                    <div className="flex items-center gap-3 mb-10">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Curriculum Structure</h2>
+                        <div className="h-[1px] flex-1 bg-slate-100"></div>
+                    </div>
+
+                    <div className="space-y-px bg-slate-100 rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                        {filteredLectures.length > 0 ? (
+                            filteredLectures.map((item, idx) => (
+                                <div
+                                    key={item.assignedId}
+                                    onClick={() => handleSelectItem(item)}
+                                    className="group flex items-center gap-6 py-4 px-6 bg-white hover:bg-slate-50/50 transition-all duration-300 cursor-pointer"
+                                >
+                                    <div className="w-8 text-[11px] font-mono text-slate-300 group-hover:text-slate-900">
+                                        {String(idx + 1).padStart(2, '0')}
+                                    </div>
+
+                                    <div className={`p-1.5 rounded-lg border ${item.type === 'video'
+                                        ? 'bg-blue-50 text-blue-500 border-blue-100'
+                                        : 'bg-emerald-50 text-emerald-500 border-emerald-100'
+                                        }`}>
+                                        {item.type === 'video' ? <Video size={14} /> : <Book size={14} />}
+                                    </div>
+
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-[13px] font-medium text-slate-700 group-hover:text-slate-900 transition-colors truncate">
+                                            {item.name}
+                                        </h4>
+                                    </div>
+
+                                    <div className="flex items-center gap-6">
+                                        {item.duration && (
+                                            <div className="flex items-center gap-1.5 text-[10px] text-slate-300 font-bold uppercase tracking-widest whitespace-nowrap">
+                                                <Clock size={11} />
+                                                {Math.floor(item.duration / 60)}m {item.duration % 60}s
+                                            </div>
+                                        )}
+                                        <div className="w-[1px] h-4 bg-slate-100"></div>
+                                        <div className="p-1 px-2 rounded-md bg-slate-50 text-[9px] font-bold text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all uppercase tracking-widest">
+                                            Preview
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-bold text-green-700">Currently Active</p>
-                                    <p className="text-[9px] text-green-600/70 font-medium">Visible to all users</p>
-                                </div>
-                            </div>
+                            ))
                         ) : (
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 border border-red-200">
-                                    <XCircle size={16} fill="currentColor" className="text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-red-700">Inactive</p>
-                                    <p className="text-[9px] text-red-600/70 font-medium">Hidden from platforms</p>
-                                </div>
+                            <div className="py-24 text-center bg-white flex flex-col items-center justify-center gap-3">
+                                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No matching curriculum items</span>
                             </div>
                         )}
                     </div>
-
-                    {/* Date Box */}
-                    <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-2.5 group transition-all hover:bg-white hover:shadow-md">
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <Calendar size={14} />
-                            <p className="text-[9px] font-black uppercase tracking-widest">Registration Date</p>
-                        </div>
-                        
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                                <Calendar size={15} strokeWidth={2.5} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-bold text-gray-800">
-                                    {moment(chapter.created_at).format("MMM DD, YYYY")}
-                                </p>
-                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
-                                    at {moment(chapter.created_at).format("hh:mm A")}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            {/* Preview Overlay */}
+            {previewItem && (
+                <div className="absolute inset-0 z-[100] bg-slate-900/90 backdrop-blur-md flex flex-col animate-in fade-in duration-300">
+                    <div className="h-16 flex items-center justify-between px-8 border-b border-white/10">
+                        <div className="flex items-center gap-4">
+                            <div className={`p-2 rounded-lg ${previewItem.type === 'video' ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'}`}>
+                                {previewItem.type === 'video' ? <Video size={16} /> : <Book size={16} />}
+                            </div>
+                            <div>
+                                <h3 className="text-white text-sm font-medium">{previewItem.name}</h3>
+                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Preview Mode • {previewItem.type}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => { setPreviewItem(null); setFetchingUrl(false); }}
+                            className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 flex items-center justify-center p-12 overflow-hidden">
+                        {fetchingUrl ? (
+                            <div className="flex flex-col items-center gap-4 text-white/60">
+                                <Loader2 size={32} className="animate-spin text-blue-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Generating Secure Access</span>
+                            </div>
+                        ) : previewItem.fileUrl ? (
+                            <div className="w-full h-full max-w-6xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                                {previewItem.type === 'video' ? (
+                                    <video
+                                        src={previewItem.fileUrl}
+                                        controls
+                                        autoPlay
+                                        className="w-full h-full object-contain"
+                                    />
+                                ) : (
+                                    <iframe
+                                        src={`${previewItem.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                                        className="w-full h-full border-none"
+                                        title={previewItem.name}
+                                    />
+                                )}
+                            </div>
+                        ) : (
+                            <div className="text-center text-white/40">
+                                <FileText size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="text-sm font-medium">Source file not found</p>
+                                <p className="text-[10px] uppercase font-bold tracking-widest mt-2">Check media library configuration</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

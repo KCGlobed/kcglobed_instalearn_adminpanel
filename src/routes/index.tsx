@@ -22,6 +22,9 @@ import ManageFaqTopics from "../pages/Faq/ManageFaqTopics";
 import ManageCourses from "../pages/course/ManageCourses";
 import ManageChapter from "../pages/course/ManageChapter";
 import ManageRole from "../pages/Roles";
+import AssignChpaterLectureForm from "../components/Forms/AssignChpaterLectureForm";
+import CourseForm from "../components/Forms/CourseForm";
+import CourseView from "../components/View/CourseView";
 
 export default function AppRoutes() {
   return (
@@ -43,24 +46,16 @@ export default function AppRoutes() {
           <Route path="/dashboard/mcq" element={<ManageMcq />} />
           <Route path="/dashboard/mcq/form" element={<McqForm />} />
           <Route path="/dashboard/mcq/form/:id" element={<McqForm />} />
-          {/* //-----------------------Abhishek Manage Instructor start ------------// */}
           <Route path="/dashboard/instructor" element={<ManageInstructor />} />
-          {/* //-----------------------Abhishek Manage Instructor end ------------// */}
-
-          {/* //-----------------------Abhishek Manage Faq Topics start ------------// */}
           <Route path="/dashboard/faq-topics" element={<ManageFaqTopics />} />
-          {/* //-----------------------Abhishek Manage Faq Topics end ------------// */}
-
-          {/* //-----------------------Abhishek Manage Faq start ------------// */}
           <Route path="/dashboard/faq" element={<ManageFaq />} />
-          {/* //-----------------------Abhishek Manage Faq end ------------// */}
-
-          {/* ------------------------------Abhishek Manage Courses----------------------  */}
           <Route path="/dashboard/courses" element={<ManageCourses />} />
-
-          {/* ------------------------------Abhishek Manage Chapter----------------------  */}
           <Route path="/dashboard/chapter" element={<ManageChapter />} />
           <Route path="/dashboard/roles" element={<ManageRole />} />
+          <Route path="/dashboard/chapter/assign-lecture/:id" element={<AssignChpaterLectureForm />} />
+          <Route path="/dashboard/courses/add" element={<CourseForm />} />
+          <Route path="/dashboard/courses/edit/:id" element={<CourseForm />} />
+          <Route path="/dashboard/course/view/:id" element={<CourseView />} />
 
         </Route>
       </Route>

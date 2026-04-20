@@ -140,7 +140,7 @@ export const createVideo = async (payload: any): Promise<any> => {
 };
 
 export const updateVideoApi = async (id: string | number, payload: any): Promise<any> => {
-  return await apiRequest(`course/edit-video/${id}`, 'POST', payload);
+  return await apiRequest(`course/update-video/${id}`, 'POST', payload);
 }
 
 export const deleteVideo = async (id: string | number): Promise<any> => {
@@ -316,8 +316,6 @@ export const updateFaqTopicStatusApi = async (id: string | number, payload: { st
 };
 
 
-
-
 // ----------------------------- Abhishek manage Faq --------------------------------------------//
 
 export const fetchFaqApi = async (page: number = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> => {
@@ -411,10 +409,7 @@ export const downloadChapterExcelApi = async ({ search = "", name = "", descript
   return await apiRequest(`course/export-chapter-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
-export const fetchChapterViewData=async(id:string|number):Promise<any>=>{
-   const res= await apiRequest(`course/view-chapter-detail/${id}`,'GET');
-   return res;
-}
+
 
 // ----------------role service start------- //
 export async function fetchRolesListingApi(page = 1, search: string = "", ordering: string = ""): Promise<any> {
@@ -431,3 +426,90 @@ export const fetchRolePermissionsApi = async (roleName: string): Promise<any> =>
 export const updateRolePermissionApi = async (payload: { role_name: string; code: string; status: boolean }): Promise<any> => {
     return await apiRequest<any>('user/update-roles-permissions/', 'POST', payload);
 };
+export const fetchChapterViewData = async (id: string | number): Promise<any> => {
+  const res = await apiRequest(`course/view-chapter-detail/${id}`, 'GET');
+  return res;
+}
+
+//----- video api start -------//
+export const downloadVideoPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-video-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadVideoExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-video-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+export const videoDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-video-detail/${id}`, 'GET');
+};
+
+
+//-----video api end -------------//
+
+
+// ---Assign chapter Himanshu Start ---//
+
+export const getEbookListApi = async () => {
+  const res: any = await apiRequest(`course/get-ebook-list/`, 'GET');
+  return res;
+}
+
+export const getVideoListApi = async () => {
+  const res: any = await apiRequest(`course/get-video-list/`, 'GET');
+  return res;
+}
+
+export const createAssignChapterLecture = async (payload: any): Promise<any> => {
+  return apiRequest(`course/assign-chapter-lecture/`, 'POST', payload)
+}
+
+export const getBookSignedUrlApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/get-book-signed-url/${id}`, 'GET');
+};
+
+// ---Assign chapter Himanshu End ---//
+
+
+// ---Course Himanshu Start ---//
+
+export const createCourseApi = async (payload: any): Promise<any> => {
+  return apiRequest(`course/create-course/`, 'POST', payload)
+}
+
+export const fetchSubCategoryOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-sub-category-listing/`, 'GET');
+  return res;
+}
+
+export const fetchTagOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-tags-list/`, 'GET');
+  return res;
+}
+
+export const courseDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
+
+export const updateCourseApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`course/edit-course/${id}`, 'POST', payload);
+};
+
+export const assignChapterApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/assign-chapter-course/${id}`, 'POST', payload);
+};
+
+
+
+
+export const fetchCourseDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/view-course-detail/${id}`, 'GET');
+};
+
+// ---Course Himanshu End ---//
+
+
+

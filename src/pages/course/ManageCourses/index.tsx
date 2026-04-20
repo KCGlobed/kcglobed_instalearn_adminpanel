@@ -5,7 +5,7 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { getCource, deleteCourse } from "../../../store/slices/courceSlice";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
-import { FiEdit, FiSettings, FiTrash } from "react-icons/fi";
+import { FiEdit, FiSettings, FiTrash, FiEye } from "react-icons/fi";
 import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
@@ -20,6 +20,7 @@ import TabsModal from "../../../components/Modal/TabsModal";
 import AssignChapterForm from "../../../components/Forms/AssignChapterForm";
 import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm";
 import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
+import { useNavigate } from "react-router-dom";
 
 interface ColumnDef {
     key: string,
@@ -40,6 +41,7 @@ const ManageCourses: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate();
 
     const [filters, setFilters] = useState({
         name: '',
@@ -154,8 +156,8 @@ const ManageCourses: React.FC = () => {
             title: 'Pricing',
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
-                    <span className="font-bold text-gray-800">${row.price}</span>
-                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: ${row.discount}</span>}
+                    <span className="font-bold text-gray-800">Rs {row.price}</span>
+                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: Rs {row.discount}</span>}
                 </div>
             ),
             sortable: true,
@@ -173,7 +175,7 @@ const ManageCourses: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '100px',
         },
 
         // {
@@ -252,16 +254,17 @@ const ManageCourses: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => navigate(`/dashboard/course/view/${row.id}`)}
+                    />
+                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
                         onClick={() =>
-                            showModal({
-                                title: 'Edit Course',
-                                content: <div className="p-8 text-center text-gray-500 font-medium">Edit form coming soon...</div>,
-                                type: 'success',
-                                size: 'xl',
-                            })
+                            navigate(`/dashboard/courses/edit/${row.id}`)
                         }
                     />
                     <GlassButton
@@ -293,7 +296,6 @@ const ManageCourses: React.FC = () => {
                                 content: (
                                     <TabsModal
                                         defaultActiveKey="chapter"
-                                        onTabChange={(key) => console.log('Active tab:', key)}
                                         tabs={[
                                             {
                                                 key: 'chapter',
@@ -394,12 +396,7 @@ const ManageCourses: React.FC = () => {
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
-                                showModal({
-                                    title: "Add Course",
-                                    content: <div className="p-8 text-center text-gray-500 font-medium">Add form coming soon...</div>,
-                                    type: 'custom',
-                                    size: 'lg',
-                                })
+                                navigate("/dashboard/courses/add")
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
