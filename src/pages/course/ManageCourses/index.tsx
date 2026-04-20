@@ -5,13 +5,13 @@ import { useAppSelector } from "../../../hooks/useRedux";
 import { getCource, deleteCourse } from "../../../store/slices/courceSlice";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
-import { FiEdit, FiSettings, FiTrash } from "react-icons/fi";
+import { FiEdit, FiSettings, FiTrash, FiEye } from "react-icons/fi";
 import moment from "moment";
 import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
 import { courseFilterConfig } from "../../../utils/filterConfiguration";
-import { Calendar, Filter, Plus, BookOpen, UserCheck, Video } from "lucide-react";
+import { Calendar, Filter, Plus, BookOpen, UserCheck, Video, Layers } from "lucide-react";
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
 import SortDropdown from "../../../components/common/SortDropdown";
@@ -21,6 +21,7 @@ import AssignChapterForm from "../../../components/Forms/AssignChapterForm";
 import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm";
 import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
 import { useNavigate } from "react-router-dom";
+import AssignRelatedCourseForm from "../../../components/Forms/AssignRelatedCourseForm";
 
 interface ColumnDef {
     key: string,
@@ -156,8 +157,8 @@ const ManageCourses: React.FC = () => {
             title: 'Pricing',
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
-                    <span className="font-bold text-gray-800">${row.price}</span>
-                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: ${row.discount}</span>}
+                    <span className="font-bold text-gray-800">Rs {row.price}</span>
+                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: Rs {row.discount}</span>}
                 </div>
             ),
             sortable: true,
@@ -175,7 +176,7 @@ const ManageCourses: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '100px',
         },
 
         // {
@@ -217,7 +218,7 @@ const ManageCourses: React.FC = () => {
                     {(!row.tags || row.tags.length === 0) && <span className="text-gray-400 text-xs">-</span>}
                 </div>
             ),
-            width: '240px',
+            width: '200px',
         },
         {
             key: 'created_at',
@@ -229,7 +230,7 @@ const ManageCourses: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '140px',
+            width: '100px',
         },
         {
             key: 'status',
@@ -253,6 +254,12 @@ const ManageCourses: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => navigate(`/dashboard/course/view/${row.id}`)}
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"
@@ -290,7 +297,6 @@ const ManageCourses: React.FC = () => {
                                 content: (
                                     <TabsModal
                                         defaultActiveKey="chapter"
-                                        onTabChange={(key) => console.log('Active tab:', key)}
                                         tabs={[
                                             {
                                                 key: 'chapter',
@@ -309,6 +315,12 @@ const ManageCourses: React.FC = () => {
                                                 label: 'Sample Video',
                                                 icon: <Video size={15} />,
                                                 component: <AssignSampleVideoForm courseId={row.id} />,
+                                            },
+                                            {
+                                                key: 'related_course',
+                                                label: 'Related Course',
+                                                icon: <Layers size={15} />,
+                                                component: <AssignRelatedCourseForm courseId={row.id} />,
                                             },
                                         ]}
                                     />

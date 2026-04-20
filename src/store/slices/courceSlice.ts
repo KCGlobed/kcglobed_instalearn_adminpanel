@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Courses, Pagination } from "../../utils/types";
-import { fetchCourseApi, deleteCourseApi } from "../../services/apiServices";
+import { fetchCourseApi, deleteCourseApi, fetchCourseDetailApi } from "../../services/apiServices";
 
 interface CourseState extends Pagination<Courses> { }
 
@@ -22,7 +22,7 @@ const initialState: CourseState = {
 
 }
 
-export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; chapter?: string,description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string,  }>(
+export const getCource = createAsyncThunk<Pagination<Courses>, { page?: number; search?: string; name?: string; chapter?: string, description?: string; ordering?: string; status?: string; startDate?: string; endDate?: string, }>(
     "course/getCource",
     async ({
         page = 1, search = "", name = "", description = "", ordering = "", status = "", startDate = "", endDate = "", chapter = "" }, { rejectWithValue }
@@ -44,6 +44,19 @@ export const deleteCourse = createAsyncThunk<number | string, number | string, {
             return id;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to delete course");
+        }
+    }
+);
+
+
+
+export const getCourseDetail = createAsyncThunk<any, string | number, { rejectValue: string }>(
+    "course/getCourseDetail",
+    async (id, { rejectWithValue }) => {
+        try {
+            return await fetchCourseDetailApi(id);
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to fetch course detail");
         }
     }
 );

@@ -2,17 +2,15 @@ import { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { FiPlus, FiTrash2, FiChevronLeft, FiImage, FiUpload, FiAlertCircle, FiEye } from "react-icons/fi";
-import { useNavigate, useParams } from "react-router-dom";
+import { FiPlus, FiTrash2, FiChevronLeft, FiImage, FiUpload, FiAlertCircle } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import LexicalEditor from "../TextEditor";
+import LexicalEditor from "../../components/TextEditor";
 import {
-    courseDetailApi,
     createCourseApi,
     fetchSubCategoryOptionsApi,
-    fetchTagOptionsApi,
-    updateCourseApi
+    fetchTagOptionsApi
 } from "../../services/apiServices";
 
 // ─── Constants & Types ────────────────────────────────────────────────────────
@@ -85,14 +83,12 @@ const validationSchema = Yup.object().shape({
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const CourseForm = () => {
+const CreateCourseForm = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState<any[]>([]);
     const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-    const { id } = useParams();
 
     const {
         register,
@@ -144,12 +140,9 @@ const CourseForm = () => {
         }
     };
 
-    const watchedValues = watch();
-
     const onSubmit = async (data: CourseFormValues) => {
         console.log(data.category_id);
         let category: any[] = data.category_id.map((item: any) => item.value);
-        let tag: any[] = data.tags.map((item: any) => item.value);
         try {
             setLoading(true);
             const formData = new FormData();
@@ -165,21 +158,16 @@ const CourseForm = () => {
             // Transform lists into JSON strings to maintain structure in FormData
             formData.append("feature_json", JSON.stringify(data.feature_json.map(f => f.value)));
             formData.append("objectives_summary", JSON.stringify(data.objectives_summary.map(o => o.value)));
-            formData.append("tags", tag.join(","));
+            formData.append("tags", JSON.stringify(data.tags.map(t => t.value)));
             formData.append("category_id", category.join(","));
 
-            if (data.image instanceof File) {
+            if (data.image) {
                 formData.append("image", data.image);
             }
 
-            if (id) {
-                await updateCourseApi(id, formData);
-                toast.success("Course Updated Successfully");
-            } else {
-                await createCourseApi(formData);
-                toast.success("Course Created Successfully");
-            }
-            navigate("/dashboard/courses");
+            await createCourseApi(formData);
+            toast.success("Course Created Successfully");
+            navigate("/dashboard/course");
         } catch (err) {
             console.error("Submission error", err);
             toast.error("Submission failed");
@@ -194,41 +182,6 @@ const CourseForm = () => {
         return <p className="mt-1 text-xs font-semibold text-red-500 flex items-center gap-1"><FiAlertCircle /> {err.message}</p>;
     };
 
-    const fetchCourseDetail = async (id: string | number) => {
-        try {
-            setLoading(true);
-            const res = await courseDetailApi(id);
-            setValue("name", res.data.name);
-            setValue("short_description", res.data.short_description);
-            setValue("description", res.data.description);
-            setValue("duration", res.data.duration);
-            setValue("requirements", res.data.requirements);
-            setValue("price", res.data.price);
-            setValue("discount", res.data.discount);
-            setValue("level", res.data.level);
-            setValue("tags", res.data.tags.map((item: any) => ({ value: item.tags.id, label: item.tags.name })));
-            setValue("category_id", res.data.categories.map((item: any) => ({ value: item.category_info?.id, label: item.category_info?.name })));
-            setValue("feature_json", res.data.feature_json.map((item: any) => ({ value: item })));
-            setValue("objectives_summary", res.data.objectives_summary.map((item: any) => ({ value: item })));
-            if (res.data.image) {
-                setImagePreview(res.data.image);
-                setValue("image", res.data.image);
-            }
-        } catch (err) {
-            console.error("Failed to fetch course detail", err);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-
-    useEffect(() => {
-        if (id) {
-            fetchCourseDetail(id);
-        }
-    }, [id]);
-
-
     return (
         <div className="w-full py-10 px-10 bg-white border border-slate-100 rounded-2xl shadow-sm my-6">
             {/* Header */}
@@ -237,20 +190,11 @@ const CourseForm = () => {
                     <button onClick={() => navigate("/dashboard/course")} className="flex items-center text-xs font-bold text-slate-400 hover:text-indigo-600 transition-all mb-2 uppercase">
                         <FiChevronLeft className="mr-1" /> Back to Dashboard
                     </button>
-                    <h1 className="text-xl font-bold text-slate-900 uppercase">{id ? "Edit Course" : "Add New Course"}</h1>
+                    <h1 className="text-xl font-bold text-slate-900 uppercase">Add New Course</h1>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        type="button"
-                        onClick={() => setIsPreviewOpen(true)}
-                        className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2"
-                    >
-                        <FiEye /> Preview
-                    </button>
-                    <button onClick={handleSubmit(onSubmit)} disabled={loading} className="px-10 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50">
-                        {loading ? "Saving..." : "Save Course"}
-                    </button>
-                </div>
+                <button onClick={handleSubmit(onSubmit)} disabled={loading} className="px-10 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50">
+                    {loading ? "Saving..." : "Save Course"}
+                </button>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
@@ -491,170 +435,9 @@ const CourseForm = () => {
                         {loading ? "Saving..." : "Save Course"}
                     </button>
                 </div>
-
-                {/* Course Preview Modal */}
-                {isPreviewOpen && (
-                    <CoursePreviewModal
-                        data={watchedValues}
-                        imagePreview={imagePreview}
-                        onClose={() => setIsPreviewOpen(false)}
-                    />
-                )}
             </form>
         </div>
     );
 };
 
-// ─── Preview Modal Component ──────────────────────────────────────────────────
-
-const CoursePreviewModal = ({ data, imagePreview, onClose }: { data: any, imagePreview: string | null, onClose: () => void }) => {
-    return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 lg:p-10">
-            <div className="bg-white w-full max-w-5xl max-h-full overflow-hidden rounded-3xl shadow-2xl flex flex-col animate-in fade-in zoom-in duration-300 border border-white/20">
-                {/* Modal Header */}
-                <div className="px-8 py-5 border-b flex items-center justify-between bg-slate-50">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
-                            <FiEye size={20} />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-bold text-slate-900 leading-none">Course Preview</h2>
-                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Live Representation</p>
-                        </div>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-all text-slate-400 hover:text-slate-900">
-                        <FiPlus className="rotate-45" size={24} />
-                    </button>
-                </div>
-
-                {/* Modal Body */}
-                <div className="flex-1 overflow-y-auto p-8 lg:p-12 space-y-12">
-                    {/* Hero Section Preview */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                        <div className="lg:col-span-12 space-y-6">
-                            <div className="flex flex-wrap gap-2">
-                                {data.category_id?.map((cat: any) => (
-                                    <span key={cat.value} className="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-extrabold rounded-full uppercase tracking-tight">{cat.label}</span>
-                                ))}
-                                <span className="px-4 py-1.5 bg-orange-50 text-orange-600 text-[10px] font-extrabold rounded-full uppercase tracking-tight">
-                                    {LEVEL_OPTIONS.find((l: any) => l.value === data.level)?.label || 'All Levels'}
-                                </span>
-                            </div>
-                            <h1 className="text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight">{data.name || 'Untitled Course'}</h1>
-                            <div className="flex flex-wrap items-center gap-8 text-slate-500 text-sm font-bold uppercase tracking-wide">
-                                <span className="flex items-center gap-2.5"><FiUpload className="text-indigo-500" size={18} /> {data.duration || 'Not specified'}</span>
-                                <span className="flex items-center gap-2.5 font-black text-slate-900">INR {data.price || '0.00'}</span>
-                                {Number(data.discount) > 0 && (
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg">-{data.discount}% OFF</span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Image & Key Info */}
-                        <div className="lg:col-span-8">
-                            <div className="aspect-video w-full rounded-3xl overflow-hidden bg-slate-100 border border-slate-200 shadow-xl relative group">
-                                {imagePreview ? (
-                                    <img src={imagePreview} alt="Course" className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                                        <FiImage size={64} className="mb-4 animate-pulse" />
-                                        <span className="font-black uppercase tracking-widest text-xs">Awaiting Thumbnail</span>
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                            </div>
-                        </div>
-
-                        <div className="lg:col-span-4 space-y-6">
-                            <div className="p-8 bg-slate-900 text-white rounded-3xl shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-10">
-                                    <FiAlertCircle size={80} />
-                                </div>
-                                <h3 className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-6">Course Highlights</h3>
-                                <ul className="space-y-4">
-                                    {data.feature_json?.filter((f: any) => f.value).map((feature: any, i: number) => (
-                                        <li key={i} className="flex items-start gap-3 text-sm font-medium text-slate-300 group">
-                                            <div className="mt-1.5 flex-shrink-0 w-2 h-2 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform"></div>
-                                            {feature.value}
-                                        </li>
-                                    ))}
-                                    {(!data.feature_json || data.feature_json.filter((f: any) => f.value).length === 0) && (
-                                        <li className="text-slate-500 italic text-xs">No highlights added yet</li>
-                                    )}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Content Sections */}
-                    <div className="space-y-16">
-                        <section className="bg-slate-50 p-8 lg:p-10 rounded-[40px] border border-slate-100">
-                            <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-                                <span className="w-8 h-1 bg-indigo-600 rounded-full"></span>
-                                Short Description
-                            </h3>
-                            <div className="prose prose-indigo max-w-none text-slate-600 font-medium leading-relaxed lexical-preview"
-                                dangerouslySetInnerHTML={{ __html: data.short_description }} />
-                        </section>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                            <section>
-                                <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3 uppercase tracking-tight text-sm">
-                                    <FiPlus className="text-indigo-600" />
-                                    Learning Objectives
-                                </h3>
-                                <div className="space-y-4">
-                                    {data.objectives_summary?.filter((o: any) => o.value).map((obj: any, i: number) => (
-                                        <div key={i} className="flex items-start gap-4 p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                            <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <FiPlus className="text-green-600" size={14} />
-                                            </div>
-                                            <span className="text-sm font-semibold text-slate-700">{obj.value}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                            <section>
-                                <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3 uppercase tracking-tight text-sm">
-                                    <FiAlertCircle className="text-indigo-600" />
-                                    Requirements
-                                </h3>
-                                <div className="prose prose-indigo max-w-none text-slate-600 font-medium leading-relaxed bg-slate-50 p-6 rounded-2xl border-l-4 border-indigo-500"
-                                    dangerouslySetInnerHTML={{ __html: data.requirements }} />
-                            </section>
-                        </div>
-
-                        <section>
-                            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-4">
-                                Full Course Description
-                            </h3>
-                            <div className="prose prose-lg prose-indigo max-w-none text-slate-600 font-medium leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: data.description }} />
-                        </section>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="pt-10 border-t flex flex-wrap items-center gap-4">
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Industry Tags:</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {data.tags?.map((tag: any) => (
-                                <span key={tag.value} className="px-4 py-1.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded-xl border border-slate-200">{tag.label}</span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Modal Footer */}
-                <div className="px-12 py-6 bg-slate-50 border-t flex justify-end items-center gap-6">
-                    <p className="text-xs font-bold text-slate-400 uppercase">This is a layout preview and may differ slightly on frontend.</p>
-                    <button onClick={onClose} className="px-10 py-3.5 bg-slate-900 text-white rounded-2xl text-sm font-black shadow-xl hover:bg-slate-800 transition-all transform hover:-translate-y-0.5">
-                        Got it, Back to Edit
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default CourseForm;
+export default CreateCourseForm;
