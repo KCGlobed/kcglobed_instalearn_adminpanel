@@ -515,9 +515,20 @@ export const assignInstructorApi = async (payload: any): Promise<any> => {
   return await apiRequest(`course/add-course-instructor/`, 'POST', payload);
 };
 
+// ---Course  End ---//
 
+// ---Payment Settings Start ---//
 
-// ---Course Himanshu End ---//
+export const fetchPaymentSettingsApi = async () => {
+  const res: any = await apiRequest(`cms/get-setting/`, 'GET');
+  return res;
+}
+
+export const updatePaymentSettingsApi = async (payload: any): Promise<any> => {
+  return apiRequest(`cms/update-setting/`, 'POST', payload)
+}
+
+// ---Payment Settings End ---//
 
 
 
