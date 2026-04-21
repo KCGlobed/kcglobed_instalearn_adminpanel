@@ -159,7 +159,7 @@ const AssignSampleVideoForm: React.FC<AssignSampleVideoFormProps> = ({ courseId 
     return (
         <div className="flex flex-col gap-6 max-h-[85vh] overflow-y-auto px-1">
             {/* ─── Header Section ─── */}
-            <div className="flex items-center justify-between p-5 rounded-2xl bg-indigo-50 border border-indigo-100 shadow-sm transition-all duration-300">
+            <div className="flex items-center justify-between p-2 rounded-2xl bg-indigo-50 border border-indigo-100 shadow-sm transition-all duration-300">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-white rounded-xl text-indigo-600 shadow-sm border border-indigo-100">
                         <Video size={20} className="animate-pulse" />
