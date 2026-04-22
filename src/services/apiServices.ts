@@ -498,7 +498,37 @@ export const fetchRelatedCourseOptionsApi = async () => {
   return res;
 }
 
-// ---Course Himanshu End ---//
+export const assignSampleVideoApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/upload-course-sample-video/`, 'POST', payload);
+};
+
+export const deleteSampleVideoApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-courses-sample-video/${id}`, 'DELETE');
+};
+
+export const fetchInstructorOptionsApi = async () => {
+  const res: any = await apiRequest(`course/get-instructor-list/`, 'GET');
+  return res;
+}
+
+export const assignInstructorApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/add-course-instructor/`, 'POST', payload);
+};
+
+// ---Course  End ---//
+
+// ---Payment Settings Start ---//
+
+export const fetchPaymentSettingsApi = async () => {
+  const res: any = await apiRequest(`cms/get-setting/`, 'GET');
+  return res;
+}
+
+export const updatePaymentSettingsApi = async (payload: any): Promise<any> => {
+  return apiRequest(`cms/update-setting/`, 'POST', payload)
+}
+
+// ---Payment Settings End ---//
 
 
 

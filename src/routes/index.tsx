@@ -24,6 +24,7 @@ import ManageChapter from "../pages/course/ManageChapter";
 import AssignChpaterLectureForm from "../components/Forms/AssignChpaterLectureForm";
 import CourseForm from "../components/Forms/CourseForm";
 import CourseView from "../components/View/CourseView";
+import PaymentSettings from "../pages/Settings/PaymentSettings";
 
 export default function AppRoutes() {
   return (
@@ -54,6 +55,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/courses/add" element={<CourseForm />} />
           <Route path="/dashboard/courses/edit/:id" element={<CourseForm />} />
           <Route path="/dashboard/course/view/:id" element={<CourseView />} />
+          <Route path="/dashboard/payment-settings" element={<PaymentSettings />} />
 
         </Route>
       </Route>
