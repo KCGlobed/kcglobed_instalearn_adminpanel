@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { useAppSelector } from "../../../hooks/useRedux";
-import { getCource, deleteCourse } from "../../../store/slices/courceSlice";
+import { getCource, deleteCourse, updateCourseStatus } from "../../../store/slices/courceSlice";
+import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
 import { FiEdit, FiSettings, FiTrash, FiEye } from "react-icons/fi";
@@ -158,7 +159,7 @@ const ManageCourses: React.FC = () => {
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
                     <span className="font-bold text-gray-800">Rs {row.price}</span>
-                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: Rs {row.discount}</span>}
+                    {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: {row.discount}%</span>}
                 </div>
             ),
             sortable: true,
@@ -237,8 +238,13 @@ const ManageCourses: React.FC = () => {
             title: 'Status',
             render: (value: boolean, row: any) => (
                 <button
-                    onClick={() => {
-
+                    onClick={async () => {
+                        try {
+                            await dispatch(updateCourseStatus({ id: row.id, status: !value })).unwrap();
+                            toast.success(`Course ${!value ? 'activated' : 'deactivated'} successfully`);
+                        } catch (error: any) {
+                            toast.error(error || "Failed to update course status");
+                        }
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
