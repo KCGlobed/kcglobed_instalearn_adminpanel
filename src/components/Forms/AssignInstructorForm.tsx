@@ -15,10 +15,15 @@ interface AssignInstructorFormProps {
 }
 
 const schema = yup.object().shape({
-    instructor: yup.object().shape({
-        label: yup.string().required(),
-        value: yup.mixed().required(),
-    }).nullable().required('Please select an instructor'),
+    instructor: yup.array()
+        .of(
+            yup.object().shape({
+                label: yup.string().required(),
+                value: yup.mixed().required(),
+            })
+        )
+        .min(1, "Please select at least one instructor")
+        .required("Please select at least one instructor"),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -37,7 +42,7 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
     } = useForm<FormData>({
         resolver: yupResolver(schema),
         defaultValues: {
-            instructor: undefined,
+            instructor: [],
         },
     });
 
@@ -72,7 +77,7 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
             setSaving(true);
             const res = await assignInstructorApi({
                 course_id: courseId,
-                instructor_id: data.instructor?.value
+                instructor_id: data.instructor.map((item: any) => item.value).join(",")
             });
             if (res?.status) {
                 toast.success(res?.message || 'Instructor assigned successfully');
@@ -93,7 +98,7 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
             if (res.data.instructors && res.data.instructors.length > 0) {
                 const instructor = res.data.instructors[0].instructor_info;
                 if (instructor) {
-                    setValue('instructor', {
+                    setValue('instructor', [{
                         label: instructor.text_1,
                         value: instructor.id,
                         meta: {
@@ -102,7 +107,7 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
                             experience: instructor.experience,
                             avatar: instructor.image
                         }
-                    } as any);
+                    }] as any);
                 }
             }
         } catch {
@@ -139,17 +144,20 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
                         <Loader2 size={16} className="animate-spin" /> Loading instructors...
                     </div>
                 ) : (
-                    <>
-                        <Controller
-                            name="instructor"
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    options={options}
-                                    placeholder="Search and select instructor..."
-                                    classNamePrefix="react-select"
-                                    formatOptionLabel={(option: any) => (
+                    <Controller
+                        name="instructor"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                {...field}
+                                isMulti
+                                options={options}
+                                placeholder="Search and select instructor..."
+                                classNamePrefix="react-select"
+                                closeMenuOnSelect={false}
+                                isDisabled={saving}
+                                formatOptionLabel={(option: any, { context }: any) => (
+                                    context === 'menu' ? (
                                         <div className="flex items-center gap-3">
                                             <div className="w-9 h-9 rounded-full bg-slate-100 flex-shrink-0 overflow-hidden border border-slate-100">
                                                 {option.meta?.avatar ? (
@@ -174,44 +182,91 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
-                                    styles={{
-                                        control: (base) => ({
-                                            ...base,
-                                            borderRadius: '16px',
-                                            borderColor: errors.instructor ? '#ef4444' : '#e2e8f0',
-                                            boxShadow: 'none',
-                                            padding: '4px',
-                                            fontSize: '14px',
-                                            transition: 'all 0.3s ease',
-                                            '&:hover': { borderColor: errors.instructor ? '#ef4444' : '#10b981', boxShadow: '0 4px 12px -2px rgba(16, 185, 129, 0.1)' },
-                                        }),
-                                        option: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: state.isSelected ? '#10b981' : state.isFocused ? '#f8fafc' : 'white',
-                                            color: state.isSelected ? 'white' : '#111827',
-                                            transition: 'all 0.2s',
-                                            padding: '10px 12px',
-                                            cursor: 'pointer',
-                                        }),
-                                        menu: (base) => ({
-                                            ...base,
-                                            borderRadius: '20px',
-                                            overflow: 'hidden',
-                                            marginTop: '8px',
-                                            border: '1px solid #f1f5f9',
-                                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                                        }),
-                                    }}
-                                />
-                            )}
-                        />
-                        {errors.instructor && (
-                            <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
-                                <AlertCircle size={12} /> {errors.instructor.message}
-                            </p>
+                                    ) : (
+                                        option.label
+                                    )
+                                )}
+                                styles={{
+                                    control: (base, state) => ({
+                                        ...base,
+                                        borderRadius: '12px',
+                                        borderColor: errors.instructor
+                                            ? '#ef4444'
+                                            : state.isFocused
+                                                ? '#10b981'
+                                                : '#e5e7eb',
+                                        boxShadow: errors.instructor
+                                            ? '0 0 0 3px rgba(239,68,68,0.15)'
+                                            : state.isFocused
+                                                ? '0 0 0 3px rgba(16,185,129,0.15)'
+                                                : 'none',
+                                        fontSize: '14px',
+                                        transition: 'border-color 0.2s, box-shadow 0.2s',
+                                        '&:hover': {
+                                            borderColor: errors.instructor ? '#ef4444' : '#10b981',
+                                        },
+                                    }),
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#ecfdf5',
+                                        borderRadius: '8px',
+                                    }),
+                                    multiValueLabel: (base) => ({
+                                        ...base,
+                                        color: '#059669',
+                                        fontWeight: 600,
+                                        fontSize: '12px',
+                                    }),
+                                    multiValueRemove: (base) => ({
+                                        ...base,
+                                        color: '#10b981',
+                                        borderRadius: '0 8px 8px 0',
+                                        '&:hover': {
+                                            backgroundColor: '#a7f3d0',
+                                            color: '#047857',
+                                        },
+                                    }),
+                                    placeholder: (base) => ({
+                                        ...base,
+                                        color: '#9ca3af',
+                                        fontSize: '14px',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        borderRadius: '12px',
+                                        boxShadow:
+                                            '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+                                        border: '1px solid #e5e7eb',
+                                        overflow: 'hidden',
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isSelected
+                                            ? '#ecfdf5'
+                                            : state.isFocused
+                                                ? '#f0fdf4'
+                                                : 'white',
+                                        color: state.isSelected ? '#047857' : '#111827',
+                                        fontWeight: state.isSelected ? 600 : 400,
+                                        fontSize: '14px',
+                                    }),
+                                }}
+                            />
                         )}
-                    </>
+                    />
+                )}
+
+                {errors.instructor && (
+                    <p className="flex items-center gap-1.5 mt-2 text-xs font-medium text-red-500">
+                        <AlertCircle size={13} />
+                        {errors.instructor.message}
+                    </p>
+                )}
+
+                {!errors.instructor && !loading && (
+                    <p className="mt-1.5 text-[11px] text-gray-400">
+                        You can select multiple instructors. They will be linked to this course immediately.
+                    </p>
                 )}
             </div>
 
@@ -220,15 +275,17 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
                 <button
                     type="button"
                     onClick={hideModal}
-                    className="px-5 py-2 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all"
+                    disabled={saving}
+                    className="px-5 py-2 rounded-xl text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-50"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={saving || loading}
-                    className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+                    className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm flex items-center gap-2"
                 >
+                    {saving && <Loader2 size={14} className="animate-spin" />}
                     {saving ? 'Saving...' : 'Assign Instructor'}
                 </button>
             </div>
