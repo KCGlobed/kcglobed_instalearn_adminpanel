@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Courses, Pagination } from "../../utils/types";
-import { fetchCourseApi, deleteCourseApi, fetchCourseDetailApi } from "../../services/apiServices";
+import { fetchCourseApi, deleteCourseApi, fetchCourseDetailApi, updateCourseStatusApi } from "../../services/apiServices";
 
 interface CourseState extends Pagination<Courses> { }
 
@@ -61,6 +61,18 @@ export const getCourseDetail = createAsyncThunk<any, string | number, { rejectVa
     }
 );
 
+export const updateCourseStatus = createAsyncThunk<any, { id: string | number, status: boolean }, { rejectValue: string }>(
+    "course/updateCourseStatus",
+    async ({ id, status }, { rejectWithValue }) => {
+        try {
+            const response = await updateCourseStatusApi(id, { status });
+            return { id, status, response };
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to update course status");
+        }
+    }
+);
+
 
 const courseSlice = createSlice({
     name: "Course",
@@ -93,6 +105,11 @@ const courseSlice = createSlice({
             })
             .addCase(deleteCourse.fulfilled, (state, action) => {
                 state.data = state.data.filter((item) => item.id !== action.payload);
+            })
+            .addCase(updateCourseStatus.fulfilled, (state, action) => {
+                state.data = state.data.map((item) =>
+                    item.id === action.payload.id ? { ...item, status: action.payload.status } : item
+                );
             });
     }
 })

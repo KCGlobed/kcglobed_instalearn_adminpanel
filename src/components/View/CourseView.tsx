@@ -169,11 +169,11 @@ const CourseView = ({ courseId }: { courseId?: number | string }) => {
                                 <span className="text-white/90 text-xs font-semibold flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
                                     <Clock size={14} className="text-indigo-300" /> {course.duration}
                                 </span>
-                                {course.categories?.[0] && (
-                                    <span className="text-white/90 text-xs font-semibold flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                                        <Layout size={14} className="text-purple-300" /> {course.categories[0].category_info.name}
+                                {course.categories && course.categories.length > 0 && course.categories.map((cat, idx) => (
+                                    <span key={idx} className="text-white/90 text-xs font-semibold flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                                        <Layout size={14} className="text-purple-300" /> {cat.category_info.name}
                                     </span>
-                                )}
+                                ))}
                             </div>
                         </div>
                     </div>

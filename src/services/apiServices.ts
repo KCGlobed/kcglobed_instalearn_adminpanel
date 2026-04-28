@@ -363,6 +363,10 @@ export const deleteCourseApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`course/delete-course/${id}`, 'DELETE');
 };
 
+export const updateCourseStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-course-status/${id}`, 'POST', payload);
+};
+
 export const fetchChapterOptionsApi = async () => {
   const res: any = await apiRequest(`course/get-chapters-list/`, 'GET');
   return res;
