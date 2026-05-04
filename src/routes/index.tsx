@@ -56,7 +56,6 @@ export default function AppRoutes() {
           <Route path="/dashboard/courses/edit/:id" element={<CourseForm />} />
           <Route path="/dashboard/course/view/:id" element={<CourseView />} />
           <Route path="/dashboard/payment-settings" element={<PaymentSettings />} />
-
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
