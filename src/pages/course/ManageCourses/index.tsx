@@ -12,7 +12,7 @@ import DynamicServerTable from "../../../components/Table/Table";
 import InlineDateFilter from "../../../components/common/InlineDateFilter";
 import DynamicFilter from "../../../components/common/DynamicFilter";
 import { courseFilterConfig } from "../../../utils/filterConfiguration";
-import { Calendar, Filter, Plus, BookOpen, UserCheck, Video, Layers } from "lucide-react";
+import { Calendar, Filter, Plus, BookOpen, UserCheck, Video, Layers, List } from "lucide-react";
 import SearchInput from "../../../components/common/SearchInput";
 import ExportFile from "../../../components/Forms/ExportFile";
 import SortDropdown from "../../../components/common/SortDropdown";
@@ -23,6 +23,7 @@ import AssignInstructorForm from "../../../components/Forms/AssignInstructorForm
 import AssignSampleVideoForm from "../../../components/Forms/AssignSampleVideoForm";
 import { useNavigate } from "react-router-dom";
 import AssignRelatedCourseForm from "../../../components/Forms/AssignRelatedCourseForm";
+import AssignCourseIncluded from "../../../components/Forms/AssignCourseIncluded";
 
 interface ColumnDef {
     key: string,
@@ -327,6 +328,12 @@ const ManageCourses: React.FC = () => {
                                                 label: 'Related Course',
                                                 icon: <Layers size={15} />,
                                                 component: <AssignRelatedCourseForm courseId={row.id} />,
+                                            },
+                                            {
+                                                key: 'course_included',
+                                                label: 'Course Included',
+                                                icon: <List size={15} />,
+                                                component: <AssignCourseIncluded courseId={row.id} />,
                                             },
                                         ]}
                                     />

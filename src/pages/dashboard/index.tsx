@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Ebooks', path: '/dashboard/ebooks' },
         { name: 'Manage Tags', path: '/dashboard/tags' },
         { name: 'Manage Courses', path: '/dashboard/courses' },
-        { name: "Manage Chapter", path: "/dashboard/chapter" }
+        { name: "Manage Chapter", path: "/dashboard/chapter" },
       ]
     },
     { name: 'Manage MCQ', icon: <FaClipboardList className="mr-2" />, path: '/dashboard/mcq' },

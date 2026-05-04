@@ -252,7 +252,7 @@ const ManageCategories: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6  animate-in fade-in duration-500">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
@@ -355,7 +355,7 @@ const ManageCategories: React.FC = () => {
             </div>
 
             {/* Main Table Content */}
-            <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
+            <div className="bg-white  rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
                 <DynamicServerTable
                     data={data}
                     columns={columns as any}

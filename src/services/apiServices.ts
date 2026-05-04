@@ -534,5 +534,26 @@ export const updatePaymentSettingsApi = async (payload: any): Promise<any> => {
 
 // ---Payment Settings End ---//
 
+// ----course included start----//
+
+export const assignCourseIncludedApi = async (payload: any): Promise<any> => {
+  return apiRequest(`course/upload-course-includes/`, 'POST', payload);
+};
+
+export const deleteCourseIncludedApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-courses-includes/${id}`, 'DELETE');
+};
+
+export const fetchCourseIncludedApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/get-courses-includes-listing/${id}`, 'GET');
+};
+
+// ----course included end----//
+
+
+
+
+
+
 
 
