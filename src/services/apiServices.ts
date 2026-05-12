@@ -556,4 +556,53 @@ export const fetchCourseIncludedApi = async (id: string | number): Promise<any> 
 
 
 
+//----------------Abhishek Manage Student Start----------//
+
+export const fetchStudents = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", description: string = "", ordering: string = "", is_active: string = "", start_date: string = "", end_date: string = "", email: string = ""): Promise<any> => {
+  const statusVal = is_active === 'active' ? '1' : is_active === 'deactive' ? '0' : '';
+  let query = `user/get-student-listing?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&is_active=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const viewStudentDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`user/view-student-detail/${id}`, 'GET');
+};
+
+export const createStudentApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-student/`, 'POST', payload);
+};
+
+export const updateStudentApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-student/${id}`, 'POST', payload);
+};
+
+
+export const updateStudentStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-student-status/${id}`, 'POST', payload);
+};
+
+export const downloadStudentPdfApi = async ({ search = "", first_name = "", last_name = "", is_active = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = is_active === 'active' ? '1' : is_active === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-student-registration-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentExcelApi = async ({ search = "", first_name = "", last_name = "", is_active = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = is_active === 'active' ? '1' : is_active === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-student-registration-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+export const changeStudentPasswordApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/admin-update-password/`, 'POST', payload);
+}
+
+
+
+//----------------Abhishek Manage Student End----------//
+
+
+
 

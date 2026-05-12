@@ -562,7 +562,6 @@ export interface ManagerUser {
 
 
 
-//--------Abhishek Manage Instructor start------------//
 
 export interface Instructor {
   id: number,
@@ -583,10 +582,8 @@ export interface Instructor {
 }
 
 
-//--------Abhishek Manage Instructor end------------//
 
 
-//--------Abhishek Manage Faq Topics start------------//
 export interface FaqTopics {
   id: number;
   title: string;
@@ -607,7 +604,6 @@ export interface Faq extends FaqTopics {
 //--------------Faq End------------//
 
 
-//---------------Abhishek Manage Courses start------------//
 
 
 type CategoryInfo = {
@@ -655,17 +651,6 @@ export interface Courses {
   actions?: any,
 }
 
-
-//--------------------------Abhishek Manage Courses end------------//
-
-
-
-
-
-// ----------------------------Abhishek Manage Chapter start-------------//
-
-
-
 export interface Chapter {
   id: number,
   name: string,
@@ -676,5 +661,59 @@ export interface Chapter {
 }
 
 
-//---------------------Abhishek Manage Chapter end------------//
+// -----------------Abhishek  Manage students -----------
+
+export interface Students{
+  id:number;
+  first_name:string;
+  last_name:string;
+  email:string;
+  phone1:string;
+  is_active:boolean;
+  date_joined:string,
+  reference_id:string | null,
+  category:string,
+  student_type:string | null,
+  actions?: any,
+}
+
+export interface StudentDetail {
+  id: number;
+  is_active: boolean;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  phone2: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  image: string | null;
+  banner_image: string | null;
+  pincode: string;
+  dob: string | null;
+  active_orders: {
+    id: number;
+    total_amount: number;
+    start_date: string;
+    next_due: string;
+    end_date: string;
+    subscription_status: number;
+    created_at: string;
+  } | null;
+  courses: {
+    id: number;
+    course_detail: {
+      id: number;
+      name: string;
+    };
+  }[];
+  user_devices: {
+    id: number;
+    device_id: string;
+    device_type: string;
+    created_at: string;
+  }[];
+}
 
