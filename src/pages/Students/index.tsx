@@ -5,11 +5,11 @@ import { useModal } from '../../context/ModalContext';
 import useDebounce from '../../hooks/useDebounce';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getStudents, removeStudent, updateStudentStatus } from '../../store/slices/studentSlice';
+import { getStudents, updateStudentStatus } from '../../store/slices/studentSlice';
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiDownload, FiEdit, FiEye, FiSettings, FiTrash } from 'react-icons/fi';
+import { FiDownload, FiEdit, FiEye, FiSettings } from 'react-icons/fi';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -174,7 +174,7 @@ const ManageStudents: React.FC = () => {
         {
             key: 'status',
             title: 'Status',
-            render: (value: any, row: any) => {
+            render: (_, row: any) => {
                 const isActive = typeof row.status !== 'undefined' ? row.status : row.is_active;
                 return (
                     <button

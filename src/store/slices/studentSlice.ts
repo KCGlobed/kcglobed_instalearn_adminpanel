@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Pagination, StudentDetail, Students } from "../../utils/types";
-import { fetchStudents, viewStudentDetailApi, createStudentApi, updateStudentApi, updateStudentStatusApi } from "../../services/apiServices";
+import { fetchStudents, viewStudentDetailApi, createStudentApi, updateStudentApi, updateStudentStatusApi, fetchStudentVideoReportsApi } from "../../services/apiServices";
 
 interface  studentState extends Pagination<Students> {
     selectedStudent: StudentDetail | null;
     selectedStudentLoading: boolean;
     selectedStudentError: string | null;
+    selectedStudentReports: any | null;
+    selectedStudentReportsLoading: boolean;
+    selectedStudentReportsError: string | null;
 }
 
 const initialState: studentState = {
@@ -26,6 +29,9 @@ const initialState: studentState = {
     selectedStudent: null,
     selectedStudentLoading: false,
     selectedStudentError: null,
+    selectedStudentReports: null,
+    selectedStudentReportsLoading: false,
+    selectedStudentReportsError: null,
 };
 
 export const getStudents= createAsyncThunk<Pagination<Students>, { page?: number; search?: string; first_name?: string; last_name?: string; description?: string; ordering?: string; is_active?: string; startDate?: string; endDate?: string;email?: string;status?: string; }>
@@ -47,6 +53,18 @@ export const getStudentDetail = createAsyncThunk<StudentDetail, string | number>
             return rejectWithValue(err?.message || "Failed to fetch student detail");
     }
 }
+)
+
+export const getStudentReports = createAsyncThunk<any, { id: string | number; courseId: string | number }>(
+    "student/getStudentReports",
+    async ({ id, courseId }, { rejectWithValue }) => {
+        try {
+            const response: any = await fetchStudentVideoReportsApi(id, courseId);
+            return response?.data?.data || response?.data || (response?.status ? response : null);
+        } catch (err: any) {
+            return rejectWithValue(err?.message || "Failed to fetch student reports");
+        }
+    }
 )
 
 
@@ -139,6 +157,18 @@ export const studentSlice = createSlice({
                     state.selectedStudent.is_active = status;
                     state.selectedStudent.status = status;
                 }
+            })
+            .addCase(getStudentReports.pending, (state) => {
+                state.selectedStudentReportsLoading = true;
+                state.selectedStudentReportsError = null;
+            })
+            .addCase(getStudentReports.fulfilled, (state, action) => {
+                state.selectedStudentReportsLoading = false;
+                state.selectedStudentReports = action.payload;
+            })
+            .addCase(getStudentReports.rejected, (state, action) => {
+                state.selectedStudentReportsLoading = false;
+                state.selectedStudentReportsError = action.payload as string;
             });
     },
 });
