@@ -28,10 +28,10 @@ const initialState: studentState = {
     selectedStudentError: null,
 };
 
-export const getStudents= createAsyncThunk<Pagination<Students>, { page?: number; search?: string; first_name?: string; last_name?: string; description?: string; ordering?: string; is_active?: string; startDate?: string; endDate?: string;email?: string }>
-( "student/getStudents", async ({ page = 1, search = "", first_name = "", last_name = "", description = "", ordering = "", is_active = "", startDate = "", endDate = "", email = "" }, { rejectWithValue }) => {
+export const getStudents= createAsyncThunk<Pagination<Students>, { page?: number; search?: string; first_name?: string; last_name?: string; description?: string; ordering?: string; is_active?: string; startDate?: string; endDate?: string;email?: string;status?: string; }>
+( "student/getStudents", async ({ page = 1, search = "", first_name = "", last_name = "", description = "", ordering = "", is_active = "", startDate = "", endDate = "", email = "",status="" }, { rejectWithValue }) => {
     try {
-        return await fetchStudents(page, search, first_name, last_name, description, ordering, is_active, startDate, endDate, email);
+        return await fetchStudents(page, search, first_name, last_name, description, ordering, is_active, startDate, endDate, email,status);
     } catch (err: any) {
         return rejectWithValue(err?.message || "Failed to fetch students");
     }
@@ -97,7 +97,7 @@ export const studentSlice = createSlice({
         StatusStudent: (state, action: PayloadAction<number | string>) => {
             state.data = state.data.map((item) =>
                 item.id.toString() === action.payload.toString()
-                    ? { ...item, is_active: !item.is_active }
+                    ? { ...item, is_active: !item.is_active, status: !item.status }
                     : item
             );
         }
@@ -132,11 +132,12 @@ export const studentSlice = createSlice({
                 const { id, status } = action.meta.arg;
                 state.data = state.data.map((item) =>
                     item.id.toString() === id.toString()
-                        ? { ...item, is_active: status }
+                        ? { ...item, is_active: status, status: status }
                         : item
                 );
                 if (state.selectedStudent && state.selectedStudent.id.toString() === id.toString()) {
                     state.selectedStudent.is_active = status;
+                    state.selectedStudent.status = status;
                 }
             });
     },

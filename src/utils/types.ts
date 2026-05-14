@@ -670,6 +670,7 @@ export interface Students{
   email:string;
   phone1:string;
   is_active:boolean;
+  status:boolean;
   date_joined:string,
   reference_id:string | null,
   category:string,
@@ -680,6 +681,7 @@ export interface Students{
 export interface StudentDetail {
   id: number;
   is_active: boolean;
+  status: boolean;
   first_name: string;
   last_name: string;
   email: string;

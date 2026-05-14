@@ -1,22 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { createStudent, updateStudent, getStudents } from '../../store/slices/studentSlice';
 import { viewStudentDetailApi } from '../../services/apiServices';
+import { Country, State, City } from 'country-state-city';
+import Select from 'react-select'
+
 import toast from 'react-hot-toast';
 
 type StudentFormValues = {
     first_name: string;
     last_name: string;
     email: string;
-    phone: string;
+    phone1: string;
     address: string;
     city: string;
     state: string;
     country: string;
     pincode: string;
     dob: string;
+    Image: FileList | null;
 };
 
 type Props = {
@@ -25,6 +29,8 @@ type Props = {
 
 const StudentForm = ({ studentData }: Props) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
     const dispatch = useAppDispatch();
     const { hideModal } = useModal();
 
@@ -32,21 +38,87 @@ const StudentForm = ({ studentData }: Props) => {
         register,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
+        watch,
+        control,
+        setValue
     } = useForm<StudentFormValues>({
         defaultValues: {
             first_name: '',
             last_name: '',
             email: '',
-            phone: '',
+            phone1: '',
             address: '',
             city: '',
             state: '',
             country: '',
             pincode: '',
             dob: '',
+            Image: null,
         },
     });
+
+    const studentImage = watch('Image');
+
+    useEffect(() => {
+        if (studentImage && studentImage.length > 0) {
+            const url = URL.createObjectURL(studentImage[0]);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        }
+    }, [studentImage]);
+
+    const watchCountry = watch('country');
+    const watchState = watch('state');
+
+    const countryOptions = useMemo(() =>
+        Country.getAllCountries().map(c => ({ value: c.isoCode, label: c.name }))
+        , []);
+
+
+    const stateOptions = useMemo(() => {
+        if (!watchCountry) return [];
+        return State.getStatesOfCountry(watchCountry).map(s => ({ value: s.isoCode, label: s.name }));
+    }, [watchCountry]);
+
+
+    const cityOptions = useMemo(() => {
+        if (!watchCountry || !watchState) return [];
+        return City.getCitiesOfState(watchCountry, watchState).map(c => ({ value: c.name, label: c.name }));
+    }, [watchCountry, watchState]);
+
+    const getCountryIso = (nameOrIso: string) => {
+        if (!nameOrIso) return '';
+        const country = Country.getAllCountries().find(c => c.isoCode === nameOrIso || c.name === nameOrIso);
+        return country ? country.isoCode : nameOrIso;
+    };
+
+
+    const getStateIso = (countryIso: string, nameOrIso: string) => {
+        if (!nameOrIso || !countryIso) return '';
+        const state = State.getStatesOfCountry(countryIso).find(s => s.isoCode === nameOrIso || s.name === nameOrIso);
+        return state ? state.isoCode : nameOrIso;
+    };
+
+    const customSelectStyles = {
+        control: (provided: any, state: any) => ({
+            ...provided,
+            borderRadius: '0.75rem',
+            borderColor: state.isFocused ? '#6366f1' : '#d1d5db',
+            boxShadow: state.isFocused ? '0 0 0 2px rgba(99, 102, 241, 0.2)' : 'none',
+            padding: '2px 4px',
+            '&:hover': {
+                borderColor: state.isFocused ? '#6366f1' : '#d1d5db'
+            }
+        }),
+        option: (provided: any, state: any) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#4f46e5' : state.isFocused ? '#e0e7ff' : 'white',
+            color: state.isSelected ? 'white' : '#374151',
+            cursor: 'pointer',
+        })
+    };
+
 
     // Set default values on edit
     useEffect(() => {
@@ -54,33 +126,43 @@ const StudentForm = ({ studentData }: Props) => {
             if (studentData?.id) {
                 try {
                     const res = await viewStudentDetailApi(studentData.id);
-                    const fullData = res.data || res;
+                    const fullData = res.data?.data || res.data || res;
+                    const countryIso = getCountryIso(fullData.country);
+                    const stateIso = getStateIso(countryIso, fullData.state);
                     reset({
                         first_name: fullData.first_name || '',
                         last_name: fullData.last_name || '',
                         email: fullData.email || '',
-                        phone: fullData.phone1 || fullData.phone || '',
+                        phone1: fullData.phone1 || fullData.phone || '',
                         address: fullData.address || '',
                         city: fullData.city || '',
-                        state: fullData.state || '',
-                        country: fullData.country || '',
+                        state: stateIso,
+                        country: countryIso,
                         pincode: fullData.pincode || '',
                         dob: fullData.dob ? fullData.dob.split('T')[0] : '',
                     });
+                    if (fullData.Image) {
+                        setPreviewUrl(fullData.Image);
+                    }
                 } catch (error) {
                     console.error("Failed to fetch student details for editing", error);
+                    const fbCountryIso = getCountryIso(studentData.country);
+                    const fbStateIso = getStateIso(fbCountryIso, studentData.state);
                     reset({
                         first_name: studentData.first_name || '',
                         last_name: studentData.last_name || '',
                         email: studentData.email || '',
-                        phone: studentData.phone1 || studentData.phone || '',
+                        phone1: studentData.phone1 || studentData.phone || '',
                         address: studentData.address || '',
                         city: studentData.city || '',
-                        state: studentData.state || '',
-                        country: studentData.country || '',
+                        state: fbStateIso,
+                        country: fbCountryIso,
                         pincode: studentData.pincode || '',
                         dob: studentData.dob ? studentData.dob.split('T')[0] : '',
                     });
+                    if (studentData.Image) {
+                        setPreviewUrl(studentData.Image);
+                    }
                 }
             }
         };
@@ -98,13 +180,17 @@ const StudentForm = ({ studentData }: Props) => {
             formdata.append("first_name", data.first_name);
             formdata.append("last_name", data.last_name);
             formdata.append("email", data.email);
-            formdata.append("phone", data.phone);
+            formdata.append("phone", data.phone1);
             formdata.append("address", data.address);
             formdata.append("city", data.city);
             formdata.append("state", data.state);
             formdata.append("country", data.country);
             formdata.append("pincode", data.pincode);
             if (data.dob) formdata.append("dob", data.dob);
+
+            if (data.Image && data.Image.length > 0) {
+                formdata.append("Image", data.Image[0]);
+            }
 
             if (studentData?.id) {
                 await dispatch(updateStudent({ id: studentData.id, studentData: formdata })).unwrap();
@@ -198,7 +284,7 @@ const StudentForm = ({ studentData }: Props) => {
                         </label>
                         <input
                             type="text"
-                            {...register('phone', {
+                            {...register('phone1', {
                                 required: 'Phone number is required',
                                 pattern: {
                                     value: /^[0-9]{10}$/,
@@ -208,8 +294,8 @@ const StudentForm = ({ studentData }: Props) => {
                             className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2 rounded-xl transition-all"
                             placeholder="Enter 10-digit Phone"
                         />
-                        {errors.phone && (
-                            <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.phone.message}</p>
+                        {errors.phone1 && (
+                            <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.phone1.message}</p>
                         )}
                     </div>
 
@@ -252,6 +338,29 @@ const StudentForm = ({ studentData }: Props) => {
                             <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.pincode.message}</p>
                         )}
                     </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Profile Image
+                        </label>
+                        <div className="flex items-center gap-4">
+                            {previewUrl && (
+                                <div className="h-20 w-20 rounded-xl border border-gray-200 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center shadow-sm">
+                                    <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+                                </div>
+                            )}
+                            <div className="flex-1">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    {...register('Image')}
+                                    className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 px-2 py-2 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer transition-all"
+                                />
+                                {errors.Image && (
+                                    <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.Image.message as string}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Address */}
                     <div className="md:col-span-2">
@@ -271,44 +380,92 @@ const StudentForm = ({ studentData }: Props) => {
                             <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.address.message}</p>
                         )}
                     </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Country <span className="text-red-500">*</span>
+                        </label>
+                        <Controller
+                            name="country"
+                            control={control}
+                            rules={{ required: 'Country is required' }}
+                            render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    options={countryOptions}
+                                    value={countryOptions.find(c => c.value === field.value) || null}
+                                    onChange={(selected) => {
+                                        field.onChange(selected ? selected.value : '');
+                                        setValue('state', '');
+                                        setValue('city', '');
+                                    }}
+                                    isClearable
+                                    isSearchable
+                                    placeholder="Select Country"
+                                    styles={customSelectStyles}
+                                />
+                            )}
+                        />
+                        {errors.country && (
+                            <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.country.message}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            State <span className="text-red-500">*</span>
+                        </label>
+                        <Controller
+                            name="state"
+                            control={control}
+                            rules={{ required: 'State is required' }}
+                            render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    options={stateOptions}
+                                    value={stateOptions.find(s => s.value === field.value) || null}
+                                    onChange={(selected) => {
+                                        field.onChange(selected ? selected.value : '');
+                                        setValue('city', '');
+                                    }}
+                                    isDisabled={!watchCountry}
+                                    isClearable
+                                    isSearchable
+                                    placeholder="Select State"
+                                    styles={customSelectStyles}
+                                />
+                            )}
+                        />
+                        {errors.state && (
+                            <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.state.message}</p>
+                        )}
+                    </div>
 
                     {/* City */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            City
+                            City <span className="text-red-500">*</span>
                         </label>
-                        <input
-                            type="text"
-                            {...register('city')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2 rounded-xl transition-all"
-                            placeholder="Enter City"
+                        <Controller
+                            name="city"
+                            control={control}
+                            rules={{ required: 'City is required' }}
+                            render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    options={cityOptions}
+                                    value={cityOptions.find(c => c.value === field.value) || null}
+                                    onChange={(selected) => field.onChange(selected ? selected.value : '')}
+                                    isDisabled={!watchState}
+                                    isClearable
+                                    isSearchable
+                                    placeholder="Select City"
+                                    styles={customSelectStyles}
+                                />
+                            )}
                         />
-                    </div>
-
-                    {/* State */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            State
-                        </label>
-                        <input
-                            type="text"
-                            {...register('state')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2 rounded-xl transition-all"
-                            placeholder="Enter State"
-                        />
-                    </div>
-
-                    {/* Country */}
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Country
-                        </label>
-                        <input
-                            type="text"
-                            {...register('country')}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2 rounded-xl transition-all"
-                            placeholder="Enter Country"
-                        />
+                        {errors.city && (
+                            <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.city.message}</p>
+                        )}
                     </div>
                 </div>
 

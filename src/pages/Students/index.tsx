@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Filter, Calendar, Plus, BookOpen } from 'lucide-react';
+import { Filter, Calendar, Plus, BookOpen, Download } from 'lucide-react';
 import { useModal } from '../../context/ModalContext';
 import useDebounce from '../../hooks/useDebounce';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -9,8 +9,7 @@ import { getStudents, removeStudent, updateStudentStatus } from '../../store/sli
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiEye, FiSettings, FiTrash } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
+import { FiDownload, FiEdit, FiEye, FiSettings, FiTrash } from 'react-icons/fi';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -22,6 +21,7 @@ import ExportFile from '../../components/Forms/ExportFile';
 import { downloadStudentExcelApi, downloadStudentPdfApi } from '../../services/apiServices';
 import TabsModal from '../../components/Modal/TabsModal';
 import StudentPasswordForm from '../../components/Forms/StudentPasswordForm';
+import StudentReportView from '../../components/View/StudentReportView';
 
 
 
@@ -150,9 +150,9 @@ const ManageStudents: React.FC = () => {
                     <div className="flex items-center gap-1.5 text-gray-600">
                         <span className="text-xs">{row.email}</span>
                     </div>
-                    {row.phone1 && (
+                    {(row.phone1 || row.phone) && (
                         <div className="flex items-center gap-1.5 text-gray-600">
-                            <span className="text-xs">{row.phone1}</span>
+                            <span className="text-xs">{row.phone1 || row.phone}</span>
                         </div>
                     )}
                 </div>
@@ -172,19 +172,22 @@ const ManageStudents: React.FC = () => {
             width: '180px',
         },
         {
-            key: 'is_active',
+            key: 'status',
             title: 'Status',
-            render: (value: boolean, row: any) => (
-                <button
-                    onClick={() => {
-                        dispatch(updateStudentStatus({ id: row.id, status: !value }));
-                        toast.success(`Student status updated`);
-                    }}
-                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
-                >
-                    {value ? 'Active' : 'Inactive'}
-                </button>
-            ),
+            render: (value: any, row: any) => {
+                const isActive = typeof row.status !== 'undefined' ? row.status : row.is_active;
+                return (
+                    <button
+                        onClick={() => {
+                            dispatch(updateStudentStatus({ id: row.id, status: !isActive }));
+                            toast.success(`Student status updated`);
+                        }}
+                        className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${isActive ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
+                    >
+                        {isActive ? 'Active' : 'Inactive'}
+                    </button>
+                );
+            },
             sortable: true,
             width: '120px',
             align: 'center',
@@ -216,22 +219,31 @@ const ManageStudents: React.FC = () => {
                         }
                     />
                     <GlassButton
-                        icon={<FiTrash className="text-base" />}
-                        color="red"
-                        title="Delete"
+                        icon={<FiDownload className="text-base" />}
+                        color="green"
+                        title="Download"
                         onClick={() => {
                             showModal({
-                                title: 'Remove Student',
-                                content: <DeleteConfirmationModal
-                                    id={row.id}
-                                    name={`${row.first_name} ${row.last_name}`}
-                                    onDelete={async () => {
-                                        dispatch(removeStudent(row.id));
-                                        toast.success("Student removed from list");
-                                    }}
-                                />,
+                                title: "Reports",
+                                content: (
+                                    <TabsModal
+                                        defaultActiveKey="chapter"
+                                        tabs={[
+                                            {
+                                                key: 'chapter',
+                                                label: 'Download Reports',
+                                                icon: <Download size={15} />,
+                                                component: (
+                                                    <StudentReportView
+                                                        studentId={row.id}
+                                                    />
+                                                ),
+                                            },
+                                        ]}
+                                    />
+                                ),
                                 type: 'custom',
-                                size: 'md',
+                                size: 'xl',
                             });
                         }}
                     />
@@ -252,9 +264,9 @@ const ManageStudents: React.FC = () => {
                                                 icon: <BookOpen size={15} />,
                                                 component: <StudentPasswordForm studentId={row.id} />,
                                             },
-                                            
-                                            
-                                            
+
+
+
                                         ]}
                                     />
                                 ),
