@@ -1,25 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar} from 'lucide-react';
-import { useModal } from '../../../context/ModalContext';
-import useDebounce from '../../../hooks/useDebounce';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
-import { chapterFilterConfig } from '../../../utils/filterConfiguration';
-import { getChapter, removeChapter, updateChapterStatus, } from '../../../store/slices/chapterSlice';
-import moment from 'moment';
-import toast from 'react-hot-toast';
-import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiEye, FiSettings, FiTrash } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import SortDropdown from '../../../components/common/SortDropdown';
-import SearchInput from '../../../components/common/SearchInput';
-import ExportFile from '../../../components/Forms/ExportFile';
-import DynamicFilter from '../../../components/common/DynamicFilter';
-import InlineDateFilter from '../../../components/common/InlineDateFilter';
-import DynamicServerTable from '../../../components/Table/Table';
-import ChapterForm from '../../../components/Forms/ChapterForm';
-import { deleteChapterApi, downloadChapterExcelApi, downloadChapterPdfApi } from '../../../services/apiServices';
-import ChapterView from '../../../components/View/ChapterView';
-import { useNavigate } from 'react-router-dom';
+import { useModal } from '../../context/ModalContext';
+import useDebounce from '../../hooks/useDebounce';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useRedux';
+import { getTrailCourse,  } from '../../store/slices/trailCourseSlice';
+import GlassButton from '../../components/Button/Button';
+import {  FiEye,  } from 'react-icons/fi';
+import AddTrailCourseForm from '../../components/Forms/AddTrailCourseForm';
+import { Calendar, Filter, Plus } from 'lucide-react';
+import SortDropdown from '../../components/common/SortDropdown';
+import SearchInput from '../../components/common/SearchInput';
+import DynamicFilter from '../../components/common/DynamicFilter';
+import InlineDateFilter from '../../components/common/InlineDateFilter';
+import DynamicServerTable from '../../components/Table/Table';
+import { trailCourseFilterConfig } from '../../utils/filterConfiguration';
+import TrailCourseView from '../../components/View/TrailCourseView';
+
+
 
 interface ColumnDef {
     key: string;
@@ -30,7 +27,7 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageChapter: React.FC = () => {
+const ManageTrailCourse: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -38,12 +35,10 @@ const ManageChapter: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
-    const navigate = useNavigate()
 
-    // Filter states
+
     const [filters, setFilters] = useState({
         name: '',
-        description: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -53,7 +48,7 @@ const ManageChapter: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.chapter);
+    const { data, loading, pagination } = useAppSelector((state) => state.trailCourses);    
     const pageSize = 5;
 
     const sortRef = useRef<HTMLDivElement>(null);
@@ -69,15 +64,13 @@ const ManageChapter: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(getChapter({
+        dispatch(getTrailCourse({
             page: currentPage,
-            search: debouncedSearchTerm,
-            name: debouncedFilters.name,
-            description: debouncedFilters.description,
+            search: debouncedSearchTerm || debouncedFilters.name, 
             ordering,
             status: debouncedFilters.status,
-            start_date: startDate,
-            end_date: endDate
+            startDate,
+            endDate
         }));
     }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, startDate, endDate, ordering]);
 
@@ -85,14 +78,13 @@ const ManageChapter: React.FC = () => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
 
-    const handleFilterChange = (title: string, value: any) => {
-        setFilters(prev => ({ ...prev, [title]: value }));
+    const handleFilterChange = (name: string, value: any) => {
+        setFilters(prev => ({ ...prev, [name]: value }));
     };
 
     const clearFilters = () => {
         setFilters({
             name: '',
-            description: '',
             status: 'all',
         });
     };
@@ -111,65 +103,23 @@ const ManageChapter: React.FC = () => {
     const columns: ColumnDef[] = [
         {
             key: 'name',
-            title: 'Chapter',
+            title: 'Course Name',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     <div
                         className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100"
                     >
-                        {row.name ? row.name.charAt(0).toUpperCase() : '#'}
+                        {row.course_detail?.name ? row.course_detail.name.charAt(0).toUpperCase() : '#'}
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.name}</span>
+                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.course_detail?.name || row.name || 'N/A'}</span>
                     </div>
                 </div>
             ),
             sortable: true,
-            width: '250px',
+            width: '350px',
         },
-        {
-            key: 'description',
-            title: 'Description',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'N/A'}
-                </div>
-            ),
-            sortable: true,
-            width: '300px',
-        },
-        {
-            key: 'created_at',
-            title: 'Created On',
-            render: (value: string) => (
-                <div className="flex flex-col">
-                    <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
-                    <span className="text-gray-400 text-[10px] uppercase font-bold">{value ? moment(value).format('hh:mm A') : ''}</span>
-                </div>
-            ),
-            sortable: true,
-            width: '180px',
-        },
-        {
-            key: 'status',
-            title: 'Status',
-            render: (value: boolean, row: any) => (
-                <button
-                    onClick={() => {
-                        dispatch(updateChapterStatus({ id: row.id, status: !value }))
-                            .unwrap()
-                            .then(() => toast.success(`Chapter ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err) => toast.error(err || "Failed to update status"));
-                    }}
-                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
-                >
-                    {value ? 'Active' : 'Inactive'}
-                </button>
-            ),
-            width: '120px',
-            align: 'center',
-            sortable: true,
-        },
+
         {
             key: 'id',
             title: 'Actions',
@@ -181,71 +131,28 @@ const ManageChapter: React.FC = () => {
                         title="View"
                         onClick={() =>
                             showModal({
-                                title: 'View Chapter',
-                                content: <ChapterView chapterData={row} />,
+                                title: 'View Trail Course',
+                                content: <TrailCourseView trailCourseData={row} />,
                                 type: 'success',
-                                size: 'xxl',
+                                size: 'lg',
                             })
                         }
-                    />
-                    <GlassButton
-                        icon={<FiEdit />}
-                        color="green"
-                        title="Edit"
-                        onClick={() =>
-                            showModal({
-                                title: 'Edit Chapter',
-                                content: <ChapterForm chapterData={row} />,
-                                type: 'success',
-                                size: 'md',
-                            })
-                        }
-                    />
-                    <GlassButton
-                        icon={<FiTrash className="text-base" />}
-                        color="red"
-                        title="Delete"
-                        onClick={() => {
-                            showModal({
-                                title: 'Delete Chapter',
-                                content: <DeleteConfirmationModal
-                                    id={row}
-                                    name={row.name}
-                                    onDelete={async () => {
-                                        try {
-                                            await deleteChapterApi(row.id);
-                                            dispatch(removeChapter(row.id));
-                                            toast.success("Chapter removed from list");
-                                        } catch (error) {
-                                            toast.error("Failed to delete chapter");
-                                        }
-                                    }}
-                                />,
-                                type: 'custom',
-                                size: 'md',
-                            });
-                        }}
-                    />
-                    <GlassButton
-                        icon={<FiSettings />}
-                        color="gray"
-                        title="Assign"
-                        onClick={() => {
-                            navigate(`/dashboard/chapter/assign-lecture/${row.id}`);
-                        }}
-                    />
+                    /> 
                 </div>
             ),
             width: '120px',
             align: 'right',
         },
+        
     ];
 
     return (
         <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
+            {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
                     <div className="flex items-center gap-4">
+                        {/* Filter Toggle Button */}
                         <button
                             onClick={() => { setShowFilter(!showFilter); setShowDate(false); }}
                             className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showFilter ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -273,52 +180,35 @@ const ManageChapter: React.FC = () => {
                         </button>
                     </div>
 
+                    {/* Search Field */}
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search chapters..."
+                        placeholder="Search Trail Course..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
-                        <ExportFile
-                            pdfApi={() => downloadChapterPdfApi({
-                                search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
-                                description: debouncedFilters.description,
-                                status: debouncedFilters.status,
-                                start_date: startDate,
-                                end_date: endDate
-                            })}
-                            excelApi={() => downloadChapterExcelApi({
-                                search: debouncedSearchTerm,
-                                name: debouncedFilters.name,
-                                description: debouncedFilters.description,
-                                status: debouncedFilters.status,
-                                start_date: startDate,
-                                end_date: endDate
-                            })}
-                            fileNamePrefix="chapter"
-                        />
+                      
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
                                 showModal({
-                                    title: "Add Chapter",
-                                    content: <ChapterForm />,
+                                    title: "Add Trail Course",
+                                    content: <AddTrailCourseForm />,
                                     type: 'custom',
                                     size: 'md',
                                 })
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
-                            Add Chapter
+                            Add Trail Course
                         </button>
                     </div>
                 </div>
 
                 <DynamicFilter
                     show={showFilter}
-                    config={chapterFilterConfig}
+                    config={trailCourseFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -337,6 +227,7 @@ const ManageChapter: React.FC = () => {
                 />
             </div>
 
+            {/* Main Table Content */}
             <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
                 <DynamicServerTable
                     data={data}
@@ -354,4 +245,4 @@ const ManageChapter: React.FC = () => {
     );
 };
 
-export default ManageChapter;
+export default ManageTrailCourse;

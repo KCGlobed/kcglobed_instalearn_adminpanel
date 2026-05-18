@@ -598,18 +598,18 @@ export const downloadStudentExcelApi = async ({ search = "", first_name = "", la
   return await apiRequest(`reports/get-student-registration-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
-export const downloadVideoReportPdfApi= async()=>{
+export const downloadVideoReportPdfApi = async () => {
   return await apiRequest(`reports/get-video-watch-report-pdf/`, 'GET');
 }
 
-export const downloadVideoWatchReportPdfApi= async(id:string|number,courseId:string|number)=>{
+export const downloadVideoWatchReportPdfApi = async (id: string | number, courseId: string | number) => {
   return await apiRequest(`reports/download-video-report/${id}/${courseId}`, 'GET');
 }
 
-export const downloadVideoWatchReportExcelApi= async(id:string|number,courseId:string|number)=>{
+export const downloadVideoWatchReportExcelApi = async (id: string | number, courseId: string | number) => {
   return await apiRequest(`reports/download-video-report-csv/${id}/${courseId}`, 'GET');
 }
-export const fetchStudentVideoReportsApi= async(id:string|number, courseId:string|number)=>{
+export const fetchStudentVideoReportsApi = async (id: string | number, courseId: string | number) => {
   return await apiRequest(`reports/get-video-report/${id}/${courseId}`, 'GET');
 }
 
@@ -622,5 +622,23 @@ export const changeStudentPasswordApi = async (payload: any): Promise<any> => {
 //----------------Abhishek Manage Student End----------//
 
 
+//---------manage trial course start ------//
 
+export const fetchTrailCourse = async (page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-trail-course-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const addTrailCourseApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-trail-course/`, 'POST', payload);
+}
+
+export const fetchCourseChaptersApi = async (id: string | number) => {
+  const res: any = await apiRequest(`course/get-course-chapter-list/${id}`, 'GET');
+  return res;
+}
 

@@ -719,3 +719,29 @@ export interface StudentDetail {
   }[];
 }
 
+
+// -----------------Abhishek  Manage Trail Courses ----------
+
+export interface TrailCourses {
+    id: number;
+   status:boolean;
+    course_detail: {
+        id: number;
+        name: string;
+    };
+    chapter_info: {
+        id: number;
+
+        chapter: string | number;
+
+        chapter_detail: {
+            id: number;
+
+            name: string | null;
+
+            description: string | null;
+
+            created_at: string;
+        };
+    }[];
+}

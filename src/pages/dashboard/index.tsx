@@ -53,6 +53,9 @@ const Dashboard: React.FC = () => {
       name: 'Manage Students', icon: <FaUser className="mr-2" />, path: '/dashboard/students'
     },
     {
+      name: 'Manage Trail Courses', icon: <FaDiscourse className="mr-2" />, path: '/dashboard/trail-course'
+    },
+    {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',
       submenu: [
         { name: 'Manage Payment Settings', path: '/dashboard/payment-settings' },
