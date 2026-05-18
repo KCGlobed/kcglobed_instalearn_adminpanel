@@ -207,4 +207,20 @@ export const videoFilterConfig: FilterField[] = [
 
 
 
+//------------------------Abhishek manage Student start------------//
 
+export const studentFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'is_active',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+//------------------------Abhishek manage Student end------------//
