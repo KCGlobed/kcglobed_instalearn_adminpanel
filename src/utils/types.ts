@@ -695,6 +695,7 @@ export interface StudentDetail {
   banner_image: string | null;
   pincode: string;
   dob: string | null;
+  date_joined?: string;
   active_orders: {
     id: number;
     total_amount: number;

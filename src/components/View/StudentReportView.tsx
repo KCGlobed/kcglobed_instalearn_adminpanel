@@ -1,88 +1,52 @@
 import { useEffect, useState } from "react";
-import { viewStudentDetailApi, fetchStudentVideoReportsApi, downloadVideoWatchReportPdfApi, downloadVideoWatchReportExcelApi } from "../../services/apiServices";
-import { FileText, Info, Download,BookOpen } from "lucide-react";
+import { useSelector } from "react-redux";
+import { getStudentDetail, getStudentReports } from "../../store/slices/studentSlice";
+import { downloadVideoWatchReportPdfApi, downloadVideoWatchReportExcelApi } from "../../services/apiServices";
+import { FileText, Info, Download, BookOpen } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 interface StudentReportViewProps {
     studentId: number;
 }
 
 const StudentReportView = ({ studentId }: StudentReportViewProps) => {
-    const [studentData, setStudentData] = useState<any>(null);
-    const [courses, setCourses] = useState<any[]>([]);
+    const dispatch = useAppDispatch();
+    const { 
+        selectedStudent: studentData, 
+        selectedStudentLoading: loading,
+        selectedStudentReports: studentReports,
+        selectedStudentReportsLoading: loadingReports
+    } = useSelector((state:any) => state.students);
+
     const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-
-    const [studentReports, setStudentReports] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [loadingReports, setLoadingReports] = useState(false);
-    
+    const courses = studentData?.courses || [];
 
     useEffect(() => {
-        const fetchStudentDetails = async () => {
-            setLoading(true);
-            try {
-                const res: any = await viewStudentDetailApi(studentId);
-                const data = res?.data?.data || res?.data || res;
-
-                if (data) {
-                    setStudentData(data);
-                    const studentCourses = data.courses || [];
-                    setCourses(studentCourses);
-
-                    if (studentCourses.length > 0) {
-                        setSelectedCourseId(studentCourses[0]?.course_detail?.id?.toString());
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to fetch student details", error);
-                toast.error("Failed to load student details");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (studentId) {
-            fetchStudentDetails();
+            dispatch(getStudentDetail(studentId));
         }
-    }, [studentId]);
+    }, [dispatch, studentId]);
 
     useEffect(() => {
-        const fetchReports = async () => {
-            if (!studentId || !selectedCourseId) {
-                setStudentReports(null);
-                return;
-            }
+        if (courses.length > 0 && !selectedCourseId) {
+            setSelectedCourseId(courses[0]?.course_detail?.id?.toString());
+        }
+    }, [courses, selectedCourseId]);
 
-            setLoadingReports(true);
-            try {
-                const res: any = await fetchStudentVideoReportsApi(studentId, selectedCourseId);
-                const reportData = res?.data?.data || res?.data || (res?.status ? res : null);
-                setStudentReports(reportData);
-            } catch (error) {
-                console.error("Failed to fetch reports", error);
-                setStudentReports(null);
-            } finally {
-                setLoadingReports(false);
-            }
-        };
-
-        fetchReports();
-    }, [studentId, selectedCourseId]);
+    useEffect(() => {
+        if (studentId && selectedCourseId) {
+            dispatch(getStudentReports({ id: studentId, courseId: selectedCourseId }));
+        }
+    }, [dispatch, studentId, selectedCourseId]);
 
     const formatDuration = (seconds: number) => {
         if (!seconds) return "0 sec";
-
         const mins = Math.floor(seconds / 60);
-
         const secs = seconds % 60;
-
-        if (mins === 0) {
-            return `${secs} sec`;
-        }
-
+        if (mins === 0) return `${secs} sec`;
         return `${mins} min ${secs} sec`;
     };
-
 
     const handleDownload = async (type: 'pdf' | 'excel') => {
         if (!studentId || !selectedCourseId) {
@@ -146,8 +110,7 @@ const StudentReportView = ({ studentId }: StudentReportViewProps) => {
         }
     };
 
-
-    if (loading) {
+    if (loading && !studentData) {
         return (
             <div className="flex flex-col items-center justify-center p-12 min-h-[300px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
@@ -209,7 +172,6 @@ const StudentReportView = ({ studentId }: StudentReportViewProps) => {
                         </div>
                     </div>
 
-
                     {studentData?.date_joined && (
                         <div className="grid grid-cols-1 gap-4 pt-4 border-t border-gray-200/60">
                             <div className="flex items-start gap-3">
@@ -270,7 +232,7 @@ const StudentReportView = ({ studentId }: StudentReportViewProps) => {
                 )}
             </div>
 
-            {/* Right Section: Progress Viewer (Styled like EbookView's PDF Viewer) */}
+            {/* Right Section: Progress Viewer */}
             <div className="w-full lg:w-2/3 bg-gray-900 rounded-2xl overflow-hidden shadow-2xl relative border-4 border-white min-h-[500px] flex flex-col">
                 {/* macOS-style Header */}
                 <div className="p-3 bg-gray-800 flex items-center justify-between border-b border-gray-700/50">

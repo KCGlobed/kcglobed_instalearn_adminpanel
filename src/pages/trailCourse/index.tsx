@@ -3,11 +3,11 @@ import { useModal } from '../../context/ModalContext';
 import useDebounce from '../../hooks/useDebounce';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getTrailCourse,  } from '../../store/slices/trailCourseSlice';
+import { getTrailCourse, } from '../../store/slices/trailCourseSlice';
 import GlassButton from '../../components/Button/Button';
-import {  FiEye,  } from 'react-icons/fi';
+import { FiEye, } from 'react-icons/fi';
 import AddTrailCourseForm from '../../components/Forms/AddTrailCourseForm';
-import { Calendar, Filter, Plus } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -48,7 +48,7 @@ const ManageTrailCourse: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.trailCourses);    
+    const { data, loading, pagination } = useAppSelector((state) => state.trailCourses);
     const pageSize = 5;
 
     const sortRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ const ManageTrailCourse: React.FC = () => {
     useEffect(() => {
         dispatch(getTrailCourse({
             page: currentPage,
-            search: debouncedSearchTerm || debouncedFilters.name, 
+            name: debouncedSearchTerm || debouncedFilters.name,
             ordering,
             status: debouncedFilters.status,
             startDate,
@@ -95,14 +95,14 @@ const ManageTrailCourse: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'name';
+        const currentKey = ordering.replace(/^-/, '') || 'course__name';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
 
     const columns: ColumnDef[] = [
         {
-            key: 'name',
+            key: 'course__name',
             title: 'Course Name',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
@@ -137,13 +137,13 @@ const ManageTrailCourse: React.FC = () => {
                                 size: 'lg',
                             })
                         }
-                    /> 
+                    />
                 </div>
             ),
             width: '120px',
             align: 'right',
         },
-        
+
     ];
 
     return (
@@ -170,14 +170,7 @@ const ManageTrailCourse: React.FC = () => {
                             sortRef={sortRef}
                         />
 
-                        <button
-                            onClick={() => { setShowDate(!showDate); setShowFilter(false); }}
-                            className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showDate || startDate ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                }`}
-                        >
-                            <Calendar size={16} className={showDate || startDate ? 'text-indigo-500' : 'text-gray-400 group-hover:text-indigo-500'} />
-                            {startDate ? `${startDate} - ${endDate}` : 'Date Range'}
-                        </button>
+
                     </div>
 
                     {/* Search Field */}
@@ -189,7 +182,7 @@ const ManageTrailCourse: React.FC = () => {
                     />
 
                     <div className="flex items-center gap-4">
-                      
+
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
                                 showModal({
