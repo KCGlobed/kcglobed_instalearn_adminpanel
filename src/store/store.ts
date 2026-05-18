@@ -13,6 +13,10 @@ import faqTopicReducer from "./slices/faqTopicSlice";
 import faqReducer from "./slices/faqSlice";
 import courseReducer from "./slices/courceSlice";
 import chapterReducer from "./slices/chapterSlice";
+
+
+import studentsReducer from "./slices/studentSlice";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -27,6 +31,8 @@ export const store = configureStore({
     faq: faqReducer,
     course: courseReducer,
     chapter:chapterReducer,
+
+    students:studentsReducer,
   },
 });
 
