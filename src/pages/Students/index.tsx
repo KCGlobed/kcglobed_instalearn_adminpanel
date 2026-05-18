@@ -172,7 +172,7 @@ const ManageStudents: React.FC = () => {
             width: '180px',
         },
         {
-            key: 'status',
+            key: 'is_active',
             title: 'Status',
             render: (_, row: any) => {
                 const isActive = typeof row.status !== 'undefined' ? row.status : row.is_active;
