@@ -13,6 +13,7 @@ import faqTopicReducer from "./slices/faqTopicSlice";
 import faqReducer from "./slices/faqSlice";
 import courseReducer from "./slices/courceSlice";
 import chapterReducer from "./slices/chapterSlice";
+import trailCoursesReducer from "./slices/trailCourseSlice";
 
 
 import studentsReducer from "./slices/studentSlice";
@@ -33,6 +34,7 @@ export const store = configureStore({
     chapter:chapterReducer,
 
     students:studentsReducer,
+    trailCourses:trailCoursesReducer,
   },
 });
 

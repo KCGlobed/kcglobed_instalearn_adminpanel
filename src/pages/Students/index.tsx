@@ -123,7 +123,7 @@ const ManageStudents: React.FC = () => {
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden"
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden"
                     >
                         {(row as any).image ? (
                             <img src={(row as any).image} alt="" className="w-full h-full object-cover" />

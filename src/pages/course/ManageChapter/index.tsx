@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar, BookOpen, UserCheck, Video } from 'lucide-react';
+import { Filter, Plus, Calendar} from 'lucide-react';
 import { useModal } from '../../../context/ModalContext';
 import useDebounce from '../../../hooks/useDebounce';
 import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
