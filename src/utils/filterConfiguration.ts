@@ -224,3 +224,8 @@ export const studentFilterConfig: FilterField[] = [
 ];
 
 //------------------------Abhishek manage Student end------------//
+
+
+export const trailCourseFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by name...' },
+];

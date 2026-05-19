@@ -15,7 +15,6 @@ import {
     updateCourseApi
 } from "../../services/apiServices";
 
-// ─── Constants & Types ────────────────────────────────────────────────────────
 
 type CourseFormValues = {
     name: string;
@@ -23,6 +22,7 @@ type CourseFormValues = {
     description: string;
     duration: string;
     requirements: string;
+    original_price: number | string;
     price: number | string;
     discount: number | string;
     level: number;
@@ -65,7 +65,6 @@ const customSelectStyles = (hasError: boolean) => ({
     })
 });
 
-// ─── Validation Schema ───────────────────────────────────────────────────────
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -74,6 +73,7 @@ const validationSchema = Yup.object().shape({
     duration: Yup.string().required("Duration is required"),
     requirements: Yup.string().required("Requirements are required"),
     price: Yup.number().typeError("Price must be a number").required("Price is required").min(0),
+    original_price: Yup.number().typeError("Price must be a number").required("Price is required").min(0),
     discount: Yup.number().typeError("Discount must be a number").required("Discount is required").min(0).max(100),
     level: Yup.number().required("Level is required").min(1),
     tags: Yup.array().min(1, "Select at least one tag"),
@@ -108,6 +108,7 @@ const CourseForm = () => {
             description: "",
             duration: "",
             requirements: "",
+            original_price: "",
             price: "",
             discount: 0,
             level: 1,
@@ -158,6 +159,7 @@ const CourseForm = () => {
             formData.append("description", data.description);
             formData.append("duration", data.duration);
             formData.append("requirements", data.requirements);
+            formData.append("original_price", String(data.original_price || data.price));
             formData.append("price", String(data.price));
             formData.append("discount", String(data.discount));
             formData.append("level", String(data.level));
@@ -204,12 +206,13 @@ const CourseForm = () => {
             setValue("duration", res.data.duration);
             setValue("requirements", res.data.requirements);
             setValue("price", res.data.price);
+            setValue("original_price", res.data.original_price || res.data.price);
             setValue("discount", res.data.discount);
             setValue("level", res.data.level);
-            setValue("tags", res.data.tags.map((item: any) => ({ value: item.tags.id, label: item.tags.name })));
-            setValue("category_id", res.data.categories.map((item: any) => ({ value: item.category_info?.id, label: item.category_info?.name })));
-            setValue("feature_json", res.data.feature_json.map((item: any) => ({ value: item })));
-            setValue("objectives_summary", res.data.objectives_summary.map((item: any) => ({ value: item })));
+            setValue("tags", (res.data.tags || []).map((item: any) => ({ value: item.tags?.id, label: item.tags?.name })));
+            setValue("category_id", (res.data.categories || []).map((item: any) => ({ value: item.category_info?.id, label: item.category_info?.name })));
+            setValue("feature_json", (res.data.feature_json || []).map((item: any) => ({ value: item })));
+            setValue("objectives_summary", (res.data.objectives_summary || []).map((item: any) => ({ value: item })));
             if (res.data.image) {
                 setImagePreview(res.data.image);
                 setValue("image", res.data.image);
@@ -234,7 +237,7 @@ const CourseForm = () => {
             {/* Header */}
             <div className="mb-8 flex items-center justify-between border-b pb-6">
                 <div>
-                    <button onClick={() => navigate("/dashboard/course")} className="flex items-center text-xs font-bold text-slate-400 hover:text-indigo-600 transition-all mb-2 uppercase">
+                    <button onClick={() => navigate("/dashboard/courses")} className="flex items-center text-xs font-bold text-slate-400 hover:text-indigo-600 transition-all mb-2 uppercase">
                         <FiChevronLeft className="mr-1" /> Back to Dashboard
                     </button>
                     <h1 className="text-xl font-bold text-slate-900 uppercase">{id ? "Edit Course" : "Add New Course"}</h1>
@@ -301,7 +304,11 @@ const CourseForm = () => {
                                 <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Price (INR)</label>
                                 <input
                                     type="number"
-                                    {...register("price")}
+                                    {...register("price", {
+                                        onChange: (e) => {
+                                            setValue("original_price", e.target.value, { shouldValidate: true });
+                                        }
+                                    })}
                                     className={`w-full h-12 px-4 bg-slate-50 border rounded-xl outline-none transition-all ${errors.price ? 'border-red-500' : 'border-slate-200 focus:border-indigo-400'}`}
                                     placeholder="0"
                                 />
@@ -486,7 +493,7 @@ const CourseForm = () => {
 
                 {/* Submit Container */}
                 <div className="pt-10 flex justify-end gap-4 border-t">
-                    <button type="button" onClick={() => navigate("/dashboard/course")} className="px-6 py-2 text-sm font-bold text-slate-400 hover:text-slate-900 transition-all">Cancel</button>
+                    <button type="button" onClick={() => navigate("/dashboard/courses")} className="px-6 py-2 text-sm font-bold text-slate-400 hover:text-slate-900 transition-all">Cancel</button>
                     <button type="submit" disabled={loading} className="px-10 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50">
                         {loading ? "Saving..." : "Save Course"}
                     </button>
