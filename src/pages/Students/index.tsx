@@ -16,7 +16,6 @@ import DynamicFilter from '../../components/common/DynamicFilter';
 import { studentFilterConfig } from '../../utils/filterConfiguration';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../components/Table/Table';
-import StudentForm from '../../components/Forms/StudentForm';
 import ExportFile from '../../components/Forms/ExportFile';
 import { downloadStudentExcelApi, downloadStudentPdfApi } from '../../services/apiServices';
 import TabsModal from '../../components/Modal/TabsModal';
@@ -209,14 +208,7 @@ const ManageStudents: React.FC = () => {
                         title="Edit Profile"
                         icon={<FiEdit />}
                         color="blue"
-                        onClick={() =>
-                            showModal({
-                                title: 'Edit Student Profile',
-                                content: <StudentForm studentData={row} />,
-                                type: 'custom',
-                                size: 'xl',
-                            })
-                        }
+                        onClick={() => navigate(`/dashboard/students/edit/${row.id}`)}
                     />
                     <GlassButton
                         icon={<FiDownload className="text-base" />}
@@ -344,12 +336,7 @@ const ManageStudents: React.FC = () => {
 
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => showModal({
-                                title: 'Create New Student',
-                                content: <StudentForm />,
-                                type: 'custom',
-                                size: 'xl'
-                            })}
+                            onClick={() => navigate('/dashboard/students/add')}
                             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95"
                         >
                             <Plus size={18} />

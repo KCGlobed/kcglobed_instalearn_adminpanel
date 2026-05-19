@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useModal } from '../../context/ModalContext';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FiChevronLeft } from 'react-icons/fi';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { createStudent, updateStudent, getStudents } from '../../store/slices/studentSlice';
 import { viewStudentDetailApi } from '../../services/apiServices';
@@ -23,16 +24,13 @@ type StudentFormValues = {
     Image: FileList | null;
 };
 
-type Props = {
-    studentData?: any;
-};
-
-const StudentForm = ({ studentData }: Props) => {
+const StudentForm = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const dispatch = useAppDispatch();
-    const { hideModal } = useModal();
 
     const {
         register,
@@ -123,9 +121,9 @@ const StudentForm = ({ studentData }: Props) => {
     // Set default values on edit
     useEffect(() => {
         const fetchFullDetail = async () => {
-            if (studentData?.id) {
+            if (id) {
                 try {
-                    const res = await viewStudentDetailApi(studentData.id);
+                    const res = await viewStudentDetailApi(id);
                     const fullData = res.data?.data || res.data || res;
                     const countryIso = getCountryIso(fullData.country);
                     const stateIso = getStateIso(countryIso, fullData.state);
@@ -146,31 +144,14 @@ const StudentForm = ({ studentData }: Props) => {
                     }
                 } catch (error) {
                     console.error("Failed to fetch student details for editing", error);
-                    const fbCountryIso = getCountryIso(studentData.country);
-                    const fbStateIso = getStateIso(fbCountryIso, studentData.state);
-                    reset({
-                        first_name: studentData.first_name || '',
-                        last_name: studentData.last_name || '',
-                        email: studentData.email || '',
-                        phone1: studentData.phone1 || studentData.phone || '',
-                        address: studentData.address || '',
-                        city: studentData.city || '',
-                        state: fbStateIso,
-                        country: fbCountryIso,
-                        pincode: studentData.pincode || '',
-                        dob: studentData.dob ? studentData.dob.split('T')[0] : '',
-                    });
-                    if (studentData.Image) {
-                        setPreviewUrl(studentData.Image);
-                    }
                 }
             }
         };
 
-        if (studentData) {
+        if (id) {
             fetchFullDetail();
         }
-    }, [studentData, reset]);
+    }, [id, reset]);
 
     // Submit handler
     const onSubmit = async (data: StudentFormValues) => {
@@ -192,8 +173,8 @@ const StudentForm = ({ studentData }: Props) => {
                 formdata.append("Image", data.Image[0]);
             }
 
-            if (studentData?.id) {
-                await dispatch(updateStudent({ id: studentData.id, studentData: formdata })).unwrap();
+            if (id) {
+                await dispatch(updateStudent({ id, studentData: formdata })).unwrap();
                 toast.success("Student updated successfully");
             } else {
                 await dispatch(createStudent(formdata)).unwrap();
@@ -204,7 +185,7 @@ const StudentForm = ({ studentData }: Props) => {
             dispatch(getStudents({ page: 1 }));
 
             reset();
-            hideModal();
+            navigate('/dashboard/students');
         } catch (err: any) {
             console.error('Student creation failed:', err);
             toast.error(err || "Failed to create student");
@@ -214,7 +195,15 @@ const StudentForm = ({ studentData }: Props) => {
     };
 
     return (
-        <div className="relative">
+        <div className="w-full py-10 px-10 bg-white border border-slate-100 rounded-2xl shadow-sm my-6">
+            <div className="mb-8 flex items-center justify-between border-b pb-6">
+                <div>
+                    <button onClick={() => navigate("/dashboard/students")} className="flex items-center text-xs font-bold text-slate-400 hover:text-indigo-600 transition-all mb-2 uppercase">
+                        <FiChevronLeft className="mr-1" /> Back to Dashboard
+                    </button>
+                    <h1 className="text-xl font-bold text-slate-900 uppercase">{id ? "Edit Student" : "Add New Student"}</h1>
+                </div>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* First Name */}
@@ -479,9 +468,9 @@ const StudentForm = ({ studentData }: Props) => {
                         {isSubmitting ? (
                             <>
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                {studentData ? 'Updating Student...' : 'Creating Student...'}
+                                {id ? 'Updating Student...' : 'Creating Student...'}
                             </>
-                        ) : studentData ? 'Update Student' : 'Create Student'}
+                        ) : id ? 'Update Student' : 'Create Student'}
                     </button>
                 </div>
             </form>

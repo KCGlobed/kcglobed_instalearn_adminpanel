@@ -27,6 +27,7 @@ import CourseView from "../components/View/CourseView";
 import PaymentSettings from "../pages/Settings/PaymentSettings";
 import ManageStudents from "../pages/Students";
 import StudentProfile from "../pages/Students/StudentProfile";
+import StudentForm from "../components/Forms/StudentForm";
 import ManageTrailCourse from "../pages/trailCourse";
 
 export default function AppRoutes() {
@@ -62,6 +63,8 @@ export default function AppRoutes() {
 
           {/* -----------------Abhishek---------------- */}
           <Route path="/dashboard/students" element={<ManageStudents />} />
+          <Route path="/dashboard/students/add" element={<StudentForm />} />
+          <Route path="/dashboard/students/edit/:id" element={<StudentForm />} />
           <Route path="/dashboard/students/view/:id" element={<StudentProfile />} />
           <Route path="/dashboard/trail-course" element={<ManageTrailCourse />} />
 
