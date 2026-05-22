@@ -229,3 +229,30 @@ export const studentFilterConfig: FilterField[] = [
 export const trailCourseFilterConfig: FilterField[] = [
     { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by name...' },
 ];
+
+export const courseReviewFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Course Name', name: 'name', placeholder: 'Filter by course name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    },
+    {
+        type: 'select',
+        label: 'Approval Status',
+        name: 'approved',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'New', value: '0' },
+            { label: 'Approved', value: '1' },
+            { label: 'Rejected', value: '2' }
+        ]
+    }
+];

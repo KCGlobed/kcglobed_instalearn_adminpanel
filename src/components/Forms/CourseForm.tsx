@@ -73,8 +73,8 @@ const validationSchema = Yup.object().shape({
     duration: Yup.string().required("Duration is required"),
     requirements: Yup.string().required("Requirements are required"),
     price: Yup.number().typeError("Price must be a number").required("Price is required").min(0),
-    original_price: Yup.number().typeError("Price must be a number").required("Price is required").min(0),
-    discount: Yup.number().typeError("Discount must be a number").required("Discount is required").min(0).max(100),
+    original_price: Yup.number().typeError("Original price must be a number").required("Original price is required").min(0),
+    discount: Yup.number().typeError("Discount must be a number").required("Discount is required").min(0, "Discount cannot be negative").max(99, "Discount cannot exceed 99%"),
     level: Yup.number().required("Level is required").min(1),
     tags: Yup.array().min(1, "Select at least one tag"),
     category_id: Yup.array().min(1, "Select at least one category"),
@@ -94,6 +94,7 @@ const CourseForm = () => {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const { id } = useParams();
 
+    const [lastEdited, setLastEdited] = useState<"original_price" | "price" | "discount" | null>(null);
     const {
         register,
         handleSubmit,
@@ -146,6 +147,60 @@ const CourseForm = () => {
     };
 
     const watchedValues = watch();
+
+    const originalPrice = Number(watch("original_price")) || 0;
+    const price = Number(watch("price")) || 0;
+    const discount = Number(watch("discount")) || 0;
+
+    useEffect(() => {
+        if (discount < 0 || discount >= 100) return;
+
+        if (lastEdited === "original_price" || lastEdited === "discount") {
+            const finalPrice =
+                originalPrice -
+                (originalPrice * discount) / 100;
+
+            setValue(
+                "price",
+                Number(finalPrice.toFixed(2)),
+                { shouldValidate: true }
+            );
+        }
+
+        if (lastEdited === "price" && discount > 0) {
+            const finalOriginalPrice =
+                price / (1 - discount / 100);
+
+            setValue(
+                "original_price",
+                Number(finalOriginalPrice.toFixed(2)),
+                { shouldValidate: true }
+            );
+        }
+
+        if (
+            lastEdited === "price" &&
+            discount === 0 &&
+            originalPrice > 0
+        ) {
+            const finalDiscount =
+                ((originalPrice - price) /
+                    originalPrice) *
+                100;
+
+            setValue(
+                "discount",
+                Number(finalDiscount.toFixed(2)),
+                { shouldValidate: true }
+            );
+        }
+    }, [
+        originalPrice,
+        price,
+        discount,
+        lastEdited,
+        setValue,
+    ]);
 
     const onSubmit = async (data: CourseFormValues) => {
         console.log(data.category_id);
@@ -272,7 +327,7 @@ const CourseForm = () => {
                             <ErrorField name="name" />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Duration</label>
                                 <input
@@ -300,14 +355,42 @@ const CourseForm = () => {
                                 />
                                 <ErrorField name="level" />
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Original Price (INR)</label>
+                                <input
+                                    type="number"
+                                    step="any"
+                                    {...register("original_price", {
+                                        onChange: () => setLastEdited("original_price")
+                                    })}
+                                    className={`w-full h-12 px-4 bg-slate-50 border rounded-xl outline-none transition-all ${errors.original_price ? 'border-red-500' : 'border-slate-200 focus:border-indigo-400'}`}
+                                    placeholder="0"
+                                />
+                                <ErrorField name="original_price" />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Discount (%)</label>
+                                <input
+                                    type="number"
+                                    step="any"
+                                    {...register("discount", {
+                                        onChange: () => setLastEdited("discount")
+                                    })}
+                                    className={`w-full h-12 px-4 bg-slate-50 border rounded-xl outline-none transition-all ${errors.discount ? 'border-red-500' : 'border-slate-200 focus:border-indigo-400'}`}
+                                    placeholder="0"
+                                />
+                                <ErrorField name="discount" />
+                            </div>
                             <div>
                                 <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Price (INR)</label>
                                 <input
                                     type="number"
+                                    step="any"
                                     {...register("price", {
-                                        onChange: (e) => {
-                                            setValue("original_price", e.target.value, { shouldValidate: true });
-                                        }
+                                        onChange: () => setLastEdited("price")
                                     })}
                                     className={`w-full h-12 px-4 bg-slate-50 border rounded-xl outline-none transition-all ${errors.price ? 'border-red-500' : 'border-slate-200 focus:border-indigo-400'}`}
                                     placeholder="0"
@@ -334,8 +417,8 @@ const CourseForm = () => {
                     </div>
                 </div>
 
-                {/* ─── Row 2: Taxonomy & Fees ─── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* ─── Row 2: Taxonomy ─── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Category</label>
                         <Controller
@@ -370,17 +453,6 @@ const CourseForm = () => {
                             )}
                         />
                         <ErrorField name="tags" />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Discount (%)</label>
-                        <input
-                            type="number"
-                            {...register("discount")}
-                            className={`w-full h-12 px-4 bg-slate-50 border rounded-xl outline-none transition-all ${errors.discount ? 'border-red-500' : 'border-slate-200 focus:border-indigo-400'}`}
-                            placeholder="0"
-                        />
-                        <ErrorField name="discount" />
                     </div>
                 </div>
 
@@ -550,9 +622,14 @@ const CoursePreviewModal = ({ data, imagePreview, onClose }: { data: any, imageP
                             <h1 className="text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight">{data.name || 'Untitled Course'}</h1>
                             <div className="flex flex-wrap items-center gap-8 text-slate-500 text-sm font-bold uppercase tracking-wide">
                                 <span className="flex items-center gap-2.5"><FiUpload className="text-indigo-500" size={18} /> {data.duration || 'Not specified'}</span>
-                                <span className="flex items-center gap-2.5 font-black text-slate-900">INR {data.price || '0.00'}</span>
+                                <div className="flex items-center gap-2.5">
+                                    {Number(data.discount) > 0 && data.original_price && (
+                                        <span className="line-through text-slate-400 font-bold">INR {data.original_price}</span>
+                                    )}
+                                    <span className="font-black text-slate-900">INR {data.price || '0.00'}</span>
+                                </div>
                                 {Number(data.discount) > 0 && (
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg">-{data.discount}% OFF</span>
+                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-bold">-{data.discount}% OFF</span>
                                 )}
                             </div>
                         </div>

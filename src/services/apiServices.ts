@@ -642,3 +642,15 @@ export const fetchCourseChaptersApi = async (id: string | number) => {
   return res;
 }
 
+export const getCourseReviewApi = async(page = 1, first_name: string = "", last_name: string = "", course: string = "", chapter: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", approved: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  const approvedVal = approved === 'all' || approved === '' ? '' : approved;
+  let query = `course/get-courses-review-rating/?page=${page}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${approvedVal ? `&approved=${approvedVal}` : ""}${start_date ? `&start_date=${start_date}` : ""}${end_date ? `&end_date=${end_date}` : ""}`;
+  
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const approveRejectCourseReviewApi = async (id: string | number, payload: { approved: number }): Promise<any> => {
+  return await apiRequest(`course/approve-reject-courses-review-rating/${id}`, 'POST', payload);
+}

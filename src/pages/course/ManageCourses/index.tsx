@@ -143,23 +143,13 @@ const ManageCourses: React.FC = () => {
             sortable: true,
             width: '280px',
         },
-        // {
-        //     key: 'short_description',
-        //     title: 'Short Description',
-        //     render: (_: any, row: any) => (
-        //         <div className="text-gray-600 text-[11px] w-full max-w-[200px] line-clamp-2" title={row.short_description}>
-        //             {row.short_description || '-'}
-        //         </div>
-        //     ),
-        //     sortable: true,
-        //     width: '220px',
-        // },
         {
             key: 'price',
             title: 'Pricing',
             render: (_: any, row: any) => (
                 <div className="flex flex-col">
-                    <span className="font-bold text-gray-800">Rs {row.price}</span>
+                    {row.original_price > 0 && <span className="font-bold text-gray-800">Rs {row.price} <span className="text-[11px] text-gray-500 font-medium line-through">{row.original_price}</span></span>}
+                    {row.original_price == 0 && <span className="font-bold text-gray-800">Rs {row.price}</span>}
                     {row.discount > 0 && <span className="text-[11px] text-green-600 font-medium">Discount: {row.discount}%</span>}
                 </div>
             ),
@@ -180,33 +170,6 @@ const ManageCourses: React.FC = () => {
             sortable: true,
             width: '100px',
         },
-
-        // {
-        //     key: 'description',
-        //     title: 'Description',
-        //     render: (_: any, row: any) => (
-        //         <div
-        //             className="text-gray-600 text-[11px] w-full max-w-[200px] line-clamp-2 prose prose-sm prose-p:my-0 prose-ul:my-0 leading-tight"
-        //             title="Description"
-        //             dangerouslySetInnerHTML={{ __html: row.description || '-' }}
-        //         />
-        //     ),
-        //     sortable: true,
-        //     width: '220px',
-        // },
-        // {
-        //     key: 'requirements',
-        //     title: 'Requirements',
-        //     render: (_: any, row: any) => (
-        //         <div
-        //             className="text-gray-600 text-[11px] w-full max-w-[200px] line-clamp-2 prose prose-sm prose-p:my-0 prose-ul:my-0 leading-tight"
-        //             title="Requirements"
-        //             dangerouslySetInnerHTML={{ __html: row.requirements || '-' }}
-        //         />
-        //     ),
-        //     sortable: true,
-        //     width: '220px',
-        // },
         {
             key: 'tags',
             title: 'Tags',
@@ -222,6 +185,20 @@ const ManageCourses: React.FC = () => {
             ),
             width: '200px',
         },
+        {
+            key: 'enrolled_students',
+            title: 'Enrolled Students',
+            render: (_: any, row: any) => (
+                <div
+                    className="text-gray-600 text-[11px] w-full max-w-[200px] line-clamp-2 prose prose-sm prose-p:my-0 prose-ul:my-0 leading-tight"
+                    title="Enrolled Students"
+                    dangerouslySetInnerHTML={{ __html: row.enrolled_students || '0' }}
+                />
+            ),
+            sortable: true,
+            width: '220px',
+        },
+
         {
             key: 'created_at',
             title: 'Created On',
@@ -396,22 +373,7 @@ const ManageCourses: React.FC = () => {
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            // pdfApi={() => downloadCategoryPdfApi({
-                            //     search: debouncedSearchTerm,
-                            //     name: debouncedFilters.name,
-                            //     description: debouncedFilters.description,
-                            //     status: debouncedFilters.status,
-                            //     start_date: startDate,
-                            //     end_date: endDate
-                            // })}
-                            // excelApi={() => downloadCategoryExcelApi({
-                            //     search: debouncedSearchTerm,
-                            //     name: debouncedFilters.name,
-                            //     description: debouncedFilters.description,
-                            //     status: debouncedFilters.status,
-                            //     start_date: startDate,
-                            //     end_date: endDate
-                            // })}
+                           
                             fileNamePrefix="courses"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
