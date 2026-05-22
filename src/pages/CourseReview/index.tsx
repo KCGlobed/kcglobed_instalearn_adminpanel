@@ -3,14 +3,13 @@ import { Filter, Calendar, Star } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getCourseReview, removeCourseReview,updateCourseReviewStatus } from '../../store/slices/courseReview';
+import { getCourseReview,updateCourseReviewStatus } from '../../store/slices/courseReview';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEye, FiTrash } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
+import { FiEye} from 'react-icons/fi';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -249,28 +248,6 @@ const CourseReview: React.FC = () => {
                                 size: 'lg',
                             })
                         }
-                    />
-                    <GlassButton
-                        icon={<FiTrash className="text-base" />}
-                        color="red"
-                        title="Delete"
-                        onClick={() => {
-                            showModal({
-                                title: 'Delete Review',
-                                content: (
-                                    <DeleteConfirmationModal
-                                        id={row.id}
-                                        name={`this review for "${row.course?.name || 'Course'}"`}
-                                        onDelete={async () => {
-                                            dispatch(removeCourseReview(row.id));
-                                            toast.success('Review removed successfully');
-                                        }}
-                                    />
-                                ),
-                                type: 'custom',
-                                size: 'md',
-                            });
-                        }}
                     />
                 </div>
             ),
