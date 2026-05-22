@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Pagination, Review } from "../../utils/types";
-import { getCourseReviewApi, approveRejectCourseReviewApi } from "../../services/apiServices";
+import { getCourseReviewApi, approveRejectCourseReviewApi, updateCourseReviewStatusApi } from "../../services/apiServices";
 
 
 interface CourseReviwState extends Pagination<Review>{};
@@ -25,18 +25,7 @@ const initialState: CourseReviwState={
 
 export const getCourseReview=createAsyncThunk<
     Pagination<Review>,
-    {
-        page?: number;
-        first_name?: string;
-        last_name?: string;
-        name?: string;
-        chapter?: string;
-        ordering?: string;
-        status?: string;
-        startDate?: string;
-        endDate?: string;
-        approved?: string;
-    }
+    { page?: number;first_name?: string;last_name?: string;name?: string;chapter?: string;ordering?: string;status?: string;startDate?: string;endDate?: string;approved?: string;}
 >(
     "CourseReview/getReview",
     async({page = 1, name="", first_name = "", last_name = "", chapter = "", ordering = "", status = "", startDate="", endDate="", approved = ""}, { rejectWithValue }
@@ -60,6 +49,22 @@ export const toggleApproveReview = createAsyncThunk<
             const response = await approveRejectCourseReviewApi(id, { approved });
             const approvedVal = typeof response?.approved === 'number' ? response.approved : approved;
             return { id, approved: approvedVal };
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const updateCourseReviewStatus = createAsyncThunk<
+    { id: string | number; status: boolean },
+    { id: string | number; status: boolean },
+    { rejectValue: string }
+>(
+    "CourseReview/updateStatus",
+    async ({ id, status }, { rejectWithValue }) => {
+        try {
+            await updateCourseReviewStatusApi(id, { status });
+            return { id, status };
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
@@ -100,6 +105,13 @@ const courseReviewSlice = createSlice({
             state.data = state.data.map((item) =>
                 item.id.toString() === action.payload.id.toString()
                     ? { ...item, approved: action.payload.approved }
+                    : item
+            );
+        })
+        .addCase(updateCourseReviewStatus.fulfilled, (state, action) => {
+            state.data = state.data.map((item) =>
+                item.id.toString() === action.payload.id.toString()
+                    ? { ...item, status: action.payload.status }
                     : item
             );
         })

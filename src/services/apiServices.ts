@@ -654,3 +654,7 @@ export const getCourseReviewApi = async(page = 1, first_name: string = "", last_
 export const approveRejectCourseReviewApi = async (id: string | number, payload: { approved: number }): Promise<any> => {
   return await apiRequest(`course/approve-reject-courses-review-rating/${id}`, 'POST', payload);
 }
+
+export const updateCourseReviewStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-courses-review-rating-status/${id}`, 'POST', {status: payload.status ? 1 : 0});
+}
