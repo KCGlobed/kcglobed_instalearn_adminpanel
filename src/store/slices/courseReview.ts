@@ -25,13 +25,13 @@ const initialState: CourseReviwState={
 
 export const getCourseReview=createAsyncThunk<
     Pagination<Review>,
-    { page?: number;first_name?: string;last_name?: string;name?: string;chapter?: string;ordering?: string;status?: string;startDate?: string;endDate?: string;approved?: string;}
+    { page?: number;search?: string;first_name?: string;last_name?: string;name?: string;chapter?: string;ordering?: string;status?: string;startDate?: string;endDate?: string;approved?: string;}
 >(
     "CourseReview/getReview",
-    async({page = 1, name="", first_name = "", last_name = "", chapter = "", ordering = "", status = "", startDate="", endDate="", approved = ""}, { rejectWithValue }
+    async({page = 1, search="", name="", first_name = "", last_name = "", chapter = "", ordering = "", status = "", startDate="", endDate="", approved = ""}, { rejectWithValue }
     )=>{
         try{
-            return await getCourseReviewApi(page, first_name, last_name, name, chapter, ordering, status, startDate, endDate, approved);
+            return await getCourseReviewApi(page, search, first_name, last_name, name, chapter, ordering, status, startDate, endDate, approved);
         } catch(error:any){
             return rejectWithValue(error.message);
         }

@@ -13,6 +13,7 @@ import { FiEye} from 'react-icons/fi';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import DynamicFilter from '../../components/common/DynamicFilter';
+import SearchInput from '../../components/common/SearchInput';
 import { courseReviewFilterConfig } from '../../utils/filterConfiguration';
 import ReviewDetailModal from '../../components/View/ReviewDetail';
 
@@ -31,6 +32,7 @@ const CourseReview: React.FC = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const { showModal, hideModal } = useModal();
 
     // Filter states
@@ -45,6 +47,7 @@ const CourseReview: React.FC = () => {
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
 
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
@@ -68,6 +71,7 @@ const CourseReview: React.FC = () => {
     useEffect(() => {
         dispatch(getCourseReview({
             page: currentPage,
+            search: debouncedSearchTerm,
             first_name: debouncedFilters.first_name,
             last_name: debouncedFilters.last_name,
             name: debouncedFilters.name,
@@ -78,12 +82,12 @@ const CourseReview: React.FC = () => {
             endDate,
             approved: debouncedFilters.approved === 'all' ? '' : debouncedFilters.approved,
         }));
-    }, [dispatch, currentPage, debouncedFilters, ordering, startDate, endDate]);
+    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, ordering, startDate, endDate]);
 
     // Reset to first page when filters, startDate or endDate change
     useEffect(() => {
         setCurrentPage(1);
-    }, [debouncedFilters, startDate, endDate]);
+    }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
 
     const handleFilterChange = (name: string, value: any) => {
         setFilters(prev => ({ ...prev, [name]: value }));
@@ -298,6 +302,13 @@ const CourseReview: React.FC = () => {
                         </button>
                     </div>
 
+                    {/* Search Field */}
+                    <SearchInput
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        placeholder="Search reviews..."
+                        className="mx-4"
+                    />
                 </div>
 
                 {/* Inline General Filter Section */}
