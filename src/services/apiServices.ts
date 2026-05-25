@@ -642,10 +642,10 @@ export const fetchCourseChaptersApi = async (id: string | number) => {
   return res;
 }
 
-export const getCourseReviewApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", course: string = "", chapter: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", approved: string = "") => {
+export const getCourseReviewApi = async (page = 1, first_name: string = "", last_name: string = "", course: string = "", chapter: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", approved: string = "") => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   const approvedVal = approved === 'all' || approved === '' ? '' : approved;
-  let query = `course/get-courses-review-rating/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${approvedVal ? `&approved=${approvedVal}` : ""}${start_date ? `&start_date=${start_date}` : ""}${end_date ? `&end_date=${end_date}` : ""}`;
+  let query = `course/get-courses-review-rating/?page=${page}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${approvedVal ? `&approved=${approvedVal}` : ""}${start_date ? `&start_date=${start_date}` : ""}${end_date ? `&end_date=${end_date}` : ""}`;
 
   const res: any = await apiRequest(query, "GET");
   return res;
@@ -658,3 +658,39 @@ export const approveRejectCourseReviewApi = async (id: string | number, payload:
 export const updateCourseReviewStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-courses-review-rating-status/${id}`, 'POST', { status: payload.status ? 1 : 0 });
 }
+
+export const fetchCourseAnnouncementApi = async (page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "", course: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-courses-announcements/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const viewCourseAnnouncementApi = async (id: string | number): Promise<any> => {
+  const res: any = await apiRequest(`course/view-courses-announcements/${id}`, "GET");
+  return res.data; // assuming standard data structure
+}
+
+export const createCourseAnnouncementApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/add-course-announcements/`, 'POST', payload);
+};
+
+export const fetchCourseListWithInstructorApi = async () => {
+  const res: any = await apiRequest(`course/get-course-list-with-instructor/`, 'GET');
+  return res;
+}
+
+export const updateCourseAnnouncementApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/update-courses-announcements/${id}`, 'POST', payload);
+};
+
+export const deleteCourseAnnouncementApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-course-announcements/${id}`, 'DELETE');
+};
+
+export const updateCourseAnnouncementStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-announcements-status/${id}`, 'POST', payload);
+};
+

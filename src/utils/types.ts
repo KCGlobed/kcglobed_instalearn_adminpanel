@@ -770,5 +770,41 @@ export interface Review {
     } | null;
 }
 
+export interface Announcement {
+    id: number;
+    title: string;
+    description: string;
+    status: boolean;
+    created_at: string;
+
+    course: {
+        id: number;
+        name: string;
+    };
+
+    instructor: {
+        id: number;
+        text_1: string;
+        text_2: string;
+        text_3: string;
+        image: string;
+        experience: string;
+        company_image_1: string | null;
+        company_image_2: string | null;
+    };
+
+    announcement_comments?: {
+        id: number;
+        user: {
+            id: number;
+            first_name: string;
+            last_name: string;
+            image: string | null;
+            email: string;
+        };
+        content: string;
+        created_at: string;
+    }[];
+}
 
 

@@ -256,3 +256,18 @@ export const courseReviewFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const courseAnnouncementFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Announcement Title', name: 'title', placeholder: 'Filter by title...' },
+    { type: 'text', label: 'Course Name', name: 'course', placeholder: 'Filter by course name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
