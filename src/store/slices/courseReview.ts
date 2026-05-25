@@ -31,12 +31,14 @@ export const getCourseReview=createAsyncThunk<
     async({page = 1, search="", name="", first_name = "", last_name = "", chapter = "", ordering = "", status = "", startDate="", endDate="", approved = ""}, { rejectWithValue }
     )=>{
         try{
-            return await getCourseReviewApi(page, search, first_name, last_name, name, chapter, ordering, status, startDate, endDate, approved);
+            const course = search || name || "";
+            return await getCourseReviewApi(page, first_name, last_name, course, chapter, ordering, status, startDate, endDate, approved);
         } catch(error:any){
             return rejectWithValue(error.message);
         }
     }
 )
+
 
 export const toggleApproveReview = createAsyncThunk<
     { id: string | number; approved: number },
