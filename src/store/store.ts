@@ -14,7 +14,7 @@ import faqReducer from "./slices/faqSlice";
 import courseReducer from "./slices/courceSlice";
 import chapterReducer from "./slices/chapterSlice";
 import trailCoursesReducer from "./slices/trailCourseSlice";
-
+import CourseReviewReducer from "./slices/courseReview";
 
 import studentsReducer from "./slices/studentSlice";
 
@@ -35,6 +35,7 @@ export const store = configureStore({
 
     students:studentsReducer,
     trailCourses:trailCoursesReducer,
+    ReviewCourse:CourseReviewReducer
   },
 });
 
