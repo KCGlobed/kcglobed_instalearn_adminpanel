@@ -18,7 +18,7 @@ import CourseReviewReducer from "./slices/courseReview";
 
 import studentsReducer from "./slices/studentSlice";
 import courseAnnouncementReducer from "./slices/courseAnnouncementSlice";
-
+import contactReducer from "./slices/ContactUsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,8 +38,8 @@ export const store = configureStore({
     students:studentsReducer,
     trailCourses:trailCoursesReducer,
     ReviewCourse:CourseReviewReducer,
-    courseAnnouncement: courseAnnouncementReducer
-
+    courseAnnouncement: courseAnnouncementReducer,
+    Contact: contactReducer
   },
 });
 

@@ -64,6 +64,14 @@ const Dashboard: React.FC = () => {
     {
       name: 'Manage Course Review', icon: <MdRateReview className="mr-2" />, path: '/dashboard/course-review'
     },
+      {
+      name: 'Manage Reports',
+      icon: <FaQuestionCircle className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage Contact Us', path: '/dashboard/report-contact' },
+      ]
+    },
     {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',
       submenu: [

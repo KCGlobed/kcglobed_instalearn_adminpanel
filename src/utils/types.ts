@@ -808,3 +808,13 @@ export interface Announcement {
 }
 
 
+export interface contact{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  phone:number,
+  message:string,
+  status?: boolean,
+  created_at:string,
+}

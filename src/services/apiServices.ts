@@ -694,3 +694,22 @@ export const updateCourseAnnouncementStatusApi = async (id: string | number, pay
   return await apiRequest(`course/update-announcements-status/${id}`, 'POST', payload);
 };
 
+export const fetchContactApi= async(page=1,search: string="",name: string="",ordering: string="",status: string="",startDate: string="",endDate: string="")=>{
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `reports/get-contact-us-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+
+export const downloadContactPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-contact-us-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadContactExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-contact-us-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}

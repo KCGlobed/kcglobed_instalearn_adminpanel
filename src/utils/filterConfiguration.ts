@@ -271,3 +271,8 @@ export const courseAnnouncementFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const contactFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Name', name: 'name', placeholder: 'Filter by name...' },
+    
+];

@@ -30,6 +30,7 @@ import StudentProfile from "../pages/Students/StudentProfile";
 import ManageTrailCourse from "../pages/trailCourse";
 import CourseReview from "../pages/CourseReview";
 import ManageCourseAnnoucement from "../pages/ManageCourseAnnoucement";
+import ManageReportContact from "../pages/ManageReports/manageContactUs";
 
 
 export default function AppRoutes() {
@@ -69,6 +70,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/trail-course" element={<ManageTrailCourse />} />
           <Route path="/dashboard/course-review" element={<CourseReview />} />
           <Route path="/dashboard/manage-announcement" element={<ManageCourseAnnoucement />} />
+          <Route path="/dashboard/report-contact" element={<ManageReportContact />} />
 
 
         </Route>
