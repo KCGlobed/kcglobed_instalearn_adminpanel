@@ -82,6 +82,18 @@ const validationSchema = Yup.object().shape({
     objectives_summary: Yup.array().of(Yup.object().shape({ value: Yup.string().required("Required") })).min(1),
     image: Yup.mixed().required("Thumbnail is required"),
 });
+const getCharacterCount = (htmlString: string) => {
+    if (!htmlString) return 0;
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, "text/html");
+        const text = doc.body.textContent || "";
+        if (text === "\n") return 0;
+        return text.length;
+    } catch (e) {
+        return 0;
+    }
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -147,6 +159,8 @@ const CourseForm = () => {
     };
 
     const watchedValues = watch();
+    const shortDescription = watch("short_description") || "";
+    const shortDescCharCount = getCharacterCount(shortDescription);
 
     const originalPrice = Number(watch("original_price")) || 0;
     const price = Number(watch("price")) || 0;
@@ -156,43 +170,39 @@ const CourseForm = () => {
         if (discount < 0 || discount >= 100) return;
 
         if (lastEdited === "original_price" || lastEdited === "discount") {
-            const finalPrice =
-                originalPrice -
-                (originalPrice * discount) / 100;
+            const finalPrice = Math.round(
+                originalPrice - (originalPrice * discount) / 100
+            );
 
             setValue(
                 "price",
-                Number(finalPrice.toFixed(2)),
+                finalPrice,
                 { shouldValidate: true }
             );
         }
 
-        if (lastEdited === "price" && discount > 0) {
-            const finalOriginalPrice =
-                price / (1 - discount / 100);
+        if (lastEdited === "price") {
+            if (originalPrice > 0) {
+                const finalDiscount = Math.round(
+                    ((originalPrice - price) / originalPrice) * 100
+                );
 
-            setValue(
-                "original_price",
-                Number(finalOriginalPrice.toFixed(2)),
-                { shouldValidate: true }
-            );
-        }
+                setValue(
+                    "discount",
+                    finalDiscount,
+                    { shouldValidate: true }
+                );
+            } else if (discount > 0) {
+                const finalOriginalPrice = Math.round(
+                    price / (1 - discount / 100)
+                );
 
-        if (
-            lastEdited === "price" &&
-            discount === 0 &&
-            originalPrice > 0
-        ) {
-            const finalDiscount =
-                ((originalPrice - price) /
-                    originalPrice) *
-                100;
-
-            setValue(
-                "discount",
-                Number(finalDiscount.toFixed(2)),
-                { shouldValidate: true }
-            );
+                setValue(
+                    "original_price",
+                    finalOriginalPrice,
+                    { shouldValidate: true }
+                );
+            }
         }
     }, [
         originalPrice,
@@ -459,20 +469,34 @@ const CourseForm = () => {
                 {/* ─── Row 3: Descriptions ─── */}
                 <div className="">
                     <div className="space-y-4 mb-4">
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Short Description</label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-xs font-bold text-slate-600 uppercase">Short Description</label>
+                            <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full transition-all border uppercase tracking-wider ${
+                                shortDescCharCount >= 153
+                                    ? 'bg-red-50 text-red-500 border-red-200'
+                                    : shortDescCharCount > 120
+                                        ? 'bg-amber-50 text-amber-600 border-amber-200'
+                                        : 'bg-indigo-50 text-indigo-600 border-indigo-200'
+                            }`}>
+                                {shortDescCharCount} / 153 characters
+                            </span>
+                        </div>
                         <div className={`border rounded-xl overflow-hidden bg-white transition-all ${errors.short_description ? 'border-red-500' : 'border-slate-200 focus-within:border-indigo-400'}`}>
-                            <Controller
-                                name="short_description"
-                                control={control}
-                                render={({ field }) => (
-                                    <LexicalEditor
-                                        type="short_desc"
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Brief course summary..."
-                                    />
-                                )}
-                            />
+                             <Controller
+            name="short_description"
+            control={control}
+            render={({ field }) => (
+                <LexicalEditor
+                    type="short_desc"
+                    value={field.value}
+                    onChange={(value: string) => {
+                        field.onChange(value);
+                    }}
+                    maxLength={153}
+                    placeholder="Brief course summary..."
+                />
+            )}
+        />
                         </div>
                         <ErrorField name="short_description" />
                     </div>
