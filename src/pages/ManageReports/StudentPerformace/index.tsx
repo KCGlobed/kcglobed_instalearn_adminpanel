@@ -165,7 +165,7 @@ const StudentPerformace: React.FC = () => {
             width: '120px',
         },
         {
-            key: 'date_joined',
+            key: 'created_at',
             title: 'Date Joined',
             render: (_: any, row: any) => (
                 <div className="flex flex-col">

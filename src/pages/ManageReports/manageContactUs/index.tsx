@@ -89,7 +89,8 @@ const ManageReportContact: React.FC = () => {
 
     const handleSort = (key: string, direction: 'asc' | 'desc') => {
         const orderPrefix = direction === 'desc' ? '-' : '';
-        setOrdering(`${orderPrefix}${key}`);
+        const apiSortKey = key === 'name' ? 'first_name' : key;
+        setOrdering(`${orderPrefix}${apiSortKey}`);
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
@@ -100,7 +101,7 @@ const ManageReportContact: React.FC = () => {
 
     const columns: ColumnDef[] = [
         {
-            key: 'first_name',
+            key: 'name',
             title: 'Name',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">

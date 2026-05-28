@@ -273,8 +273,8 @@ export const courseAnnouncementFilterConfig: FilterField[] = [
 ];
 
 export const contactFilterConfig: FilterField[] = [
-    { type: 'text', label: 'Name', name: 'name', placeholder: 'Filter by name...' },
-    
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
 ];
 
 export const studentOrderFilterConfig: FilterField[] = [
@@ -303,15 +303,7 @@ export const studentPerformanceFilterConfig: FilterField[] = [
         type: "text",
         placeholder: 'Filter by email...',
     },
-    {
-        name: "category",
-        label: "Category",
-        type: "select",
-        options: [
-            { value: "all", label: "All" },
-            { value: "DIRECT", label: "DIRECT" },
-        ]
-    }
+    
 ];
 
 export const studentNotesFilterConfig: FilterField[] = [
