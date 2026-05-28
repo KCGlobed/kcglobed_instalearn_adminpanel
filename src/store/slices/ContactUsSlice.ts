@@ -23,10 +23,10 @@ const initialState:Contact={
 
 }
 
-export const getContact=createAsyncThunk<Pagination<contact>,{page?:number;search?:string;name?:string;ordering?:string;status?:string;startDate?:string;endDate?:string,}>( "Contact/getContact",
-    async({page=1,search="",name="",ordering="",status="",startDate="",endDate=""},{rejectWithValue})=>{
+export const getContact = createAsyncThunk<Pagination<contact>, { page?: number; search?: string; first_name?: string; last_name?: string; email?: string; ordering?: string; status?: string; startDate?: string; endDate?: string; }>( "Contact/getContact",
+    async({ page=1, search="", first_name="", last_name="", email="", ordering="", status="", startDate="", endDate="" }, { rejectWithValue } )=>{
       try{
-         return await fetchContactApi(page,search,name,ordering,status,startDate,endDate);
+         return await fetchContactApi(page,search,first_name,last_name,email,ordering,status,startDate,endDate);
       }catch(error:any){
          return rejectWithValue(error.message)
       }

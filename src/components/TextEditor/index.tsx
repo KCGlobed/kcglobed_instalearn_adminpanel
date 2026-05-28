@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
@@ -15,8 +15,13 @@ import {
   type DOMConversionMap,
   type EditorState,
   TextNode,
-  type LexicalEditor as editable
+  type LexicalEditor as editable,
+  RootNode,
+  $getSelection,
+  $isRangeSelection
 } from 'lexical';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $trimTextContentFromAnchor } from "@lexical/selection";
 import { parseAllowedFontSize } from "./ui/fontSize";
 import { parseAllowedColor } from "./ui/ColorPicker";
 import Editor from "./Editor";
@@ -33,9 +38,37 @@ type Props = {
   placeholder?: string;
   initialValue?: string;
   className?: string;
+  maxLength?: number;
 };
 
-const LexicalEditor: React.FC<Props> = ({ value, onChange, className }) => {
+const MaxLengthPlugin = ({ maxLength }: { maxLength?: number }) => {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    if (!maxLength) return;
+
+    return editor.registerNodeTransform(RootNode, (rootNode: RootNode) => {
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
+        return;
+      }
+
+      const textContentSize = rootNode.getTextContentSize();
+
+      if (textContentSize > maxLength) {
+        const delCount = textContentSize - maxLength;
+        const anchor = selection.anchor;
+
+        // Truncate the text from the anchor selection point back
+        $trimTextContentFromAnchor(editor, anchor, delCount);
+      }
+    });
+  }, [editor, maxLength]);
+
+  return null;
+};
+
+const LexicalEditor: React.FC<Props> = ({ value, onChange, className, maxLength }) => {
 
   const emptyEditor = true;
 
@@ -215,6 +248,7 @@ const LexicalEditor: React.FC<Props> = ({ value, onChange, className }) => {
             <div className={`editor-shell ${className}`}>
               <Editor value={value} />
               <OnChangePlugin onChange={onChangeHandler} />
+              <MaxLengthPlugin maxLength={maxLength} />
             </div>
           </ToolbarContext>
         </TableContext>

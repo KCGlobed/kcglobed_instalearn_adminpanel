@@ -622,6 +622,7 @@ export const changeStudentPasswordApi = async (payload: any): Promise<any> => {
 //----------------Abhishek Manage Student End----------//
 
 
+
 //---------manage trial course start ------//
 
 export const fetchTrailCourse = async (page = 1, search: string = "", name: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "") => {
@@ -694,9 +695,9 @@ export const updateCourseAnnouncementStatusApi = async (id: string | number, pay
   return await apiRequest(`course/update-announcements-status/${id}`, 'POST', payload);
 };
 
-export const fetchContactApi= async(page=1,search: string="",name: string="",ordering: string="",status: string="",startDate: string="",endDate: string="")=>{
+export const fetchContactApi= async(page=1,search: string="",first_name: string="",last_name: string="",email: string="",ordering: string="",status: string="",startDate: string="",endDate: string="")=>{
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  let query = `reports/get-contact-us-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  let query = `reports/get-contact-us-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (startDate) query += `&start_date=${startDate}`;
   if (endDate) query += `&end_date=${endDate}`;
   const res: any = await apiRequest(query, "GET");
@@ -704,12 +705,56 @@ export const fetchContactApi= async(page=1,search: string="",name: string="",ord
 }
 
 
-export const downloadContactPdfApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadContactPdfApi = async ({ search = "", first_name = "", email = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`reports/get-contact-us-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`reports/get-contact-us-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
-export const downloadContactExcelApi = async ({ search = "", name = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadContactExcelApi = async ({ search = "", first_name = "", email = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`reports/get-contact-us-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`reports/get-contact-us-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+
+
+
+export const fetchStudentOrdersApi = async (page = 1,search: string = "",first_name: string = "",last_name: string = "", email: string = "",ordering: string = "",status: string = "",startDate: string = "",endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-active-order-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${status && status !== 'all' ? `&subscription_status=${encodeURIComponent(status)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const downloadActiveOrderPdfApi = async ({ search = "", first_name = "",last_name = "", email = "",status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-active-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadActiveOrderExcelApi = async ({ search = "", first_name = "",last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-active-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const fetchStudentPerformanceApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", category: string = "", startDate: string = "", endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const downloadStudentPerformancePdfApi = async ({ search = "", first_name = "", last_name = "", email = "", category = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentPerformanceExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", category = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const fetchStudentNotesReportApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", course: string = "", startDate: string = "", endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-student-notes-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const fetchStudentNotesDetailApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-admin-user-notes-report/${userId}/${courseId}`, "GET");
+};
+
+export const downloadStudentNotesPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", course = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-admin-notes-listing-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentNotesExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", course = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-admin-notes-listing-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }

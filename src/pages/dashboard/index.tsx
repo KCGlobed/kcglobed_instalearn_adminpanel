@@ -70,6 +70,9 @@ const Dashboard: React.FC = () => {
       path: '#',
       submenu: [
         { name: 'Manage Contact Us', path: '/dashboard/report-contact' },
+        { name: 'Manage Student Order', path: '/dashboard/report-student-order' },
+        { name: 'Manage Student Performance', path: '/dashboard/student-performance-report' },
+        { name: 'Manage Student Notes', path: '/dashboard/student-notes-report' },
       ]
     },
     {

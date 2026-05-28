@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar } from 'lucide-react';
-import useDebounce from '../../../hooks/useDebounce';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
-import { contactFilterConfig } from '../../../utils/filterConfiguration';
-import { getContact } from '../../../store/slices/ContactUsSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '../../../hooks/useRedux';
+import { getStudentOrders } from '../../../store/slices/studentOrderSlice';
 import moment from 'moment';
+import GlassButton from '../../../components/Button/Button';
+import { FiEye } from 'react-icons/fi';
+import { Filter, Calendar } from 'lucide-react';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../../components/Table/Table';
+import { useModal } from '../../../context/ModalContext';
+import useDebounce from '../../../hooks/useDebounce';
+import StudentOrderView from '../../../components/View/StudentOrderView';
 import ExportFile from '../../../components/Forms/ExportFile';
-import { downloadContactExcelApi, downloadContactPdfApi } from '../../../services/apiServices';
+import { downloadActiveOrderPdfApi, downloadActiveOrderExcelApi } from '../../../services/apiServices';
+import { studentOrderFilterConfig } from '../../../utils/filterConfiguration';
 
 interface ColumnDef {
     key: string;
@@ -22,19 +27,21 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageReportContact: React.FC = () => {
+const ManageStudentOrder: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
+    const { showModal } = useModal();
 
     // Filter states
     const [filters, setFilters] = useState({
         first_name: '',
+        last_name: '',
         email: '',
-        status: 'all' as 'all' | 'active' | 'deactive',
+        status: 'all',
     });
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -43,7 +50,7 @@ const ManageReportContact: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.Contact);
+    const { data, loading, pagination } = useAppSelector((state) => state.studentOrder);
     const pageSize = 10;
 
     const sortRef = useRef<HTMLDivElement>(null);
@@ -59,10 +66,11 @@ const ManageReportContact: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(getContact({
+        dispatch(getStudentOrders({
             page: currentPage,
             search: debouncedSearchTerm,
             first_name: debouncedFilters.first_name,
+            last_name: debouncedFilters.last_name,
             email: debouncedFilters.email,
             ordering,
             status: debouncedFilters.status,
@@ -82,6 +90,7 @@ const ManageReportContact: React.FC = () => {
     const clearFilters = () => {
         setFilters({
             first_name: '',
+            last_name: '',
             email: '',
             status: 'all',
         });
@@ -98,10 +107,11 @@ const ManageReportContact: React.FC = () => {
         setShowSort(false);
     };
 
+   
     const columns: ColumnDef[] = [
         {
             key: 'first_name',
-            title: 'Name',
+            title: 'Student',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     <div
@@ -127,34 +137,17 @@ const ManageReportContact: React.FC = () => {
         {
             key: 'email',
             title: 'Email',
-            render: (value: string) => (
-                <span className="text-gray-600 text-sm">{value}</span>
-            ),
             sortable: true,
             width: '200px',
         },
         {
             key: 'phone',
             title: 'Phone',
-            render: (value: string) => (
-                <span className="text-gray-600 text-sm">{value || 'N/A'}</span>
-            ),
             width: '150px',
         },
         {
-            key: 'message',
-            title: 'Message',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'N/A'}
-                </div>
-            ),
-            sortable: false,
-            width: '300px',
-        },
-        {
             key: 'created_at',
-            title: 'Submitted On',
+            title: 'Created At',
             render: (value: string) => (
                 <div className="flex flex-col">
                     <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
@@ -162,8 +155,31 @@ const ManageReportContact: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '150px',
-        }
+            width: '180px',
+        },
+        {
+            key: 'actions',
+            title: 'Actions',
+            render: (_, row) => (
+                <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() =>
+                            showModal({
+                                title: 'View Student Order',
+                                content: <StudentOrderView order={row} />,
+                                type: 'custom',
+                                size: 'xl',
+                            })
+                        }
+                    />
+                </div>
+            ),
+            width: '80px',
+            align: 'right',
+        },
     ];
 
     return (
@@ -201,36 +217,38 @@ const ManageReportContact: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search contacts..."
+                        placeholder="Search orders..."
                         className="mx-4"
                     />
+
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadContactPdfApi({
+                            pdfApi={() => downloadActiveOrderPdfApi({
                                 search: debouncedSearchTerm,
                                 first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 email: debouncedFilters.email,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            excelApi={() => downloadContactExcelApi({
+                            excelApi={() => downloadActiveOrderExcelApi({
                                 search: debouncedSearchTerm,
                                 first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 email: debouncedFilters.email,
                                 status: debouncedFilters.status,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            fileNamePrefix="contact"
+                            fileNamePrefix="student-order"
                         />
-
                     </div>
                 </div>
 
                 <DynamicFilter
                     show={showFilter}
-                    config={contactFilterConfig}
+                    config={studentOrderFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -251,7 +269,7 @@ const ManageReportContact: React.FC = () => {
 
             <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
                 <DynamicServerTable
-                    data={data || []}
+                    data={data}
                     columns={columns as any}
                     currentPage={currentPage}
                     pageSize={pagination?.page_size || pageSize}
@@ -266,4 +284,4 @@ const ManageReportContact: React.FC = () => {
     );
 };
 
-export default ManageReportContact;
+export default ManageStudentOrder;

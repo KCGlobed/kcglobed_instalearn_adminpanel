@@ -276,3 +276,61 @@ export const contactFilterConfig: FilterField[] = [
     { type: 'text', label: 'Name', name: 'name', placeholder: 'Filter by name...' },
     
 ];
+
+export const studentOrderFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    
+];
+
+export const studentPerformanceFilterConfig: FilterField[] = [
+    {
+        name: "first_name",
+        label: "First Name",
+        type: "text",
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: "last_name",
+        label: "Last Name",
+        type: "text",
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: "email",
+        label: "Email",
+        type: "text",
+        placeholder: 'Filter by email...',
+    },
+    {
+        name: "category",
+        label: "Category",
+        type: "select",
+        options: [
+            { value: "all", label: "All" },
+            { value: "DIRECT", label: "DIRECT" },
+        ]
+    }
+];
+
+export const studentNotesFilterConfig: FilterField[] = [
+    {
+        name: "first_name",
+        label: "First Name",
+        type: "text",
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: "last_name",
+        label: "Last Name",
+        type: "text",
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: "email",
+        label: "Email",
+        type: "text",
+        placeholder: 'Filter by email...',
+    },
+];

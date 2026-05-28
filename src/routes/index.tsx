@@ -31,6 +31,9 @@ import ManageTrailCourse from "../pages/trailCourse";
 import CourseReview from "../pages/CourseReview";
 import ManageCourseAnnoucement from "../pages/ManageCourseAnnoucement";
 import ManageReportContact from "../pages/ManageReports/manageContactUs";
+import ManageStudentOrder from "../pages/ManageReports/ManageStudentOrder";
+import StudentPerformace from "../pages/ManageReports/StudentPerformace";
+import ManageStudentNotesReport from "../pages/ManageReports/StudentNotesReport";
 
 
 export default function AppRoutes() {
@@ -71,6 +74,11 @@ export default function AppRoutes() {
           <Route path="/dashboard/course-review" element={<CourseReview />} />
           <Route path="/dashboard/manage-announcement" element={<ManageCourseAnnoucement />} />
           <Route path="/dashboard/report-contact" element={<ManageReportContact />} />
+          <Route path="/dashboard/report-student-order" element={<ManageStudentOrder />} />
+          <Route path="/dashboard/student-performance-report" element={<StudentPerformace />} />
+          <Route path="/dashboard/student-notes-report" element={<ManageStudentNotesReport />} />
+
+
 
 
         </Route>

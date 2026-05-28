@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar } from 'lucide-react';
-import useDebounce from '../../../hooks/useDebounce';
-import { useAppDispatch, useAppSelector } from '../../../hooks/useRedux';
-import { contactFilterConfig } from '../../../utils/filterConfiguration';
-import { getContact } from '../../../store/slices/ContactUsSlice';
+import { useAppDispatch } from '../../../hooks/useAppDispatch';
+import { useAppSelector } from '../../../hooks/useRedux';
+import { getStudentNotes } from '../../../store/slices/studentNotesSlice';
 import moment from 'moment';
+import GlassButton from '../../../components/Button/Button';
+import { FiEye } from 'react-icons/fi';
+import { Filter, Calendar } from 'lucide-react';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../../components/Table/Table';
+import { useModal } from '../../../context/ModalContext';
+import useDebounce from '../../../hooks/useDebounce';
 import ExportFile from '../../../components/Forms/ExportFile';
-import { downloadContactExcelApi, downloadContactPdfApi } from '../../../services/apiServices';
+import { downloadStudentNotesPdfApi, downloadStudentNotesExcelApi } from '../../../services/apiServices';
+import { studentNotesFilterConfig } from '../../../utils/filterConfiguration';
+import StudentNotesView from '../../../components/View/StudentNotesView';
 
 interface ColumnDef {
     key: string;
@@ -22,19 +27,21 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageReportContact: React.FC = () => {
+const ManageStudentNotesReport: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
+    const { showModal } = useModal();
 
     // Filter states
     const [filters, setFilters] = useState({
         first_name: '',
+        last_name: '',
         email: '',
-        status: 'all' as 'all' | 'active' | 'deactive',
+        course__name: '',
     });
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -43,8 +50,10 @@ const ManageReportContact: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.Contact);
+    const { data, loading, pagination } = useAppSelector((state) => state.studentNotes);
     const pageSize = 10;
+
+
 
     const sortRef = useRef<HTMLDivElement>(null);
     const dateRef = useRef<HTMLDivElement>(null);
@@ -59,13 +68,14 @@ const ManageReportContact: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(getContact({
+        dispatch(getStudentNotes({
             page: currentPage,
             search: debouncedSearchTerm,
             first_name: debouncedFilters.first_name,
+            last_name: debouncedFilters.last_name,
             email: debouncedFilters.email,
             ordering,
-            status: debouncedFilters.status,
+            course: debouncedFilters.course__name,
             startDate: startDate,
             endDate: endDate
         }));
@@ -82,88 +92,124 @@ const ManageReportContact: React.FC = () => {
     const clearFilters = () => {
         setFilters({
             first_name: '',
+            last_name: '',
             email: '',
-            status: 'all',
+            course__name: '',
         });
     };
 
-    const handleSort = (key: string, direction: 'asc' | 'desc') => {
+    const handleSort = (key: string | number | symbol, direction: 'asc' | 'desc') => {
         const orderPrefix = direction === 'desc' ? '-' : '';
-        setOrdering(`${orderPrefix}${key}`);
+        setOrdering(`${orderPrefix}${String(key)}`);
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'first_name';
+        const currentKey = ordering.replace(/^-/, '') || 'user__first_name';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
 
     const columns: ColumnDef[] = [
         {
-            key: 'first_name',
-            title: 'Name',
+            key: 'user__first_name',
+            title: 'Student',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden"
-                    >
-                        {(row as any).image ? (
-                            <img src={(row as any).image} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                            <span>{row.first_name ? row.first_name.charAt(0).toUpperCase() : 'S'}</span>
-                        )}
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden flex-shrink-0">
+                        <span>{row.user__first_name ? row.user__first_name.charAt(0).toUpperCase() : 'S'}</span>
                     </div>
                     <div className="flex flex-col">
                         <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">
-                            {row.first_name} {row.last_name}
+                            {row.user__first_name} {row.user__last_name}
                         </span>
-                        <span className="text-gray-400 text-[10px]">ID: {row.id}</span>
+                        <span className="text-gray-400 text-[10px]">ID: {row.user}</span>
                     </div>
                 </div>
             ),
             sortable: true,
-            width: '250px',
+            width: '220px',
         },
         {
-            key: 'email',
+            key: 'user__email',
             title: 'Email',
-            render: (value: string) => (
-                <span className="text-gray-600 text-sm">{value}</span>
+            render: (_: any, row: any) => (
+                <span className="text-gray-800 text-sm">{row.user__email || '-'}</span>
             ),
             sortable: true,
             width: '200px',
         },
         {
-            key: 'phone',
-            title: 'Phone',
-            render: (value: string) => (
-                <span className="text-gray-600 text-sm">{value || 'N/A'}</span>
+            key: 'user__phone1',
+            title: 'Phone Number',
+            render: (_: any, row: any) => (
+                <span className="text-gray-800 text-sm">{row.user__phone1 || '-'}</span>
             ),
             width: '150px',
         },
         {
-            key: 'message',
-            title: 'Message',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'N/A'}
-                </div>
+            key: 'user__category',
+            title: 'Category',
+            render: (_: any, row: any) => (
+                <span className="text-gray-800 text-sm">{row.user__category || '-'}</span>
             ),
-            sortable: false,
-            width: '300px',
+            width: '120px',
         },
         {
-            key: 'created_at',
-            title: 'Submitted On',
-            render: (value: string) => (
-                <div className="flex flex-col">
-                    <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
-                    <span className="text-gray-400 text-[10px] uppercase font-bold">{value ? moment(value).format('hh:mm A') : ''}</span>
-                </div>
+            key: 'course__name',
+            title: 'Course Name',
+            render: (_: any, row: any) => (
+                <span className="text-gray-800 text-sm font-semibold">{row.course__name || '-'}</span>
             ),
             sortable: true,
-            width: '150px',
-        }
+            width: '220px',
+        },
+        {
+            key: 'notes_count',
+            title: 'Notes Count',
+            render: (_: any, row: any) => (
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200">
+                    {row.notes_count || 0}
+                </span>
+            ),
+           
+            width: '120px',
+        },
+        {
+            key: 'actions',
+            title: 'Actions',
+            render: (_, row: any) => {
+                const studentCourses = data
+                    .filter((item: any) => item.user === row.user)
+                    .map((item: any) => ({
+                        id: item.course,
+                        name: item.course__name,
+                        notes_count: item.notes_count,
+                    }));
+                const uniqueCourses = studentCourses.filter((course, index, self) =>
+                    self.findIndex(c => c.id === course.id) === index
+                );
+
+                return (
+                    <div className="flex items-center justify-end gap-3 pr-2">
+                        <GlassButton
+                            icon={<FiEye />}
+                            color="blue"
+                            title="View Notes"
+                            onClick={() =>
+                                showModal({
+                                    title: 'View Student Notes',
+                                    content: <StudentNotesView userId={row.user} courses={uniqueCourses} initialCourseId={row.course} />,
+                                    type: 'custom',
+                                    size: 'xl',
+                                })
+                            }
+                        />
+                    </div>
+                );
+            },
+            width: '80px',
+            align: 'right',
+        },
     ];
 
     return (
@@ -201,36 +247,38 @@ const ManageReportContact: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search contacts..."
+                        placeholder="Search student notes..."
                         className="mx-4"
                     />
+
                     <div className="flex items-center gap-4">
                         <ExportFile
-                            pdfApi={() => downloadContactPdfApi({
+                            pdfApi={() => downloadStudentNotesPdfApi({
                                 search: debouncedSearchTerm,
                                 first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 email: debouncedFilters.email,
-                                status: debouncedFilters.status,
+                                course: debouncedFilters.course__name,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            excelApi={() => downloadContactExcelApi({
+                            excelApi={() => downloadStudentNotesExcelApi({
                                 search: debouncedSearchTerm,
                                 first_name: debouncedFilters.first_name,
+                                last_name: debouncedFilters.last_name,
                                 email: debouncedFilters.email,
-                                status: debouncedFilters.status,
+                                course: debouncedFilters.course__name,
                                 start_date: startDate,
                                 end_date: endDate
                             })}
-                            fileNamePrefix="contact"
+                            fileNamePrefix="student-notes"
                         />
-
                     </div>
                 </div>
 
                 <DynamicFilter
                     show={showFilter}
-                    config={contactFilterConfig}
+                    config={studentNotesFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -251,7 +299,7 @@ const ManageReportContact: React.FC = () => {
 
             <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
                 <DynamicServerTable
-                    data={data || []}
+                    data={data}
                     columns={columns as any}
                     currentPage={currentPage}
                     pageSize={pagination?.page_size || pageSize}
@@ -266,4 +314,4 @@ const ManageReportContact: React.FC = () => {
     );
 };
 
-export default ManageReportContact;
+export default ManageStudentNotesReport;
