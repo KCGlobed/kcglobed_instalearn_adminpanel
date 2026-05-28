@@ -746,3 +746,29 @@ export interface TrailCourses {
         };
     }[];
 }
+
+
+export interface Review {
+    id: number;
+    rating: number;
+    review: string;
+    status: boolean;
+    approved: number;
+    created_at: string;
+
+    course: {
+        id: number;
+        name: string;
+    } | null;
+
+    user: {
+        id: number;
+        first_name: string;
+        last_name: string;
+        image: string | null;
+        email: string;
+    } | null;
+}
+
+
+

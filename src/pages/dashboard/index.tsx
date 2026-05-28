@@ -5,6 +5,7 @@ import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
+import { MdRateReview } from "react-icons/md";
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -54,6 +55,9 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Manage Trail Courses', icon: <FaDiscourse className="mr-2" />, path: '/dashboard/trail-course'
+    },
+    {
+      name: 'Manage Course Review', icon: <MdRateReview className="mr-2" />, path: '/dashboard/course-review'
     },
     {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',
