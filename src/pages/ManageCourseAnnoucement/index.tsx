@@ -132,7 +132,7 @@ const ManageCourseAnnoucement: React.FC = () => {
 
 
         {
-            key: 'course',
+            key: 'course__name',
             title: 'Course',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">

@@ -472,6 +472,10 @@ export const fetchSubCategoryOptionsApi = async () => {
   return res;
 }
 
+export const fetchCategorySubcategoryListApi = async (): Promise<any> => {
+  return await apiRequest(`course/get-category-subcategory-list/`, 'GET');
+}
+
 export const fetchTagOptionsApi = async () => {
   const res: any = await apiRequest(`course/get-tags-list/`, 'GET');
   return res;

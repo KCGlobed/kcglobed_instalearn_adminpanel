@@ -10,9 +10,9 @@ import LexicalEditor from "../TextEditor";
 import {
     courseDetailApi,
     createCourseApi,
-    fetchSubCategoryOptionsApi,
     fetchTagOptionsApi,
-    updateCourseApi
+    updateCourseApi,
+    fetchCategorySubcategoryListApi
 } from "../../services/apiServices";
 
 
@@ -102,6 +102,9 @@ const CourseForm = () => {
     const [loading, setLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState<any[]>([]);
     const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+    const [categoriesData, setCategoriesData] = useState<any[]>([]);
+    const [selectedParentCategory, setSelectedParentCategory] = useState<any>(null);
+    const [subCategoryOptions, setSubCategoryOptions] = useState<any[]>([]);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const { id } = useParams();
@@ -140,13 +143,89 @@ const CourseForm = () => {
     useEffect(() => {
         const load = async () => {
             try {
-                const [tags, cats] = await Promise.all([fetchTagOptionsApi(), fetchSubCategoryOptionsApi()]);
+                setLoading(true);
+                const [tags, catSubcatRes] = await Promise.all([
+                    fetchTagOptionsApi(),
+                    fetchCategorySubcategoryListApi()
+                ]);
+
                 setTagOptions((tags?.data || tags?.results || tags || []).map((t: any) => ({ value: t.id, label: t.name || t.title })));
-                setCategoryOptions((cats?.data || cats?.results || cats || []).map((c: any) => ({ value: c.id, label: c.name || c.title })));
-            } catch (err) { toast.error("Failed to load options"); }
+
+                const rawCats = catSubcatRes?.data || catSubcatRes || [];
+                setCategoriesData(rawCats);
+
+                const catOpts = rawCats.map((cat: any) => ({
+                    value: cat.id,
+                    label: cat.name
+                }));
+                setCategoryOptions(catOpts);
+
+                if (id) {
+                    const res = await courseDetailApi(id);
+                    setValue("name", res.data.name);
+                    setValue("short_description", res.data.short_description);
+                    setValue("description", res.data.description);
+                    setValue("duration", res.data.duration);
+                    setValue("requirements", res.data.requirements);
+                    setValue("price", res.data.price);
+                    setValue("original_price", res.data.original_price || res.data.price);
+                    setValue("discount", res.data.discount);
+                    setValue("level", res.data.level);
+                    setValue("tags", (res.data.tags || []).map((item: any) => ({ value: item.tags?.id, label: item.tags?.name })));
+
+                    const assignedSubCats = (res.data.categories || []).map((item: any) => ({
+                        value: item.category_info?.id,
+                        label: item.category_info?.name
+                    }));
+                    setValue("category_id", assignedSubCats);
+
+                    // Set parent category based on first assigned subcategory
+                    if (assignedSubCats.length > 0) {
+                        const firstSubCatId = assignedSubCats[0].value;
+                        const parentCat = rawCats.find((cat: any) => 
+                            (cat.subcategory || []).some((sub: any) => sub.id === firstSubCatId)
+                        );
+                        if (parentCat) {
+                            setSelectedParentCategory({ value: parentCat.id, label: parentCat.name });
+                        }
+                    }
+
+                    setValue("feature_json", (res.data.feature_json || []).map((item: any) => ({ value: item })));
+                    setValue("objectives_summary", (res.data.objectives_summary || []).map((item: any) => ({ value: item })));
+                    if (res.data.image) {
+                        setImagePreview(res.data.image);
+                        setValue("image", res.data.image);
+                    }
+                }
+            } catch (err) {
+                toast.error("Failed to load options or course details");
+            } finally {
+                setLoading(false);
+            }
         };
         load();
-    }, []);
+    }, [id, setValue]);
+
+    useEffect(() => {
+        if (!selectedParentCategory) {
+            setSubCategoryOptions([]);
+            return;
+        }
+
+        const parentCatObj = categoriesData.find(
+            (cat: any) => Number(cat.id) === Number(selectedParentCategory.value)
+        );
+
+        if (parentCatObj && parentCatObj.subcategory) {
+            const subOpts = parentCatObj.subcategory.map((sub: any) => ({
+                value: sub.id,
+                label: sub.name
+            }));
+            setSubCategoryOptions(subOpts);
+        } else {
+            setSubCategoryOptions([]);
+        }
+    }, [selectedParentCategory, categoriesData]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -261,40 +340,7 @@ const CourseForm = () => {
         return <p className="mt-1 text-xs font-semibold text-red-500 flex items-center gap-1"><FiAlertCircle /> {err.message}</p>;
     };
 
-    const fetchCourseDetail = async (id: string | number) => {
-        try {
-            setLoading(true);
-            const res = await courseDetailApi(id);
-            setValue("name", res.data.name);
-            setValue("short_description", res.data.short_description);
-            setValue("description", res.data.description);
-            setValue("duration", res.data.duration);
-            setValue("requirements", res.data.requirements);
-            setValue("price", res.data.price);
-            setValue("original_price", res.data.original_price || res.data.price);
-            setValue("discount", res.data.discount);
-            setValue("level", res.data.level);
-            setValue("tags", (res.data.tags || []).map((item: any) => ({ value: item.tags?.id, label: item.tags?.name })));
-            setValue("category_id", (res.data.categories || []).map((item: any) => ({ value: item.category_info?.id, label: item.category_info?.name })));
-            setValue("feature_json", (res.data.feature_json || []).map((item: any) => ({ value: item })));
-            setValue("objectives_summary", (res.data.objectives_summary || []).map((item: any) => ({ value: item })));
-            if (res.data.image) {
-                setImagePreview(res.data.image);
-                setValue("image", res.data.image);
-            }
-        } catch (err) {
-            console.error("Failed to fetch course detail", err);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-
-    useEffect(() => {
-        if (id) {
-            fetchCourseDetail(id);
-        }
-    }, [id]);
+    // Course details are handled in the mounting load effect to avoid race conditions.
 
 
     return (
@@ -428,9 +474,24 @@ const CourseForm = () => {
                 </div>
 
                 {/* ─── Row 2: Taxonomy ─── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
                         <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Category</label>
+                        <Select
+                            styles={customSelectStyles(false)}
+                            options={categoryOptions}
+                            value={selectedParentCategory}
+                            onChange={(val: any) => {
+                                setSelectedParentCategory(val);
+                                setValue("category_id", []);
+                            }}
+                            placeholder="Select Category"
+                            isClearable
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-slate-600 uppercase mb-2">SubCategory</label>
                         <Controller
                             name="category_id"
                             control={control}
@@ -438,9 +499,10 @@ const CourseForm = () => {
                                 <Select
                                     isMulti
                                     styles={customSelectStyles(!!errors.category_id)}
-                                    options={categoryOptions}
+                                    options={subCategoryOptions}
                                     {...field}
-                                    placeholder="Select category"
+                                    placeholder={selectedParentCategory ? "Select SubCategory" : "Select Category first"}
+                                    isDisabled={!selectedParentCategory}
                                 />
                             )}
                         />
