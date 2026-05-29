@@ -42,8 +42,13 @@ const StudentReportView = ({ studentId }: StudentReportViewProps) => {
 
     const formatDuration = (seconds: number) => {
         if (!seconds) return "0 sec";
-        const mins = Math.floor(seconds / 60);
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
+
+        if (seconds >= 3600) {
+            return `${hours} hr ${mins} min ${secs} sec`;
+        }
         if (mins === 0) return `${secs} sec`;
         return `${mins} min ${secs} sec`;
     };

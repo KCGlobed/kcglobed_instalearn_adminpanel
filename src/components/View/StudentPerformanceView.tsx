@@ -23,11 +23,16 @@ const StudentPerformanceView: React.FC<StudentPerformanceViewProps> = ({ perform
 
     const { user_detail, course_detail, performance_report } = performance;
 
-    // Helper to format watch time in hours and minutes
-    const formatWatchTime = (totalMinutes: number) => {
-        if (!totalMinutes) return '0 mins 0 secs';
-        const minutes = Math.floor(totalMinutes / 60);
-        const seconds = totalMinutes % 60;
+    // Helper to format watch time in hours, minutes and seconds
+    const formatWatchTime = (totalSeconds: number) => {
+        if (!totalSeconds) return '0 mins 0 secs';
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+
+        if (totalSeconds >= 3600) {
+            return `${hours} hr${hours > 1 ? 's' : ''} ${minutes} min${minutes !== 1 ? 's' : ''} ${seconds} sec${seconds !== 1 ? 's' : ''}`;
+        }
         return `${minutes} mins ${seconds} secs`;
     };
 
