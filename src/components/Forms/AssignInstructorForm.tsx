@@ -96,19 +96,23 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
         try {
             const res = await courseDetailApi(courseId);
             if (res.data.instructors && res.data.instructors.length > 0) {
-                const instructor = res.data.instructors[0].instructor_info;
-                if (instructor) {
-                    setValue('instructor', [{
-                        label: instructor.text_1,
-                        value: instructor.id,
-                        meta: {
-                            qualification: instructor.text_2,
-                            company: instructor.text_3,
-                            experience: instructor.experience,
-                            avatar: instructor.image
-                        }
-                    }] as any);
-                }
+                const mappedInstructors = res.data.instructors
+                    .map((item: any) => {
+                        const instructor = item.instructor_info;
+                        if (!instructor) return null;
+                        return {
+                            label: instructor.text_1,
+                            value: instructor.id,
+                            meta: {
+                                qualification: instructor.text_2,
+                                company: instructor.text_3,
+                                experience: instructor.experience,
+                                avatar: instructor.image
+                            }
+                        };
+                    })
+                    .filter(Boolean);
+                setValue('instructor', mappedInstructors as any);
             }
         } catch {
             toast.error('Failed to load instructor details.');
