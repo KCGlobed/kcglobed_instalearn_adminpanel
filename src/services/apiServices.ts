@@ -271,8 +271,8 @@ export const deleteInstructorApi = async (id: string | number): Promise<any> => 
   return await apiRequest(`user/delete-user/instructor/${id}`, 'DELETE');
 };
 
-export const updateInstructorStatusApi = async (id: string | number, payload: { is_active: boolean }): Promise<any> => {
-  return await apiRequest(`user/update-user-status/instructor/${id}`, 'POST', payload);
+export const updateInstructorStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/instructor/${id}`, 'POST', payload);
 };
 
 export const downloadInstructorPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
@@ -618,6 +618,10 @@ export const fetchStudentVideoReportsApi = async (id: string | number, courseId:
 }
 
 export const changeStudentPasswordApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/admin-update-password/`, 'POST', payload);
+}
+
+export const changeInstructorPasswordApi = async (payload: any): Promise<any> => {
   return await apiRequest(`user/admin-update-password/`, 'POST', payload);
 }
 

@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
       ]
     },
     { name: 'Manage MCQ', icon: <FaClipboardList className="mr-2" />, path: '/dashboard/mcq' },
-    // { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
+    { name: 'Manage Instructor', icon: <FaUser className="mr-2" />, path: '/dashboard/instructor' },
     {
       name: 'Manage FAQ',
       icon: <FaQuestionCircle className="mr-2" />,

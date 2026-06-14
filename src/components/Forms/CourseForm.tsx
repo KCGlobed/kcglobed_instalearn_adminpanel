@@ -6,6 +6,8 @@ import { FiPlus, FiTrash2, FiChevronLeft, FiImage, FiUpload, FiAlertCircle, FiEy
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import { CropperModal } from "../ImageCropper/components/CropperModal";
+import type { CropResult } from "../ImageCropper/utils/cropCanvas";
 import LexicalEditor from "../TextEditor";
 import {
     courseDetailApi,
@@ -107,6 +109,9 @@ const CourseForm = () => {
     const [subCategoryOptions, setSubCategoryOptions] = useState<any[]>([]);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
+    const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+    const [originalImageFormat, setOriginalImageFormat] = useState<'image/png' | 'image/jpeg'>('image/png');
     const { id } = useParams();
 
     const [lastEdited, setLastEdited] = useState<"original_price" | "price" | "discount" | null>(null);
@@ -230,11 +235,24 @@ const CourseForm = () => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setValue("image", file, { shouldValidate: true });
+            // Detect and preserve the original image format
+            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
+            setOriginalImageFormat(isJpeg ? 'image/jpeg' : 'image/png');
+
             const r = new FileReader();
-            r.onloadend = () => setImagePreview(r.result as string);
+            r.onloadend = () => {
+                setRawImageSrc(r.result as string);
+                setIsCropperOpen(true);
+            };
             r.readAsDataURL(file);
+            // Clear input value so re-uploading the same file works
+            e.target.value = '';
         }
+    };
+
+    const handleCropComplete = (result: CropResult) => {
+        setValue("image", result.file, { shouldValidate: true });
+        setImagePreview(result.dataUrl);
     };
 
     const watchedValues = watch();
@@ -458,16 +476,16 @@ const CourseForm = () => {
 
                     <div className="col-span-12 lg:col-span-4">
                         <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Thumbnail</label>
-                        <div className={`relative w-full aspect-video lg:h-40 lg:aspect-auto rounded-xl border-2 border-dashed flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden ${errors.image ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-indigo-400'}`}>
+                        <div className={`relative w-full aspect-video lg:h-40 lg:aspect-auto rounded-xl border-2 border-dashed flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden group ${errors.image ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-indigo-400'}`}>
                             {imagePreview ? (
-                                <img src={imagePreview} className="w-full h-full " alt="Preview" />
+                                <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
                             ) : (
                                 <div className="text-center">
                                     <FiImage className="mx-auto text-slate-300 mb-1" size={24} />
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Upload</span>
                                 </div>
                             )}
-                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onChange={handleImageChange} />
+                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" accept="image/*" onChange={handleImageChange} />
                         </div>
                         <ErrorField name="image" />
                     </div>
@@ -657,15 +675,25 @@ const CourseForm = () => {
                     </button>
                 </div>
 
-                {/* Course Preview Modal */}
-                {isPreviewOpen && (
-                    <CoursePreviewModal
-                        data={watchedValues}
-                        imagePreview={imagePreview}
-                        onClose={() => setIsPreviewOpen(false)}
-                    />
-                )}
             </form>
+
+            {/* Course Preview Modal - outside form to prevent accidental submission */}
+            {isPreviewOpen && (
+                <CoursePreviewModal
+                    data={watchedValues}
+                    imagePreview={imagePreview}
+                    onClose={() => setIsPreviewOpen(false)}
+                />
+            )}
+
+            {/* Image Cropper Modal - outside form to prevent accidental submission */}
+            <CropperModal
+                imageSrc={rawImageSrc}
+                isOpen={isCropperOpen}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+                initialFormat={originalImageFormat}
+            />
         </div>
     );
 };

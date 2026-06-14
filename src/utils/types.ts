@@ -913,3 +913,21 @@ export interface StudentNotesState extends Pagination<StudentNoteListing> {
   detailData: StudentNoteDetail | null;
   detailLoading: boolean;
 }
+
+export interface Instructor{
+    id: number,
+    first_name: string,
+    last_name: string,
+    email: string,
+    address: string,
+    city: string,
+    state: string,
+    country: string,
+    pincode: string,
+    dob: string,
+    is_active: boolean,
+    status:boolean,
+    role: number,
+    created_at: string,
+}
+

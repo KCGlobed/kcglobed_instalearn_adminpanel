@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar } from 'lucide-react';
+import { Filter, Plus, Calendar, BookOpen } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
@@ -10,7 +10,7 @@ import InstructorForm from '../../components/Forms/InstructorForm';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiSettings } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 import { deleteInstructorApi, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
@@ -19,6 +19,8 @@ import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
 import { instructorFilterConfig } from '../../utils/filterConfiguration';
+import TabsModal from '../../components/Modal/TabsModal';
+import InstructorPasswordForm from '../../components/Forms/InstructorPasswordForm';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -161,19 +163,22 @@ const ManageInstructors: React.FC = () => {
         {
             key: 'status',
             title: 'Status',
-            render: (value: boolean, row: any) => (
-                <button
-                    onClick={() => {
-                        dispatch(updateInstructorStatus({ id: row.id, status: !value }))
-                            .unwrap()
-                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err) => toast.error(err || "Failed to update status"));
-                    }}
-                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
-                >
-                    {value ? 'Active' : 'Inactive'}
-                </button>
-            ),
+            render: (_: any, row: any) => {
+                const isActive = row.is_active !== undefined ? row.is_active : row.status;
+                return (
+                    <button
+                        onClick={() => {
+                            dispatch(updateInstructorStatus({ id: row.id, status: !isActive }))
+                                .unwrap()
+                                .then(() => toast.success(`Instructor ${!isActive ? 'activated' : 'deactivated'} successfully`))
+                                .catch((err) => toast.error(err || "Failed to update status"));
+                        }}
+                        className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${isActive ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
+                    >
+                        {isActive ? 'Active' : 'Inactive'}
+                    </button>
+                );
+            },
             width: '120px',
             align: 'center',
             sortable: true,
@@ -192,9 +197,34 @@ const ManageInstructors: React.FC = () => {
                                 title: 'Edit Instructor',
                                 content: <InstructorForm instructorData={row} />,
                                 type: 'success',
-                                size: 'md',
+                                size: 'lg',
                             })
                         }
+                    />
+                    <GlassButton
+                        icon={<FiSettings />}
+                        color="gray"
+                        title="Manage"
+                        onClick={() => {
+                            showModal({
+                                title: 'Manage Password',
+                                content: (
+                                    <TabsModal
+                                        defaultActiveKey="password"
+                                        tabs={[
+                                            {
+                                                key: 'password',
+                                                label: 'Change Password',
+                                                icon: <BookOpen size={15} />,
+                                                component: <InstructorPasswordForm instructorId={row.id} />,
+                                            },
+                                        ]}
+                                    />
+                                ),
+                                type: 'custom',
+                                size: 'xl',
+                            });
+                        }}
                     />
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
@@ -219,7 +249,7 @@ const ManageInstructors: React.FC = () => {
                     />
                 </div>
             ),
-            width: '120px',
+            width: '180px',
             align: 'right',
         },
     ];
@@ -294,7 +324,7 @@ const ManageInstructors: React.FC = () => {
                                     title: "Add Instructor",
                                     content: <InstructorForm />,
                                     type: 'custom',
-                                    size: 'md',
+                                    size: 'lg',
                                 })
                             }
                         >
