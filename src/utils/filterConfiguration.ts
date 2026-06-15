@@ -256,3 +256,95 @@ export const courseReviewFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const courseAnnouncementFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Announcement Title', name: 'title', placeholder: 'Filter by title...' },
+    { type: 'text', label: 'Course Name', name: 'course', placeholder: 'Filter by course name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const contactFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+];
+
+export const studentOrderFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    
+];
+
+export const studentPerformanceFilterConfig: FilterField[] = [
+    {
+        name: "first_name",
+        label: "First Name",
+        type: "text",
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: "last_name",
+        label: "Last Name",
+        type: "text",
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: "email",
+        label: "Email",
+        type: "text",
+        placeholder: 'Filter by email...',
+    },
+    
+];
+
+export const studentNotesFilterConfig: FilterField[] = [
+    {
+        name: "first_name",
+        label: "First Name",
+        type: "text",
+        placeholder: 'Filter by first name...',
+    },
+    {
+        name: "last_name",
+        label: "Last Name",
+        type: "text",
+        placeholder: 'Filter by last name...',
+    },
+    {
+        name: "email",
+        label: "Email",
+        type: "text",
+        placeholder: 'Filter by email...',
+    },
+];
+
+export const blogCategoryFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Category Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+

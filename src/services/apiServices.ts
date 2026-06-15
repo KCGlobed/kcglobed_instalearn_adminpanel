@@ -271,8 +271,8 @@ export const deleteInstructorApi = async (id: string | number): Promise<any> => 
   return await apiRequest(`user/delete-user/instructor/${id}`, 'DELETE');
 };
 
-export const updateInstructorStatusApi = async (id: string | number, payload: { is_active: boolean }): Promise<any> => {
-  return await apiRequest(`user/update-user-status/instructor/${id}`, 'POST', payload);
+export const updateInstructorStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/instructor/${id}`, 'POST', payload);
 };
 
 export const downloadInstructorPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
@@ -472,6 +472,10 @@ export const fetchSubCategoryOptionsApi = async () => {
   return res;
 }
 
+export const fetchCategorySubcategoryListApi = async (): Promise<any> => {
+  return await apiRequest(`course/get-category-subcategory-list/`, 'GET');
+}
+
 export const fetchTagOptionsApi = async () => {
   const res: any = await apiRequest(`course/get-tags-list/`, 'GET');
   return res;
@@ -617,9 +621,14 @@ export const changeStudentPasswordApi = async (payload: any): Promise<any> => {
   return await apiRequest(`user/admin-update-password/`, 'POST', payload);
 }
 
+export const changeInstructorPasswordApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/admin-update-password/`, 'POST', payload);
+}
+
 
 
 //----------------Abhishek Manage Student End----------//
+
 
 
 //---------manage trial course start ------//
@@ -642,10 +651,10 @@ export const fetchCourseChaptersApi = async (id: string | number) => {
   return res;
 }
 
-export const getCourseReviewApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", course: string = "", chapter: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", approved: string = "") => {
+export const getCourseReviewApi = async (page = 1, first_name: string = "", last_name: string = "", course: string = "", chapter: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", approved: string = "") => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   const approvedVal = approved === 'all' || approved === '' ? '' : approved;
-  let query = `course/get-courses-review-rating/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${approvedVal ? `&approved=${approvedVal}` : ""}${start_date ? `&start_date=${start_date}` : ""}${end_date ? `&end_date=${end_date}` : ""}`;
+  let query = `course/get-courses-review-rating/?page=${page}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${approvedVal ? `&approved=${approvedVal}` : ""}${start_date ? `&start_date=${start_date}` : ""}${end_date ? `&end_date=${end_date}` : ""}`;
 
   const res: any = await apiRequest(query, "GET");
   return res;
@@ -658,3 +667,130 @@ export const approveRejectCourseReviewApi = async (id: string | number, payload:
 export const updateCourseReviewStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-courses-review-rating-status/${id}`, 'POST', { status: payload.status ? 1 : 0 });
 }
+
+export const fetchCourseAnnouncementApi = async (page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "", course: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-courses-announcements/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}${course ? `&course=${encodeURIComponent(course)}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const viewCourseAnnouncementApi = async (id: string | number): Promise<any> => {
+  const res: any = await apiRequest(`course/view-courses-announcements/${id}`, "GET");
+  return res.data; // assuming standard data structure
+}
+
+export const createCourseAnnouncementApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/add-course-announcements/`, 'POST', payload);
+};
+
+export const fetchCourseListWithInstructorApi = async () => {
+  const res: any = await apiRequest(`course/get-course-list-with-instructor/`, 'GET');
+  return res;
+}
+
+export const updateCourseAnnouncementApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`course/update-courses-announcements/${id}`, 'POST', payload);
+};
+
+export const deleteCourseAnnouncementApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`course/delete-course-announcements/${id}`, 'DELETE');
+};
+
+export const updateCourseAnnouncementStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-announcements-status/${id}`, 'POST', payload);
+};
+
+export const fetchContactApi= async(page=1,search: string="",first_name: string="",last_name: string="",email: string="",ordering: string="",status: string="",startDate: string="",endDate: string="")=>{
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `reports/get-contact-us-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+
+export const downloadContactPdfApi = async ({ search = "", first_name = "", email = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-contact-us-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadContactExcelApi = async ({ search = "", first_name = "", email = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-contact-us-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
+
+
+
+export const fetchStudentOrdersApi = async (page = 1,search: string = "",first_name: string = "",last_name: string = "", email: string = "",ordering: string = "",status: string = "",startDate: string = "",endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-active-order-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${status && status !== 'all' ? `&subscription_status=${encodeURIComponent(status)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const downloadActiveOrderPdfApi = async ({ search = "", first_name = "",last_name = "", email = "",status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-active-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadActiveOrderExcelApi = async ({ search = "", first_name = "",last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-active-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const fetchStudentPerformanceApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", category: string = "", startDate: string = "", endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const downloadStudentPerformancePdfApi = async ({ search = "", first_name = "", last_name = "", email = "", category = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentPerformanceExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", category = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-student-performance-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const fetchStudentNotesReportApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", course: string = "", startDate: string = "", endDate: string = ""): Promise<any> => {
+  return await apiRequest(`reports/get-student-notes-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
+};
+
+export const fetchStudentNotesDetailApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-admin-user-notes-report/${userId}/${courseId}`, "GET");
+};
+
+export const downloadStudentNotesPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", course = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-admin-notes-listing-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentNotesExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", course = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-admin-notes-listing-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+// ---------------- blog category service start ------- //
+export async function fetchBlogCategoryApi(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-blog-category-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const addBlogCategoryApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-blog-category/`, 'POST', payload);
+};
+
+export const updateBlogCategoryApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-blog-category/${id}`, 'POST', payload);
+};
+
+export const deleteBlogCategoryApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-blog-category/${id}`, 'DELETE');
+};
+
+export const updateBlogCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-blog-category-status/${id}`, 'POST', payload);
+};
+// ---------------- blog category service end ------- //
+

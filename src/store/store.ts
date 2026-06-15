@@ -17,6 +17,12 @@ import trailCoursesReducer from "./slices/trailCourseSlice";
 import CourseReviewReducer from "./slices/courseReview";
 
 import studentsReducer from "./slices/studentSlice";
+import courseAnnouncementReducer from "./slices/courseAnnouncementSlice";
+import contactReducer from "./slices/ContactUsSlice";
+import studentOrderReducer from "./slices/studentOrderSlice";
+import studentPerformanceReducer from './slices/studentPerformanceSlice';
+import studentNotesReducer from './slices/studentNotesSlice';
+import blogCategoryReducer from "./slices/blogCategorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -31,11 +37,17 @@ export const store = configureStore({
     faqTopic: faqTopicReducer,
     faq: faqReducer,
     course: courseReducer,
-    chapter:chapterReducer,
+    chapter: chapterReducer,
 
-    students:studentsReducer,
-    trailCourses:trailCoursesReducer,
-    ReviewCourse:CourseReviewReducer
+    students: studentsReducer,
+    trailCourses: trailCoursesReducer,
+    ReviewCourse: CourseReviewReducer,
+    courseAnnouncement: courseAnnouncementReducer,
+    Contact: contactReducer,
+    studentOrder: studentOrderReducer,
+    studentPerformance: studentPerformanceReducer,
+    studentNotes: studentNotesReducer,
+    blogCategory: blogCategoryReducer,
   },
 });
 

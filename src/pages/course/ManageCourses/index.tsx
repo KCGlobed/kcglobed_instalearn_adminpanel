@@ -50,7 +50,7 @@ const ManageCourses: React.FC = () => {
         name: '',
         description: '',
         status: 'all' as 'all' | 'active' | 'deactive',
-        chapter: 'all',
+       
     });
 
 
@@ -77,8 +77,8 @@ const ManageCourses: React.FC = () => {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
-    })
     useEffect(() => {
         dispatch(getCource({
             page: currentPage,
@@ -87,11 +87,10 @@ const ManageCourses: React.FC = () => {
             description: debouncedFilters.description,
             ordering,
             status: debouncedFilters.status,
-            chapter: debouncedFilters.chapter,
             startDate,
             endDate
         }))
-    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters.name, ordering, debouncedFilters.status, debouncedFilters.chapter, startDate, endDate])
+    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters.name, debouncedFilters.description, ordering, debouncedFilters.status, startDate, endDate])
 
     useEffect(() => {
         setCurrentPage(1);
@@ -105,7 +104,7 @@ const ManageCourses: React.FC = () => {
             name: '',
             description: '',
             status: 'all',
-            chapter: 'all',
+
         })
     }
 
@@ -195,7 +194,6 @@ const ManageCourses: React.FC = () => {
                     dangerouslySetInnerHTML={{ __html: row.enrolled_students || '0' }}
                 />
             ),
-            sortable: true,
             width: '220px',
         },
 

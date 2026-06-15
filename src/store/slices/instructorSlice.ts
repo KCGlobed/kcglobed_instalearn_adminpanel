@@ -55,11 +55,11 @@ export const updateInstructor = createAsyncThunk<Instructor, any, { rejectValue:
     }
 )
 
-export const updateInstructorStatus = createAsyncThunk<Instructor, any, { rejectValue: string }>(
+export const updateInstructorStatus = createAsyncThunk<Instructor, { id: string | number; status: boolean }, { rejectValue: string }>(
     "instructor/updateInstructorStatus",
-    async ({ id, instructorData }, { rejectWithValue }) => {
+    async ({ id, status }, { rejectWithValue }) => {
         try {
-            const data = await updateInstructorStatusApi(id, instructorData);
+            const data = await updateInstructorStatusApi(id, { status });
             return data?.data ? data.data : data;
         } catch (error: any) {
             return rejectWithValue(error?.message || "Failed to update instructor status");
@@ -68,13 +68,13 @@ export const updateInstructorStatus = createAsyncThunk<Instructor, any, { reject
 )
 
 export const deleteInstructor = createAsyncThunk<number | string, any, { rejectValue: string }>(
-    "tags/deleteTags",
+    "instructor/deleteInstructor",
     async (id, { rejectWithValue }) => {
         try {
             await deleteInstructorApi(id);
             return id;
         } catch (err: any) {
-            return rejectWithValue(err.message || "Failed to delete tag");
+            return rejectWithValue(err.message || "Failed to delete instructor");
         }
     }
 )
@@ -92,7 +92,7 @@ const instructorSlice = createSlice({
         StatusInstructor: (state, action: PayloadAction<Number | string>) => {
              state.data = state.data.map((item) =>
                 item.id.toString() === action.payload.toString()
-                    ? { ...item, status: !item.status }
+                    ? { ...item, status: !item.status, is_active: !item.is_active }
                     : item
             );
         }
@@ -104,7 +104,11 @@ const instructorSlice = createSlice({
             })
             .addCase(getInstructor.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload.data;
+                state.data = (action.payload.data || []).map((item: any) => ({
+                    ...item,
+                    is_active: item.is_active !== undefined ? item.is_active : item.status,
+                    status: item.status !== undefined ? item.status : item.is_active
+                }));
                 state.pagination = action.payload.pagination;
             })
             .addCase(getInstructor.rejected, (state, action) => {
@@ -113,15 +117,34 @@ const instructorSlice = createSlice({
             })
             .addCase(addInstructor.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data.unshift(action.payload);
+                const newItem = {
+                    ...action.payload,
+                    is_active: action.payload.is_active !== undefined ? action.payload.is_active : action.payload.status,
+                    status: action.payload.status !== undefined ? action.payload.status : action.payload.is_active
+                };
+                state.data.unshift(newItem);
             })
             .addCase(updateInstructor.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
+                const updatedItem = {
+                    ...action.payload,
+                    is_active: action.payload.is_active !== undefined ? action.payload.is_active : action.payload.status,
+                    status: action.payload.status !== undefined ? action.payload.status : action.payload.is_active
+                };
+                state.data = state.data.map(item => item.id == updatedItem.id ? updatedItem : item);
             })
             .addCase(updateInstructorStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = state.data.map(item => item.id == action.payload.id ? action.payload : item);
+                const { id, status } = action.meta.arg;
+                state.data = state.data.map(item =>
+                    item.id.toString() === id.toString()
+                        ? {
+                            ...item,
+                            is_active: status,
+                            status: status
+                        }
+                        : item
+                );
             });
 
     }
