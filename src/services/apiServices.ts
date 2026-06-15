@@ -766,3 +766,31 @@ export const downloadStudentNotesPdfApi = async ({ search = "", first_name = "",
 export const downloadStudentNotesExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", course = "", start_date = "", end_date = "" }: any): Promise<any> => {
   return await apiRequest(`reports/get-admin-notes-listing-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
+
+// ---------------- blog category service start ------- //
+export async function fetchBlogCategoryApi(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-blog-category-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const addBlogCategoryApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-blog-category/`, 'POST', payload);
+};
+
+export const updateBlogCategoryApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-blog-category/${id}`, 'POST', payload);
+};
+
+export const deleteBlogCategoryApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-blog-category/${id}`, 'DELETE');
+};
+
+export const updateBlogCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-blog-category-status/${id}`, 'POST', payload);
+};
+// ---------------- blog category service end ------- //
+

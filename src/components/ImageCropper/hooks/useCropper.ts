@@ -76,9 +76,27 @@ export const useCropper = (
     );
     const startScale = Math.min(1, containerFitScale);
 
-    // Default crop box dimensions to 500x500 (clamped by workspace size/image size but min 192)
-    const initialW = Math.max(192, Math.min(500, containerSize.width - 80, originalSize.width * startScale));
-    const initialH = Math.max(192, Math.min(500, containerSize.height - 80, originalSize.height * startScale));
+    const imgRatio = originalSize.width / originalSize.height;
+    
+    let baseScale = startScale;
+    let initialW = originalSize.width * baseScale;
+    let initialH = originalSize.height * baseScale;
+    
+    // Max constraints
+    const maxW = Math.min(500, containerSize.width - 80);
+    const maxH = Math.min(500, containerSize.height - 80);
+    const fitMax = Math.min(1, maxW / initialW, maxH / initialH);
+    initialW *= fitMax;
+    initialH *= fitMax;
+    baseScale *= fitMax;
+
+    // Min constraints
+    if (initialW < 192 || initialH < 192) {
+      const fitMin = Math.max(192 / initialW, 192 / initialH);
+      initialW *= fitMin;
+      initialH *= fitMin;
+      baseScale *= fitMin;
+    }
 
     const initialMinScale = getMinScale(originalSize, initialW, initialH, 0);
 
@@ -87,7 +105,7 @@ export const useCropper = (
     setImagePosition({ x: 0, y: 0 });
     setRotationState(0);
     setMinScaleRef.current(initialMinScale);
-    setScaleRef.current(startScale);
+    setScaleRef.current(Math.max(baseScale, initialMinScale));
     setCropWidth(initialW);
     setCropHeight(initialH);
     setAspectRatioState('free');
@@ -105,35 +123,113 @@ export const useCropper = (
     });
   }, [cropWidth, cropHeight, imageSize]);
 
-  // Wrapped setter for scale to enforce cropping constraints
+  // Wrapped setter for scale to enforce cropping constraints.
+  // Also adjusts imagePosition proportionally so the viewport center stays
+  // fixed on the same image point (prevents drift when zoomed and panned).
   const updateScale = useCallback((s: number | ((prev: number) => number)) => {
     setScale((prev) => {
       let next = typeof s === 'function' ? s(prev) : s;
       next = Math.max(next, minScale); // Strictly enforce minScale
-      adjustCropBoxOnZoom(next, rotation);
+
+      if (next !== prev) {
+        const ratio = next / prev;
+        const curIP = imagePositionRef.current;
+        const newIP = { x: curIP.x * ratio, y: curIP.y * ratio };
+        setImagePosition(newIP);
+
+        // Clamp crop box relative to the adjusted image position
+        setPosition((prevPos) => {
+          const relPos = { x: prevPos.x - newIP.x, y: prevPos.y - newIP.y };
+          const clampedRelPos = clampImagePosition(relPos, next, imageSize, cropWidth, cropHeight, rotation);
+          return { x: clampedRelPos.x + newIP.x, y: clampedRelPos.y + newIP.y };
+        });
+      }
+
       return next;
     });
-  }, [setScale, adjustCropBoxOnZoom, rotation, minScale]);
+  }, [setScale, rotation, minScale, imageSize, cropWidth, cropHeight]);
 
   // Set rotation
   const setRotation = useCallback((deg: number) => {
     const nextDeg = ((deg % 360) + 360) % 360;
+    const deltaDeg = nextDeg - rotation;
+    const is90DegShift = Math.abs(deltaDeg) === 90 || Math.abs(deltaDeg) === 270;
+    
     setRotationState(nextDeg);
     
-    // When rotation changes, the bounding box of the image changes.
-    // Calculate the new minScale required to cover the crop box.
-    const newMinScale = getMinScale(imageSize, cropWidth, cropHeight, nextDeg);
-    setMinScale(newMinScale);
-    
-    // Use setScale to enforce the new minimum and clamp position.
-    // setScale must be in the dependency array so we always use the latest version
-    // (its identity changes when minScale changes inside useZoom).
-    setScale((prev) => {
-      const nextScale = Math.max(prev, newMinScale);
-      adjustCropBoxOnZoom(nextScale, nextDeg);
-      return nextScale;
-    });
-  }, [imageSize, cropWidth, cropHeight, adjustCropBoxOnZoom, setMinScale, setScale]);
+    if (is90DegShift) {
+      let newCropW = cropHeight;
+      let newCropH = cropWidth;
+      
+      const maxW = containerSize.width - 80;
+      const maxH = containerSize.height - 80;
+      
+      const fitRatio = Math.min(1, maxW / newCropW, maxH / newCropH);
+      
+      newCropW = Math.round(newCropW * fitRatio);
+      newCropH = Math.round(newCropH * fitRatio);
+      
+      setCropWidth(newCropW);
+      setCropHeight(newCropH);
+      
+      if (aspectRatio !== 'free') {
+        setAspectRatioState(1 / aspectRatio);
+      }
+      
+      const newMinScale = getMinScale(imageSize, newCropW, newCropH, nextDeg);
+      setMinScale(newMinScale);
+      
+      setScale((prevScale) => {
+        let nextScale = prevScale * fitRatio;
+        nextScale = Math.max(nextScale, newMinScale);
+        
+        let finalImgPos = imagePositionRef.current;
+        const actualRatio = nextScale / prevScale;
+        finalImgPos = { x: finalImgPos.x * actualRatio, y: finalImgPos.y * actualRatio };
+        setImagePosition(finalImgPos);
+        
+        setPosition((prevPos) => {
+          const oldRel = { x: prevPos.x - imagePositionRef.current.x, y: prevPos.y - imagePositionRef.current.y };
+          const theta = (deltaDeg * Math.PI) / 180;
+          const cos = Math.round(Math.cos(theta));
+          const sin = Math.round(Math.sin(theta));
+          
+          const rotX = oldRel.x * cos - oldRel.y * sin;
+          const rotY = oldRel.x * sin + oldRel.y * cos;
+          
+          const scaledRel = { x: rotX * actualRatio, y: rotY * actualRatio };
+          const clamped = clampImagePosition(scaledRel, nextScale, imageSize, newCropW, newCropH, nextDeg);
+          
+          return { x: clamped.x + finalImgPos.x, y: clamped.y + finalImgPos.y };
+        });
+        
+        return nextScale;
+      });
+      
+    } else {
+      const newMinScale = getMinScale(imageSize, cropWidth, cropHeight, nextDeg);
+      setMinScale(newMinScale);
+      
+      setScale((prev) => {
+        const nextScale = Math.max(prev, newMinScale);
+        
+        let finalImgPos = imagePositionRef.current;
+        if (nextScale !== prev) {
+           const ratio = nextScale / prev;
+           finalImgPos = { x: finalImgPos.x * ratio, y: finalImgPos.y * ratio };
+           setImagePosition(finalImgPos);
+        }
+
+        setPosition((prevPos) => {
+          const relPos = { x: prevPos.x - imagePositionRef.current.x, y: prevPos.y - imagePositionRef.current.y };
+          const clampedRelPos = clampImagePosition(relPos, nextScale, imageSize, cropWidth, cropHeight, nextDeg);
+          return { x: clampedRelPos.x + finalImgPos.x, y: clampedRelPos.y + finalImgPos.y };
+        });
+
+        return nextScale;
+      });
+    }
+  }, [rotation, cropWidth, cropHeight, containerSize, aspectRatio, imageSize, setMinScale, setScale]);
 
   // Reset
   const reset = useCallback(() => {
@@ -145,8 +241,27 @@ export const useCropper = (
     );
     const startScale = Math.min(1, containerFitScale);
 
-    const initialW = Math.max(192, Math.min(500, containerSize.width - 80, imageSize.width * startScale));
-    const initialH = Math.max(192, Math.min(500, containerSize.height - 80, imageSize.height * startScale));
+    const imgRatio = imageSize.width / imageSize.height;
+    
+    let baseScale = startScale;
+    let initialW = imageSize.width * baseScale;
+    let initialH = imageSize.height * baseScale;
+    
+    // Max constraints
+    const maxW = Math.min(500, containerSize.width - 80);
+    const maxH = Math.min(500, containerSize.height - 80);
+    const fitMax = Math.min(1, maxW / initialW, maxH / initialH);
+    initialW *= fitMax;
+    initialH *= fitMax;
+    baseScale *= fitMax;
+
+    // Min constraints
+    if (initialW < 192 || initialH < 192) {
+      const fitMin = Math.max(192 / initialW, 192 / initialH);
+      initialW *= fitMin;
+      initialH *= fitMin;
+      baseScale *= fitMin;
+    }
 
     const initialMinScale = getMinScale(imageSize, initialW, initialH, 0);
 
@@ -154,7 +269,7 @@ export const useCropper = (
     setImagePosition({ x: 0, y: 0 });
     setRotationState(0);
     setMinScaleRef.current(initialMinScale);
-    setScaleRef.current(startScale);
+    setScaleRef.current(Math.max(baseScale, initialMinScale));
     setCropWidth(initialW);
     setCropHeight(initialH);
     setAspectRatioState('free');
@@ -301,16 +416,40 @@ export const useCropper = (
     const maxViewportW = containerSize.width - 40;
     const maxViewportH = containerSize.height - 40;
 
-    const { extX, extY } = getCropBoxExtents(newWidth, newHeight, rotation);
-    const maxW = Math.min(maxImgW / (extX * 2 / newWidth), maxViewportW);
-    const maxH = Math.min(maxImgH / (extY * 2 / newHeight), maxViewportH);
+    let maxAllowedW = maxViewportW;
+    let maxAllowedH = maxViewportH;
 
-    if (newWidth > maxW) {
-      newWidth = maxW;
+    const theta = (rotation * Math.PI) / 180;
+    const cos = Math.abs(Math.round(Math.cos(theta))); // 1 for 0/180, 0 for 90/270
+    const sin = Math.abs(Math.round(Math.sin(theta))); // 0 for 0/180, 1 for 90/270
+
+    if (aspectRatio !== 'free') {
+      const ratio = aspectRatio;
+      const effectiveCos = cos + sin / ratio;
+      const effectiveSin = sin + cos * ratio;
+      
+      maxAllowedW = Math.min(maxAllowedW, maxImgW / effectiveCos);
+      maxAllowedH = Math.min(maxAllowedH, maxImgH / effectiveSin);
+      
+      // Keep them tied to the aspect ratio
+      maxAllowedW = Math.min(maxAllowedW, maxAllowedH * ratio);
+      maxAllowedH = maxAllowedW / ratio;
+    } else {
+      if (cos === 1) {
+        maxAllowedW = Math.min(maxAllowedW, maxImgW);
+        maxAllowedH = Math.min(maxAllowedH, maxImgH);
+      } else {
+        maxAllowedW = Math.min(maxAllowedW, maxImgH);
+        maxAllowedH = Math.min(maxAllowedH, maxImgW);
+      }
+    }
+
+    if (newWidth > maxAllowedW) {
+      newWidth = maxAllowedW;
       if (aspectRatio !== 'free') newHeight = newWidth / aspectRatio;
     }
-    if (newHeight > maxH) {
-      newHeight = maxH;
+    if (newHeight > maxAllowedH) {
+      newHeight = maxAllowedH;
       if (aspectRatio !== 'free') newWidth = newHeight * aspectRatio;
     }
 
@@ -363,8 +502,10 @@ export const useCropper = (
     }
   }, [imageSize, position, cropWidth, cropHeight, cropDrag.startDrag, imageDrag.startDrag]);
 
-  // Wheel zoom handler (scroll zooms stable image centered)
-  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+  // Wheel zoom handler – attached natively with { passive: false } so
+  // preventDefault() works and the page doesn't scroll while zooming.
+  const handleWheelRef = useRef<(e: WheelEvent) => void>(() => {});
+  handleWheelRef.current = (e: WheelEvent) => {
     e.preventDefault();
     if (imageSize.width === 0) return;
 
@@ -374,9 +515,31 @@ export const useCropper = (
 
     if (newScale === scale) return;
 
+    // Scale imagePosition to keep the viewport center stable on the same image point
+    const ratio = newScale / scale;
+    const curIP = imagePositionRef.current;
+    const newIP = { x: curIP.x * ratio, y: curIP.y * ratio };
+    setImagePosition(newIP);
+
+    // Clamp crop box relative to the adjusted image position
+    setPosition((prev) => {
+      const relPos = { x: prev.x - newIP.x, y: prev.y - newIP.y };
+      const clampedRelPos = clampImagePosition(relPos, newScale, imageSize, cropWidth, cropHeight, rotation);
+      return { x: clampedRelPos.x + newIP.x, y: clampedRelPos.y + newIP.y };
+    });
+
     setScale(newScale);
-    adjustCropBoxOnZoom(newScale, rotation);
-  }, [scale, minScale, imageSize, rotation, setScale, adjustCropBoxOnZoom]);
+  };
+
+  // Attach/detach the native wheel listener on the container element
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const handler = (e: WheelEvent) => handleWheelRef.current(e);
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, [containerRef]);
 
   const getTouchDistance = (touches: React.TouchList) => {
     const dx = touches[0].clientX - touches[1].clientX;
@@ -596,7 +759,7 @@ export const useCropper = (
 
     // Gesture Handlers
     handleWorkspaceMouseDown,
-    handleWheel,
+
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,

@@ -18,7 +18,7 @@ interface CropWorkspaceProps {
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: (e: React.TouchEvent) => void;
-  onWheel: (e: React.WheelEvent<HTMLDivElement>) => void;
+
   onHandleMouseDown: (e: React.MouseEvent, handle: CropHandleType) => void;
   onHandleTouchStart: (e: React.TouchEvent, handle: CropHandleType) => void;
 }
@@ -42,14 +42,13 @@ export const CropWorkspace: React.FC<CropWorkspaceProps> = React.memo(({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
-  onWheel,
+
   onHandleMouseDown,
   onHandleTouchStart,
 }) => {
   return (
     <div
       ref={containerRef}
-      onWheel={onWheel}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}

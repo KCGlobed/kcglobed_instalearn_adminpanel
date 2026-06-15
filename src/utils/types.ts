@@ -931,3 +931,13 @@ export interface Instructor{
     created_at: string,
 }
 
+export interface BlogCategory{
+  id:number,
+  title:string,
+  description:string,
+  status:boolean,
+  image:string,
+  created_at:string,
+}
+
+

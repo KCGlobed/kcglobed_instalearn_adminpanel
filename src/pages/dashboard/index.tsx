@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -63,6 +63,15 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Manage Course Review', icon: <MdRateReview className="mr-2" />, path: '/dashboard/course-review'
+    },
+    {
+      name: 'Manage Blog',
+      icon: <FaBlog className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage Blog Category', path: '/dashboard/blog-category' },
+        { name: 'Manage Blog Post', path: '/dashboard/blog' },
+      ]
     },
       {
       name: 'Manage Reports',

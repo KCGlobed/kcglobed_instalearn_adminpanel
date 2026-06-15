@@ -208,7 +208,6 @@ export const CropperModal: React.FC<CropperModalProps> = ({
               onTouchStart={cropper.handleTouchStart}
               onTouchMove={cropper.handleTouchMove}
               onTouchEnd={cropper.handleTouchEnd}
-              onWheel={cropper.handleWheel}
               onHandleMouseDown={(e, h) => cropper.startResize(e.clientX, e.clientY, h)}
               onHandleTouchStart={(e, h) => {
                 const touch = e.touches[0];

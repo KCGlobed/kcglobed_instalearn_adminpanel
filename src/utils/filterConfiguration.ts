@@ -326,3 +326,25 @@ export const studentNotesFilterConfig: FilterField[] = [
         placeholder: 'Filter by email...',
     },
 ];
+
+export const blogCategoryFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Category Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
