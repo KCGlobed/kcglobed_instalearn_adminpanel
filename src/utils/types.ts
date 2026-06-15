@@ -770,5 +770,174 @@ export interface Review {
     } | null;
 }
 
+export interface Announcement {
+    id: number;
+    title: string;
+    description: string;
+    status: boolean;
+    created_at: string;
+
+    course: {
+        id: number;
+        name: string;
+    };
+
+    instructor: {
+        id: number;
+        text_1: string;
+        text_2: string;
+        text_3: string;
+        image: string;
+        experience: string;
+        company_image_1: string | null;
+        company_image_2: string | null;
+    };
+
+    announcement_comments?: {
+        id: number;
+        user: {
+            id: number;
+            first_name: string;
+            last_name: string;
+            image: string | null;
+            email: string;
+        };
+        content: string;
+        created_at: string;
+    }[];
+}
+
+
+export interface contact{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  phone:number,
+  message:string,
+  status?: boolean,
+  created_at:string,
+}
+
+export interface student{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  phone:string,
+  total_amount:number,
+  start_date:string,
+  next_due:string,
+  end_date:string,
+  subscription_status:number,
+  created_at:string,
+  subscription_type: number;
+  ordered_courses: {
+    id: number,
+    name: string
+  }[],
+  trail_mode:boolean
+  
+}
+
+export interface StudentPerformance {
+  id: number;
+  user_detail: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      email: string;
+      phone1: string;
+      category: string;
+      reference_id: string | null;
+      student_type: string | null;
+      date_joined: string;
+      created_at: string;
+      is_locked: boolean;
+      unlocked_on: string | null;
+  };
+  course_detail: {
+      id: number;
+      name: string;
+  };
+  performance_report: {
+      watch_time: number;
+      total_video_watched: number;
+  };
+}
+
+export interface StudentPerformanceState {
+  data: StudentPerformance[];
+  count?: number;
+  next: string | null;
+  previous: string | null;
+  page: number;
+  loading: boolean;
+  error: string | null;
+}
+
+
+export interface StudentNoteListing {
+  user: number;
+  course: number;
+  user__first_name: string;
+  user__last_name: string;
+  user__email: string;
+  user__phone1: string | null;
+  user__category: string;
+  user__reference_id: string | null;
+  user__student_type: string | null;
+  course__name: string;
+  notes_count: number;
+}
+
+export interface StudentNoteItem {
+  id: number;
+  chapter_lecture: {
+      id: number;
+      name: string;
+  };
+  duration: string;
+  note_content: string;
+  created_at: string;
+}
+
+export interface StudentNoteDetail {
+  user_notes: StudentNoteItem[];
+  username: string;
+  user_id: string;
+  course: string;
+}
+
+export interface StudentNotesState extends Pagination<StudentNoteListing> {
+  detailData: StudentNoteDetail | null;
+  detailLoading: boolean;
+}
+
+export interface Instructor{
+    id: number,
+    first_name: string,
+    last_name: string,
+    email: string,
+    address: string,
+    city: string,
+    state: string,
+    country: string,
+    pincode: string,
+    dob: string,
+    is_active: boolean,
+    status:boolean,
+    role: number,
+    created_at: string,
+}
+
+export interface BlogCategory{
+  id:number,
+  title:string,
+  description:string,
+  status:boolean,
+  image:string,
+  created_at:string,
+}
 
 

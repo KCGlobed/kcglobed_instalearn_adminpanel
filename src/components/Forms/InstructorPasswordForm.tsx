@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Lock, Loader2, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useModal } from '../../context/ModalContext';
-import { changeStudentPasswordApi } from '../../services/apiServices';
+import { changeInstructorPasswordApi } from '../../services/apiServices';
 
-interface StudentPasswordFormProps {
-    studentId: number | string;
+interface InstructorPasswordFormProps {
+    instructorId: number | string;
 }
 
 interface PasswordFormValues {
@@ -14,8 +14,8 @@ interface PasswordFormValues {
     confirm_password: string;
 }
 
-const StudentPasswordForm: React.FC<StudentPasswordFormProps> = ({
-    studentId,
+const InstructorPasswordForm: React.FC<InstructorPasswordFormProps> = ({
+    instructorId,
 }) => {
     const { hideModal } = useModal();
     const [showPassword, setShowPassword] = useState(false);
@@ -34,12 +34,12 @@ const StudentPasswordForm: React.FC<StudentPasswordFormProps> = ({
     const onSubmit = async (data: PasswordFormValues) => {
         try {
             const payload = {
-                user_id: studentId,
+                user_id: instructorId,
                 password: data.password,
                 confirm_password: data.confirm_password,
             };
 
-            const res = await changeStudentPasswordApi(payload);
+            const res = await changeInstructorPasswordApi(payload);
 
             if (res.status) {
                 toast.success(res.message || 'Password updated successfully');
@@ -66,11 +66,11 @@ const StudentPasswordForm: React.FC<StudentPasswordFormProps> = ({
 
                 <div>
                     <h3 className="text-sm font-bold text-indigo-900">
-                        Change Student Password
+                        Change Instructor Password
                     </h3>
 
                     <p className="text-xs text-indigo-500 mt-1 leading-relaxed">
-                        Create a secure password for the student account.
+                        Create a secure password for the instructor account.
                         Make sure both passwords match before saving.
                     </p>
                 </div>
@@ -203,4 +203,4 @@ const StudentPasswordForm: React.FC<StudentPasswordFormProps> = ({
     );
 };
 
-export default StudentPasswordForm;
+export default InstructorPasswordForm;

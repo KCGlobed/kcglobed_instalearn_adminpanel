@@ -6,13 +6,15 @@ import { FiPlus, FiTrash2, FiChevronLeft, FiImage, FiUpload, FiAlertCircle, FiEy
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import { CropperModal } from "../ImageCropper/components/CropperModal";
+import type { CropResult } from "../ImageCropper/utils/cropCanvas";
 import LexicalEditor from "../TextEditor";
 import {
     courseDetailApi,
     createCourseApi,
-    fetchSubCategoryOptionsApi,
     fetchTagOptionsApi,
-    updateCourseApi
+    updateCourseApi,
+    fetchCategorySubcategoryListApi
 } from "../../services/apiServices";
 
 
@@ -82,6 +84,18 @@ const validationSchema = Yup.object().shape({
     objectives_summary: Yup.array().of(Yup.object().shape({ value: Yup.string().required("Required") })).min(1),
     image: Yup.mixed().required("Thumbnail is required"),
 });
+const getCharacterCount = (htmlString: string) => {
+    if (!htmlString) return 0;
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, "text/html");
+        const text = doc.body.textContent || "";
+        if (text === "\n") return 0;
+        return text.length;
+    } catch (e) {
+        return 0;
+    }
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -90,8 +104,14 @@ const CourseForm = () => {
     const [loading, setLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState<any[]>([]);
     const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+    const [categoriesData, setCategoriesData] = useState<any[]>([]);
+    const [selectedParentCategory, setSelectedParentCategory] = useState<any>(null);
+    const [subCategoryOptions, setSubCategoryOptions] = useState<any[]>([]);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
+    const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+    const [originalImageFormat, setOriginalImageFormat] = useState<'image/png' | 'image/jpeg'>('image/png');
     const { id } = useParams();
 
     const [lastEdited, setLastEdited] = useState<"original_price" | "price" | "discount" | null>(null);
@@ -128,25 +148,116 @@ const CourseForm = () => {
     useEffect(() => {
         const load = async () => {
             try {
-                const [tags, cats] = await Promise.all([fetchTagOptionsApi(), fetchSubCategoryOptionsApi()]);
+                setLoading(true);
+                const [tags, catSubcatRes] = await Promise.all([
+                    fetchTagOptionsApi(),
+                    fetchCategorySubcategoryListApi()
+                ]);
+
                 setTagOptions((tags?.data || tags?.results || tags || []).map((t: any) => ({ value: t.id, label: t.name || t.title })));
-                setCategoryOptions((cats?.data || cats?.results || cats || []).map((c: any) => ({ value: c.id, label: c.name || c.title })));
-            } catch (err) { toast.error("Failed to load options"); }
+
+                const rawCats = catSubcatRes?.data || catSubcatRes || [];
+                setCategoriesData(rawCats);
+
+                const catOpts = rawCats.map((cat: any) => ({
+                    value: cat.id,
+                    label: cat.name
+                }));
+                setCategoryOptions(catOpts);
+
+                if (id) {
+                    const res = await courseDetailApi(id);
+                    setValue("name", res.data.name);
+                    setValue("short_description", res.data.short_description);
+                    setValue("description", res.data.description);
+                    setValue("duration", res.data.duration);
+                    setValue("requirements", res.data.requirements);
+                    setValue("price", res.data.price);
+                    setValue("original_price", res.data.original_price || res.data.price);
+                    setValue("discount", res.data.discount);
+                    setValue("level", res.data.level);
+                    setValue("tags", (res.data.tags || []).map((item: any) => ({ value: item.tags?.id, label: item.tags?.name })));
+
+                    const assignedSubCats = (res.data.categories || []).map((item: any) => ({
+                        value: item.category_info?.id,
+                        label: item.category_info?.name
+                    }));
+                    setValue("category_id", assignedSubCats);
+
+                    // Set parent category based on first assigned subcategory
+                    if (assignedSubCats.length > 0) {
+                        const firstSubCatId = assignedSubCats[0].value;
+                        const parentCat = rawCats.find((cat: any) => 
+                            (cat.subcategory || []).some((sub: any) => sub.id === firstSubCatId)
+                        );
+                        if (parentCat) {
+                            setSelectedParentCategory({ value: parentCat.id, label: parentCat.name });
+                        }
+                    }
+
+                    setValue("feature_json", (res.data.feature_json || []).map((item: any) => ({ value: item })));
+                    setValue("objectives_summary", (res.data.objectives_summary || []).map((item: any) => ({ value: item })));
+                    if (res.data.image) {
+                        setImagePreview(res.data.image);
+                        setValue("image", res.data.image);
+                    }
+                }
+            } catch (err) {
+                toast.error("Failed to load options or course details");
+            } finally {
+                setLoading(false);
+            }
         };
         load();
-    }, []);
+    }, [id, setValue]);
+
+    useEffect(() => {
+        if (!selectedParentCategory) {
+            setSubCategoryOptions([]);
+            return;
+        }
+
+        const parentCatObj = categoriesData.find(
+            (cat: any) => Number(cat.id) === Number(selectedParentCategory.value)
+        );
+
+        if (parentCatObj && parentCatObj.subcategory) {
+            const subOpts = parentCatObj.subcategory.map((sub: any) => ({
+                value: sub.id,
+                label: sub.name
+            }));
+            setSubCategoryOptions(subOpts);
+        } else {
+            setSubCategoryOptions([]);
+        }
+    }, [selectedParentCategory, categoriesData]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setValue("image", file, { shouldValidate: true });
+            // Detect and preserve the original image format
+            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
+            setOriginalImageFormat(isJpeg ? 'image/jpeg' : 'image/png');
+
             const r = new FileReader();
-            r.onloadend = () => setImagePreview(r.result as string);
+            r.onloadend = () => {
+                setRawImageSrc(r.result as string);
+                setIsCropperOpen(true);
+            };
             r.readAsDataURL(file);
+            // Clear input value so re-uploading the same file works
+            e.target.value = '';
         }
     };
 
+    const handleCropComplete = (result: CropResult) => {
+        setValue("image", result.file, { shouldValidate: true });
+        setImagePreview(result.dataUrl);
+    };
+
     const watchedValues = watch();
+    const shortDescription = watch("short_description") || "";
+    const shortDescCharCount = getCharacterCount(shortDescription);
 
     const originalPrice = Number(watch("original_price")) || 0;
     const price = Number(watch("price")) || 0;
@@ -156,43 +267,39 @@ const CourseForm = () => {
         if (discount < 0 || discount >= 100) return;
 
         if (lastEdited === "original_price" || lastEdited === "discount") {
-            const finalPrice =
-                originalPrice -
-                (originalPrice * discount) / 100;
+            const finalPrice = Math.round(
+                originalPrice - (originalPrice * discount) / 100
+            );
 
             setValue(
                 "price",
-                Number(finalPrice.toFixed(2)),
+                finalPrice,
                 { shouldValidate: true }
             );
         }
 
-        if (lastEdited === "price" && discount > 0) {
-            const finalOriginalPrice =
-                price / (1 - discount / 100);
+        if (lastEdited === "price") {
+            if (originalPrice > 0) {
+                const finalDiscount = Math.round(
+                    ((originalPrice - price) / originalPrice) * 100
+                );
 
-            setValue(
-                "original_price",
-                Number(finalOriginalPrice.toFixed(2)),
-                { shouldValidate: true }
-            );
-        }
+                setValue(
+                    "discount",
+                    finalDiscount,
+                    { shouldValidate: true }
+                );
+            } else if (discount > 0) {
+                const finalOriginalPrice = Math.round(
+                    price / (1 - discount / 100)
+                );
 
-        if (
-            lastEdited === "price" &&
-            discount === 0 &&
-            originalPrice > 0
-        ) {
-            const finalDiscount =
-                ((originalPrice - price) /
-                    originalPrice) *
-                100;
-
-            setValue(
-                "discount",
-                Number(finalDiscount.toFixed(2)),
-                { shouldValidate: true }
-            );
+                setValue(
+                    "original_price",
+                    finalOriginalPrice,
+                    { shouldValidate: true }
+                );
+            }
         }
     }, [
         originalPrice,
@@ -251,40 +358,7 @@ const CourseForm = () => {
         return <p className="mt-1 text-xs font-semibold text-red-500 flex items-center gap-1"><FiAlertCircle /> {err.message}</p>;
     };
 
-    const fetchCourseDetail = async (id: string | number) => {
-        try {
-            setLoading(true);
-            const res = await courseDetailApi(id);
-            setValue("name", res.data.name);
-            setValue("short_description", res.data.short_description);
-            setValue("description", res.data.description);
-            setValue("duration", res.data.duration);
-            setValue("requirements", res.data.requirements);
-            setValue("price", res.data.price);
-            setValue("original_price", res.data.original_price || res.data.price);
-            setValue("discount", res.data.discount);
-            setValue("level", res.data.level);
-            setValue("tags", (res.data.tags || []).map((item: any) => ({ value: item.tags?.id, label: item.tags?.name })));
-            setValue("category_id", (res.data.categories || []).map((item: any) => ({ value: item.category_info?.id, label: item.category_info?.name })));
-            setValue("feature_json", (res.data.feature_json || []).map((item: any) => ({ value: item })));
-            setValue("objectives_summary", (res.data.objectives_summary || []).map((item: any) => ({ value: item })));
-            if (res.data.image) {
-                setImagePreview(res.data.image);
-                setValue("image", res.data.image);
-            }
-        } catch (err) {
-            console.error("Failed to fetch course detail", err);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-
-    useEffect(() => {
-        if (id) {
-            fetchCourseDetail(id);
-        }
-    }, [id]);
+    // Course details are handled in the mounting load effect to avoid race conditions.
 
 
     return (
@@ -402,25 +476,40 @@ const CourseForm = () => {
 
                     <div className="col-span-12 lg:col-span-4">
                         <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Thumbnail</label>
-                        <div className={`relative w-full aspect-video lg:h-40 lg:aspect-auto rounded-xl border-2 border-dashed flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden ${errors.image ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-indigo-400'}`}>
+                        <div className={`relative w-full aspect-video lg:h-40 lg:aspect-auto rounded-xl border-2 border-dashed flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden group ${errors.image ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-indigo-400'}`}>
                             {imagePreview ? (
-                                <img src={imagePreview} className="w-full h-full " alt="Preview" />
+                                <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
                             ) : (
                                 <div className="text-center">
                                     <FiImage className="mx-auto text-slate-300 mb-1" size={24} />
                                     <span className="text-[10px] font-bold text-slate-400 uppercase">Upload</span>
                                 </div>
                             )}
-                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onChange={handleImageChange} />
+                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer z-10" accept="image/*" onChange={handleImageChange} />
                         </div>
                         <ErrorField name="image" />
                     </div>
                 </div>
 
                 {/* ─── Row 2: Taxonomy ─── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
                         <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Category</label>
+                        <Select
+                            styles={customSelectStyles(false)}
+                            options={categoryOptions}
+                            value={selectedParentCategory}
+                            onChange={(val: any) => {
+                                setSelectedParentCategory(val);
+                                setValue("category_id", []);
+                            }}
+                            placeholder="Select Category"
+                            isClearable
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-slate-600 uppercase mb-2">SubCategory</label>
                         <Controller
                             name="category_id"
                             control={control}
@@ -428,9 +517,10 @@ const CourseForm = () => {
                                 <Select
                                     isMulti
                                     styles={customSelectStyles(!!errors.category_id)}
-                                    options={categoryOptions}
+                                    options={subCategoryOptions}
                                     {...field}
-                                    placeholder="Select category"
+                                    placeholder={selectedParentCategory ? "Select SubCategory" : "Select Category first"}
+                                    isDisabled={!selectedParentCategory}
                                 />
                             )}
                         />
@@ -459,20 +549,34 @@ const CourseForm = () => {
                 {/* ─── Row 3: Descriptions ─── */}
                 <div className="">
                     <div className="space-y-4 mb-4">
-                        <label className="block text-xs font-bold text-slate-600 uppercase mb-2">Short Description</label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-xs font-bold text-slate-600 uppercase">Short Description</label>
+                            <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full transition-all border uppercase tracking-wider ${
+                                shortDescCharCount >= 153
+                                    ? 'bg-red-50 text-red-500 border-red-200'
+                                    : shortDescCharCount > 120
+                                        ? 'bg-amber-50 text-amber-600 border-amber-200'
+                                        : 'bg-indigo-50 text-indigo-600 border-indigo-200'
+                            }`}>
+                                {shortDescCharCount} / 153 characters
+                            </span>
+                        </div>
                         <div className={`border rounded-xl overflow-hidden bg-white transition-all ${errors.short_description ? 'border-red-500' : 'border-slate-200 focus-within:border-indigo-400'}`}>
-                            <Controller
-                                name="short_description"
-                                control={control}
-                                render={({ field }) => (
-                                    <LexicalEditor
-                                        type="short_desc"
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        placeholder="Brief course summary..."
-                                    />
-                                )}
-                            />
+                             <Controller
+            name="short_description"
+            control={control}
+            render={({ field }) => (
+                <LexicalEditor
+                    type="short_desc"
+                    value={field.value}
+                    onChange={(value: string) => {
+                        field.onChange(value);
+                    }}
+                    maxLength={153}
+                    placeholder="Brief course summary..."
+                />
+            )}
+        />
                         </div>
                         <ErrorField name="short_description" />
                     </div>
@@ -571,15 +675,25 @@ const CourseForm = () => {
                     </button>
                 </div>
 
-                {/* Course Preview Modal */}
-                {isPreviewOpen && (
-                    <CoursePreviewModal
-                        data={watchedValues}
-                        imagePreview={imagePreview}
-                        onClose={() => setIsPreviewOpen(false)}
-                    />
-                )}
             </form>
+
+            {/* Course Preview Modal - outside form to prevent accidental submission */}
+            {isPreviewOpen && (
+                <CoursePreviewModal
+                    data={watchedValues}
+                    imagePreview={imagePreview}
+                    onClose={() => setIsPreviewOpen(false)}
+                />
+            )}
+
+            {/* Image Cropper Modal - outside form to prevent accidental submission */}
+            <CropperModal
+                imageSrc={rawImageSrc}
+                isOpen={isCropperOpen}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+                initialFormat={originalImageFormat}
+            />
         </div>
     );
 };

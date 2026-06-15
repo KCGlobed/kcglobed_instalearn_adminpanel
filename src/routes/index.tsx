@@ -29,6 +29,14 @@ import ManageStudents from "../pages/Students";
 import StudentProfile from "../pages/Students/StudentProfile";
 import ManageTrailCourse from "../pages/trailCourse";
 import CourseReview from "../pages/CourseReview";
+import ManageCourseAnnoucement from "../pages/ManageCourseAnnoucement";
+import ManageReportContact from "../pages/ManageReports/manageContactUs";
+import ManageStudentOrder from "../pages/ManageReports/ManageStudentOrder";
+import StudentPerformace from "../pages/ManageReports/StudentPerformace";
+import ManageStudentNotesReport from "../pages/ManageReports/StudentNotesReport";
+import ManageBlogCategory from "../pages/Blog/BlogCategory";
+import ManageBlogPost from "../pages/Blog/Blog";
+
 
 export default function AppRoutes() {
   return (
@@ -66,6 +74,18 @@ export default function AppRoutes() {
           <Route path="/dashboard/students/view/:id" element={<StudentProfile />} />
           <Route path="/dashboard/trail-course" element={<ManageTrailCourse />} />
           <Route path="/dashboard/course-review" element={<CourseReview />} />
+          <Route path="/dashboard/manage-announcement" element={<ManageCourseAnnoucement />} />
+          <Route path="/dashboard/report-contact" element={<ManageReportContact />} />
+          <Route path="/dashboard/report-student-order" element={<ManageStudentOrder />} />
+          <Route path="/dashboard/student-performance-report" element={<StudentPerformace />} />
+          <Route path="/dashboard/student-notes-report" element={<ManageStudentNotesReport />} />
+          <Route path="/dashboard/blog-category" element={<ManageBlogCategory />} />
+          <Route path="/dashboard/blog" element={<ManageBlogPost />} />
+          
+
+
+
+
 
         </Route>
       </Route>
