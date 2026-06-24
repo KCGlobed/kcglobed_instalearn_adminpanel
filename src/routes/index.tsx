@@ -34,8 +34,10 @@ import ManageReportContact from "../pages/ManageReports/manageContactUs";
 import ManageStudentOrder from "../pages/ManageReports/ManageStudentOrder";
 import StudentPerformace from "../pages/ManageReports/StudentPerformace";
 import ManageStudentNotesReport from "../pages/ManageReports/StudentNotesReport";
-import ManageBlogCategory from "../pages/Blog/BlogCategory";
-import ManageBlogPost from "../pages/Blog/Blog";
+import ManageBlogCategory from "../pages/blog/BlogCategory";
+import ManageBlogPost from "../pages/blog/Blog";
+import BlogForm from "../components/Forms/BlogForm";
+
 
 
 export default function AppRoutes() {
@@ -81,11 +83,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/student-notes-report" element={<ManageStudentNotesReport />} />
           <Route path="/dashboard/blog-category" element={<ManageBlogCategory />} />
           <Route path="/dashboard/blog" element={<ManageBlogPost />} />
-          
-
-
-
-
+          <Route path="/dashboard/blog/form" element={<BlogForm />} />
+          <Route path="/dashboard/blog/form/:id" element={<BlogForm />} />
 
         </Route>
       </Route>

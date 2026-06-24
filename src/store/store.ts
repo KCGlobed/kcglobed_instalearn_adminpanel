@@ -23,6 +23,7 @@ import studentOrderReducer from "./slices/studentOrderSlice";
 import studentPerformanceReducer from './slices/studentPerformanceSlice';
 import studentNotesReducer from './slices/studentNotesSlice';
 import blogCategoryReducer from "./slices/blogCategorySlice";
+import blogReducer from "./slices/blogSlice";
 
 export const store = configureStore({
   reducer: {
@@ -48,6 +49,7 @@ export const store = configureStore({
     studentPerformance: studentPerformanceReducer,
     studentNotes: studentNotesReducer,
     blogCategory: blogCategoryReducer,
+    blog: blogReducer,
   },
 });
 

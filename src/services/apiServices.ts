@@ -703,7 +703,7 @@ export const updateCourseAnnouncementStatusApi = async (id: string | number, pay
   return await apiRequest(`course/update-announcements-status/${id}`, 'POST', payload);
 };
 
-export const fetchContactApi= async(page=1,search: string="",first_name: string="",last_name: string="",email: string="",ordering: string="",status: string="",startDate: string="",endDate: string="")=>{
+export const fetchContactApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "") => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   let query = `reports/get-contact-us-list/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
   if (startDate) query += `&start_date=${startDate}`;
@@ -727,15 +727,15 @@ export const downloadContactExcelApi = async ({ search = "", first_name = "", em
 
 
 
-export const fetchStudentOrdersApi = async (page = 1,search: string = "",first_name: string = "",last_name: string = "", email: string = "",ordering: string = "",status: string = "",startDate: string = "",endDate: string = ""): Promise<any> => {
+export const fetchStudentOrdersApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = ""): Promise<any> => {
   return await apiRequest(`reports/get-active-order-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${status && status !== 'all' ? `&subscription_status=${encodeURIComponent(status)}` : ""}${startDate ? `&start_date=${startDate}` : ""}${endDate ? `&end_date=${endDate}` : ""}`, "GET");
 };
 
-export const downloadActiveOrderPdfApi = async ({ search = "", first_name = "",last_name = "", email = "",status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadActiveOrderPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   return await apiRequest(`reports/get-active-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
-export const downloadActiveOrderExcelApi = async ({ search = "", first_name = "",last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+export const downloadActiveOrderExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   return await apiRequest(`reports/get-active-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${status && status !== 'all' ? `&status=${encodeURIComponent(status)}&subscription_status=${encodeURIComponent(status)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
@@ -793,4 +793,30 @@ export const updateBlogCategoryStatusApi = async (id: string | number, payload: 
   return await apiRequest(`cms/update-blog-category-status/${id}`, 'POST', payload);
 };
 // ---------------- blog category service end ------- //
+export const addBlogPostApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-blog/`, 'POST', payload);
+};
 
+export const updateBlogPostApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-blog/${id}`, 'POST', payload);
+};
+
+export const deleteBlogPostApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-blog/${id}`, 'DELETE');
+};
+
+export async function fetchBlogPostApi(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-blogs-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  return await apiRequest(query, "GET");
+}
+
+export const updateBlogPostStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-blog-status/${id}`, 'POST', payload);
+};
+
+export const fetchBlogPostDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`cms/view-blog-info/${id}`, 'GET');
+};

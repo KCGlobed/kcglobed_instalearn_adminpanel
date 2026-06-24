@@ -940,4 +940,26 @@ export interface BlogCategory{
   created_at:string,
 }
 
+export interface Blog {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  category_id: number;
+  category_title?: string;
+  canonical_url: string;
+  schema_markup: string;
+  reading_time: string;
+  tags: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keys: string;
+  img_alt_tag: string;
+  live_date: string;
+  created_by: string;
+  status: boolean;
+  created_at: string;
+}
+
+
 
