@@ -940,4 +940,54 @@ export interface BlogCategory{
   created_at:string,
 }
 
+export interface Blog {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  category_id: number;
+  category_title?: string;
+  canonical_url: string;
+  schema_markup: string;
+  reading_time: string;
+  tags: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keys: string;
+  img_alt_tag: string;
+  live_date: string;
+  created_by: string;
+  status: boolean;
+  created_at: string;
+}
 
+export interface coupons{
+  id:number,
+  code:string,
+  discount_type:string,
+  discount_value:number,
+  valid_from:string,
+  valid_to:string,
+  max_usage:number,
+  usages_count:number,
+  minimum_cart_value:number,
+  status:boolean,
+  created_at:string,
+}
+
+
+
+export interface promotionalCampaign{
+  id:number,
+  title:string,
+  display_text:string,
+  start_time:string,
+  end_time:string,
+  status:boolean,
+  created_at:string,
+  updated_at:string,
+  coupon_info:{
+    id:number,
+    name:string
+  }
+}

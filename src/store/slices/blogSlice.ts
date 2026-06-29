@@ -1,17 +1,16 @@
-// src/store/slices/blogCategorySlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import type { BlogCategory, Pagination } from "../../utils/types";
+import type { Blog, Pagination } from "../../utils/types";
 import {
-  addBlogCategoryApi,
-  deleteBlogCategoryApi,
-  fetchBlogCategoryApi,
-  updateBlogCategoryApi,
-  updateBlogCategoryStatusApi,
+  addBlogPostApi,
+  deleteBlogPostApi,
+  fetchBlogPostApi,
+  updateBlogPostApi,
+  updateBlogStatusApi
 } from "../../services/apiServices";
 
-interface BlogCategoryState extends Pagination<BlogCategory> { }
+interface BlogState extends Pagination<Blog> { }
 
-const initialState: BlogCategoryState = {
+const initialState: BlogState = {
   data: [],
   next: null,
   pagination: {
@@ -28,8 +27,8 @@ const initialState: BlogCategoryState = {
   error: null,
 };
 
-export const getBlogCategories = createAsyncThunk<
-  Pagination<BlogCategory>,
+export const getBlogs = createAsyncThunk<
+  Pagination<Blog>,
   {
     page?: number;
     search?: string;
@@ -41,7 +40,7 @@ export const getBlogCategories = createAsyncThunk<
     endDate?: string;
   }
 >(
-  "blogCategory/getBlogCategories",
+  "blog/getBlogs",
   async (
     {
       page = 1,
@@ -56,7 +55,7 @@ export const getBlogCategories = createAsyncThunk<
     { rejectWithValue }
   ) => {
     try {
-      return await fetchBlogCategoryApi(
+      return await fetchBlogPostApi(
         page,
         search,
         title,
@@ -67,76 +66,76 @@ export const getBlogCategories = createAsyncThunk<
         endDate
       );
     } catch (err: any) {
-      return rejectWithValue(err?.message || "Failed to fetch blog categories");
+      return rejectWithValue(err?.message || "Failed to fetch blogs");
     }
   }
 );
 
-export const addBlogCategory = createAsyncThunk<BlogCategory, any, { rejectValue: string }>(
-  "blogCategory/addBlogCategory",
+export const addBlog = createAsyncThunk<Blog, any, { rejectValue: string }>(
+  "blog/addBlog",
   async (formData, { rejectWithValue }) => {
     try {
-      const data = await addBlogCategoryApi(formData);
+      const data = await addBlogPostApi(formData);
       return data?.data ? data.data : data;
     } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to create blog category");
+      return rejectWithValue(error.message || "Failed to create blog");
     }
   }
 );
 
-export const editBlogCategory = createAsyncThunk<
-  BlogCategory,
-  { id: number | string; categoryData: any },
+export const editBlog = createAsyncThunk<
+  Blog,
+  { id: number | string; blogData: any },
   { rejectValue: string }
 >(
-  "blogCategory/editBlogCategory",
-  async ({ id, categoryData }, { rejectWithValue }) => {
+  "blog/editBlog",
+  async ({ id, blogData }, { rejectWithValue }) => {
     try {
-      const data = await updateBlogCategoryApi(id, categoryData);
+      const data = await updateBlogPostApi(id, blogData);
       return data.data ? data.data : data;
     } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update blog category");
+      return rejectWithValue(error.message || "Failed to update blog");
     }
   }
 );
 
-export const deleteBlogCategory = createAsyncThunk<
+export const deleteBlog = createAsyncThunk<
   number | string,
   number | string,
   { rejectValue: string }
->("blogCategory/deleteBlogCategory", async (id, { rejectWithValue }) => {
+>("blog/deleteBlog", async (id, { rejectWithValue }) => {
   try {
-    await deleteBlogCategoryApi(id);
+    await deleteBlogPostApi(id);
     return id;
   } catch (error: any) {
-    return rejectWithValue(error.message || "Failed to delete blog category");
+    return rejectWithValue(error.message || "Failed to delete blog");
   }
 });
 
-export const updateBlogCategoryStatus = createAsyncThunk<
+export const updateBlogStatus = createAsyncThunk<
   { id: number | string; status: boolean },
   { id: number | string; status: boolean },
   { rejectValue: string }
->("blogCategory/updateBlogCategoryStatus", async ({ id, status }, { rejectWithValue }) => {
+>("blog/updateBlogStatus", async ({ id, status }, { rejectWithValue }) => {
   try {
-    await updateBlogCategoryStatusApi(id, { status });
+    await updateBlogStatusApi(id, { status });
     return { id, status };
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to update status");
   }
 });
 
-const blogCategorySlice = createSlice({
-  name: "blogCategory",
+const blogSlice = createSlice({
+  name: "blog",
   initialState,
   reducers: {
     setPage(state, action: PayloadAction<number>) {
       state.page = action.payload;
     },
-    removeBlogCategory: (state, action: PayloadAction<number | string>) => {
+    removeBlog: (state, action: PayloadAction<number | string>) => {
       state.data = state.data.filter((item) => item.id !== action.payload);
     },
-    statusBlogCategory: (state, action: PayloadAction<number | string>) => {
+    statusBlog: (state, action: PayloadAction<number | string>) => {
       state.data = state.data.map((item) =>
         item.id.toString() === action.payload.toString()
           ? { ...item, status: !item.status }
@@ -146,34 +145,34 @@ const blogCategorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getBlogCategories.pending, (state) => {
+      .addCase(getBlogs.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getBlogCategories.fulfilled, (state, action) => {
+      .addCase(getBlogs.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.data;
         state.pagination = action.payload.pagination;
       })
-      .addCase(getBlogCategories.rejected, (state, action) => {
+      .addCase(getBlogs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
-      .addCase(addBlogCategory.fulfilled, (state, action) => {
+      .addCase(addBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.data.unshift(action.payload);
       })
-      .addCase(editBlogCategory.fulfilled, (state, action) => {
+      .addCase(editBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.data = state.data.map((item) =>
           item.id === action.payload.id ? action.payload : item
         );
       })
-      .addCase(deleteBlogCategory.fulfilled, (state, action) => {
+      .addCase(deleteBlog.fulfilled, (state, action) => {
         state.loading = false;
         state.data = state.data.filter((item) => item.id !== action.payload);
       })
-      .addCase(updateBlogCategoryStatus.fulfilled, (state, action) => {
+      .addCase(updateBlogStatus.fulfilled, (state, action) => {
         state.loading = false;
         state.data = state.data.map((item) =>
           item.id.toString() === action.payload.id.toString()
@@ -184,6 +183,6 @@ const blogCategorySlice = createSlice({
   },
 });
 
-export const { setPage, removeBlogCategory, statusBlogCategory } = blogCategorySlice.actions;
+export const { setPage, removeBlog, statusBlog } = blogSlice.actions;
 
-export default blogCategorySlice.reducer;
+export default blogSlice.reducer;

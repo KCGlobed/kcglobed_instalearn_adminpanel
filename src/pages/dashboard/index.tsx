@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
 import { MdRateReview } from "react-icons/md";
 import { HiSpeakerphone } from "react-icons/hi";
+import { Ticket } from "lucide-react";
 
 
 const Dashboard: React.FC = () => {
@@ -71,6 +72,17 @@ const Dashboard: React.FC = () => {
       submenu: [
         { name: 'Manage Blog Category', path: '/dashboard/blog-category' },
         { name: 'Manage Blog Post', path: '/dashboard/blog' },
+      ]
+    },
+     
+     {
+      name: 'Manage Coupons',
+      icon: <Ticket className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage Coupons', path: '/dashboard/coupons' },
+        { name:'Manage Promotional Campaign', path:'/dashboard/promotional-campaign'}
+
       ]
     },
       {
