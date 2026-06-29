@@ -790,7 +790,65 @@ export const deleteBlogCategoryApi = async (id: number | string): Promise<any> =
 };
 
 export const updateBlogCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
-  return await apiRequest(`cms/update-blog-category-status/${id}`, 'POST', payload);
+  return await apiRequest(`cms/delete-faq-topic/${id}`, 'POST', payload);
 };
 // ---------------- blog category service end ------- //
+
+// ---------------- coupons service start ------- //
+export async function fetchCoupons(page = 1, search: string = "", code: string = "", discount_type: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `course/get-coupons-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${code ? `&code=${encodeURIComponent(code)}` : ""}${discount_type ? `&discount_type=${encodeURIComponent(discount_type)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createCoupon = async (payload: any): Promise<any> => {
+  return await apiRequest(`course/create-coupons/`, 'POST', payload);
+};
+
+export const updateCouponApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`course/edit-coupons/${id}`, 'POST', payload);
+};
+
+export const deleteCouponApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`course/delete-coupons/${id}`, 'DELETE');
+};
+
+export const updateCouponStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`course/update-coupons-status/${id}`, 'POST', payload);
+};
+// ---------------- coupons service end ------- //
+
+//----------------- promotional campaigns start ------------------//
+
+
+export async function fetchPromoCamp(page = 1, search: string = "", title: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-promotional-banner-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createPromoCamp = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-promotional-banner/`, 'POST', payload);
+};
+
+export const updatePromoCampApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/update-promotional-banner/${id}`, 'POST', payload);
+};
+
+export const deletePromoCampApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-promotional-banner/${id}`, 'DELETE');
+};
+
+export const updatePromoCampStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-promotional-banner-status/${id}`, 'POST', payload);
+};
+
+
+//----------------- promotional campaigns end ------------------//
 

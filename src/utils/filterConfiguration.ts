@@ -348,3 +348,31 @@ export const blogCategoryFilterConfig: FilterField[] = [
     }
 ];
 
+export const couponFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Coupon Code', name: 'code', placeholder: 'Filter by code...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    },
+];
+
+export const promoCampFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    },
+];
+

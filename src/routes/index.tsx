@@ -36,6 +36,8 @@ import StudentPerformace from "../pages/ManageReports/StudentPerformace";
 import ManageStudentNotesReport from "../pages/ManageReports/StudentNotesReport";
 import ManageBlogCategory from "../pages/Blog/BlogCategory";
 import ManageBlogPost from "../pages/Blog/Blog";
+import ManageCoupons from "../pages/Coupon/coupons";
+import ManagePromotionalCampign from "../pages/Coupon/promotional-campaign";
 
 
 export default function AppRoutes() {
@@ -81,10 +83,9 @@ export default function AppRoutes() {
           <Route path="/dashboard/student-notes-report" element={<ManageStudentNotesReport />} />
           <Route path="/dashboard/blog-category" element={<ManageBlogCategory />} />
           <Route path="/dashboard/blog" element={<ManageBlogPost />} />
+          <Route path="/dashboard/coupons" element={<ManageCoupons />} />
+          <Route path="/dashboard/promotional-campaign" element={<ManagePromotionalCampign/>} />
           
-
-
-
 
 
         </Route>
