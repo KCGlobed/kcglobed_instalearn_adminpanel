@@ -48,7 +48,7 @@ const ManagePromotionalCampaign: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.promotionalCampaigns);
+    const { data, loading, pagination } = useAppSelector((state:any) => state.promotionalCampaigns);
     const pageSize = 5;
 
     const sortRef = useRef<HTMLDivElement>(null);
@@ -90,7 +90,7 @@ const ManagePromotionalCampaign: React.FC = () => {
         });
     };
 
-    const handleSort = (key: string, direction: 'asc' | 'desc') => {
+    const handleSort = (key: string | number, direction: 'asc' | 'desc') => {
         const orderPrefix = direction === 'desc' ? '-' : '';
         setOrdering(`${orderPrefix}${key}`);
     };

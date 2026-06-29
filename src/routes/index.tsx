@@ -38,6 +38,8 @@ import ManageBlogCategory from "../pages/Blog/BlogCategory";
 import ManageBlogPost from "../pages/Blog/Blog";
 import ManageCoupons from "../pages/Coupon/coupons";
 import ManagePromotionalCampign from "../pages/Coupon/promotional-campaign";
+import BlogForm from "../components/Forms/BlogForm";
+
 
 
 export default function AppRoutes() {
@@ -87,6 +89,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/promotional-campaign" element={<ManagePromotionalCampign/>} />
           
 
+          <Route path="/dashboard/blog/form" element={<BlogForm />} />
+          <Route path="/dashboard/blog/form/:id" element={<BlogForm />} />
 
         </Route>
       </Route>
