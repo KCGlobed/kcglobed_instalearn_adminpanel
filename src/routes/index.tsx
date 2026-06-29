@@ -34,11 +34,11 @@ import ManageReportContact from "../pages/ManageReports/manageContactUs";
 import ManageStudentOrder from "../pages/ManageReports/ManageStudentOrder";
 import StudentPerformace from "../pages/ManageReports/StudentPerformace";
 import ManageStudentNotesReport from "../pages/ManageReports/StudentNotesReport";
-import ManageBlogCategory from "../pages/Blog/BlogCategory";
 import ManageBlogPost from "../pages/Blog/Blog";
 import ManageCoupons from "../pages/Coupon/coupons";
 import ManagePromotionalCampign from "../pages/Coupon/promotional-campaign";
 import BlogForm from "../components/Forms/BlogForm";
+import ManageBlogCategory from "../pages/Blog/BlogCategory";
 
 
 
