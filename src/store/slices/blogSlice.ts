@@ -5,7 +5,7 @@ import {
   deleteBlogPostApi,
   fetchBlogPostApi,
   updateBlogPostApi,
-  updateBlogPostStatusApi,
+  updateBlogStatusApi
 } from "../../services/apiServices";
 
 interface BlogState extends Pagination<Blog> { }
@@ -118,7 +118,7 @@ export const updateBlogStatus = createAsyncThunk<
   { rejectValue: string }
 >("blog/updateBlogStatus", async ({ id, status }, { rejectWithValue }) => {
   try {
-    await updateBlogPostStatusApi(id, { status });
+    await updateBlogStatusApi(id, { status });
     return { id, status };
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to update status");

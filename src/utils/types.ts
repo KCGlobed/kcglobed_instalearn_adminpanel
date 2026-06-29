@@ -961,5 +961,33 @@ export interface Blog {
   created_at: string;
 }
 
+export interface coupons{
+  id:number,
+  code:string,
+  discount_type:string,
+  discount_value:number,
+  valid_from:string,
+  valid_to:string,
+  max_usage:number,
+  usages_count:number,
+  minimum_cart_value:number,
+  status:boolean,
+  created_at:string,
+}
 
 
+
+export interface promotionalCampaign{
+  id:number,
+  title:string,
+  display_text:string,
+  start_time:string,
+  end_time:string,
+  status:boolean,
+  created_at:string,
+  updated_at:string,
+  coupon_info:{
+    id:number,
+    name:string
+  }
+}

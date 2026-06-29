@@ -24,6 +24,8 @@ import studentPerformanceReducer from './slices/studentPerformanceSlice';
 import studentNotesReducer from './slices/studentNotesSlice';
 import blogCategoryReducer from "./slices/blogCategorySlice";
 import blogReducer from "./slices/blogSlice";
+import couponReducer from "./slices/couponSlice";
+import promotionalCampaignReducer from "./slices/promotionalCampaignSlice";
 
 export const store = configureStore({
   reducer: {
@@ -50,6 +52,8 @@ export const store = configureStore({
     studentNotes: studentNotesReducer,
     blogCategory: blogCategoryReducer,
     blog: blogReducer,
+    coupons: couponReducer,
+    promotionalCampaigns: promotionalCampaignReducer,
   },
 });
 
