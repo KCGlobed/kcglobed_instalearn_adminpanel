@@ -9,7 +9,8 @@ import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
+import BlogView from '../../../components/View/BlogView';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import { deleteBlogPostApi } from '../../../services/apiServices';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
@@ -183,6 +184,19 @@ const ManageBlogPost: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View Blog Post',
+                                content: <BlogView id={row.id} />,
+                                type: 'custom',
+                                size: 'xl',
+                            });
+                        }}
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"
