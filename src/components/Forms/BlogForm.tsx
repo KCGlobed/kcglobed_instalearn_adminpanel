@@ -89,7 +89,9 @@ const BlogForm = () => {
               canonical_url: blog.canonical_url || '',
               schema_markup: blog.schema_markup || '',
               reading_time: blog.reading_time || '',
-              tags: blog.tags || '',
+              tags: Array.isArray(blog.tags)
+                ? blog.tags.join(", ")
+                : (blog.tags || ""),
               meta_title: blog.meta_title || '',
               meta_description: blog.meta_description || '',
               meta_keys: blog.meta_keys || '',
@@ -153,16 +155,16 @@ const BlogForm = () => {
       formData.append('title', data.title.trim());
       formData.append('description', data.description.trim());
       formData.append('category_id', data.category_id);
-      formData.append('canonical_url', data.canonical_url.trim());
-      formData.append('schema_markup', data.schema_markup.trim());
-      formData.append('reading_time', data.reading_time.trim());
-      formData.append('tags', data.tags.trim());
-      formData.append('meta_title', data.meta_title.trim());
-      formData.append('meta_description', data.meta_description.trim());
-      formData.append('meta_keys', data.meta_keys.trim());
-      formData.append('img_alt_tag', data.img_alt_tag.trim());
+      formData.append('canonical_url', (data.canonical_url || '').trim());
+      formData.append('schema_markup', (data.schema_markup || '').trim());
+      formData.append('reading_time', (data.reading_time || '').trim());
+      formData.append('tags', (data.tags || '').trim());
+      formData.append('meta_title', (data.meta_title || '').trim());
+      formData.append('meta_description', (data.meta_description || '').trim());
+      formData.append('meta_keys', (data.meta_keys || '').trim());
+      formData.append('img_alt_tag', (data.img_alt_tag || '').trim());
       formData.append('live_date', data.live_date);
-      formData.append('created_by', data.created_by.trim());
+      formData.append('created_by', (data.created_by || '').trim());
 
       if (data.image instanceof File) {
         formData.append('image', data.image);
@@ -177,8 +179,25 @@ const BlogForm = () => {
       }
       navigate('/dashboard/blog');
     } catch (err: any) {
-      console.error('Blog submission failed:', err);
-      toast.error(err || "Failed to save blog post");
+      console.error("Blog submission failed:", err);
+
+      const errorMsg = err?.response?.data?.message;
+      let displayMsg = "Failed to save blog post";
+      if (typeof errorMsg === 'string') {
+        displayMsg = errorMsg;
+      } else if (errorMsg && typeof errorMsg === 'object') {
+        // If it's an object of validation errors (e.g., Laravel), get the first error
+        const firstKey = Object.keys(errorMsg)[0];
+        if (firstKey && Array.isArray(errorMsg[firstKey])) {
+          displayMsg = errorMsg[firstKey][0];
+        } else {
+          displayMsg = JSON.stringify(errorMsg);
+        }
+      } else if (err?.message) {
+        displayMsg = err.message;
+      }
+
+      toast.error(displayMsg);
     } finally {
       setIsSubmitting(false);
     }
