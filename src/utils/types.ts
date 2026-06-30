@@ -991,3 +991,16 @@ export interface promotionalCampaign{
     name:string
   }
 }
+
+
+export interface Testimonials{
+  id:number,
+  testimonials_type:number,
+  name:string,
+  qualification:string,
+  college:string,
+  content:string,
+  image:string,
+  status:boolean,
+  created_at:string,
+}

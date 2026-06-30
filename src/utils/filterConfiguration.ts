@@ -399,3 +399,29 @@ export const promoCampFilterConfig: FilterField[] = [
     },
 ];
 
+export const testimonialFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Name', name: 'name', placeholder: 'Filter by name...' },
+    {
+        type: 'select',
+        label: 'Testimonial Type',
+        name: 'testimonials_type',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Placement', value: '1' },
+            { label: 'Institutions', value: '2' },
+            { label: 'Corporate', value: '3' },
+            { label: 'Student', value: '4' }
+        ]
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    },
+];
+

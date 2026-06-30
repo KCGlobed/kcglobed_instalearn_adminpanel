@@ -26,6 +26,7 @@ import blogCategoryReducer from "./slices/blogCategorySlice";
 import blogReducer from "./slices/blogSlice";
 import couponReducer from "./slices/couponSlice";
 import promotionalCampaignReducer from "./slices/promotionalCampaignSlice";
+import testimonialReducer from "./slices/testimonialSlice";
 
 export const store = configureStore({
   reducer: {
@@ -54,6 +55,7 @@ export const store = configureStore({
     blog: blogReducer,
     coupons: couponReducer,
     promotionalCampaigns: promotionalCampaignReducer,
+    testimonial:testimonialReducer
   },
 });
 

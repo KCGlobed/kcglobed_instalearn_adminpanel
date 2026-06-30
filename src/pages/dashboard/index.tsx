@@ -8,7 +8,7 @@ import { logout } from '../../store/slices/authSlice';
 import { MdRateReview } from "react-icons/md";
 import { HiSpeakerphone } from "react-icons/hi";
 import { Ticket } from "lucide-react";
-
+import { MessageSquareQuote } from "lucide-react";
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -95,6 +95,9 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Student Performance', path: '/dashboard/student-performance-report' },
         { name: 'Manage Student Notes', path: '/dashboard/student-notes-report' },
       ]
+    },
+    {
+      name:'Manage Testimonials', icon:<MessageSquareQuote className="mr-2"/>, path:'/dashboard/testimonials'
     },
     {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',
