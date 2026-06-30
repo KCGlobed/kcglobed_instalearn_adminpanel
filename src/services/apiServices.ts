@@ -880,5 +880,31 @@ export const updatePromoCampStatusApi = async (id: string | number, payload: { s
 };
 
 
-//----------------- promotional campaigns end ------------------//
+//----------------- testimonials start ------------------//
 
+export async function fetchTestimonialsApi(page = 1, search: string = "", name: string = "", testimonials_type: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-testimonials-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${testimonials_type ? `&testimonials_type=${testimonials_type}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createTestimonialsApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-testimonials/`, 'POST', payload);
+};
+
+export const updateTestimonialsApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-testimonials/${id}`, 'POST', payload);
+};
+
+export const deleteTestimonialsApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-testimonials/${id}`, 'DELETE');
+};
+
+export const updateTestimonialStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-testimonials-status/${id}`, 'POST', payload);
+};
+
+//----------------- testimonials end ------------------//
