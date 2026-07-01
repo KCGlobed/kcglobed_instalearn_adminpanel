@@ -5,7 +5,7 @@ import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
-import { MdRateReview } from "react-icons/md";
+import { MdOutlineQuiz, MdRateReview } from "react-icons/md";
 import { HiSpeakerphone } from "react-icons/hi";
 import { Ticket } from "lucide-react";
 import { MessageSquareQuote } from "lucide-react";
@@ -98,6 +98,9 @@ const Dashboard: React.FC = () => {
     },
     {
       name:'Manage Testimonials', icon:<MessageSquareQuote className="mr-2"/>, path:'/dashboard/testimonials'
+    },
+    {
+      name:'Manage Quiz', icon:<MdOutlineQuiz className="mr-2"/>, path:'/dashboard/quiz'
     },
     {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',

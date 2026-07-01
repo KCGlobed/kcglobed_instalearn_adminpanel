@@ -908,3 +908,48 @@ export const updateTestimonialStatusApi = async (id: string | number, payload: {
 };
 
 //----------------- testimonials end ------------------//
+
+//------------------ quiz start ------------------//
+
+export async function fetchQuiz(page = 1, search: string = "", id_number: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "", name: string = "", description: string = "") {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `questions/get-chapter-quiz-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${id_number ? `&id_number=${encodeURIComponent(id_number)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createQuiz = async (payload: any): Promise<any> => {
+  return await apiRequest(`questions/create-chapter-quiz/`, 'POST', payload);
+};
+
+export const fetchAllChapters = async (): Promise<any> => {
+  return await apiRequest(`course/get-chapter-listing/`, 'GET');
+};
+
+export const updateQuizApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`questions/edit-chapter-quiz/${id}`, 'POST', payload);
+};
+
+export const updateQuizStatusApi = async (id: number | string, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`questions/update-chapter-quiz-status/${id}`, 'POST', payload);
+};
+
+export const deleteQuizApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`questions/delete-chapter-quiz/${id}`, 'DELETE');
+};
+
+export const viewQuizApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`questions/view-chapter-quiz-detail/${id}`, 'GET');
+};
+
+export const getMcqsListByQuizApi = async (quizId: string | number): Promise<any> => {
+  return await apiRequest(`questions/get-mcqs-lists/${quizId}`, 'GET');
+};
+
+export const assignMcqsToQuizApi = async (payload: { quiz_id: string | number; mcq_ids: (string | number)[] }): Promise<any> => {
+  return await apiRequest(`questions/assign-mcqs-chapter-quiz/`, 'POST', payload);
+};
+
+//-------------quiz end-----------------------------//

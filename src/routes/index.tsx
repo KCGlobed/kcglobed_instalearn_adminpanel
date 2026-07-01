@@ -40,6 +40,7 @@ import ManagePromotionalCampign from "../pages/Coupon/promotional-campaign";
 import BlogForm from "../components/Forms/BlogForm";
 import ManageBlogCategory from "../pages/Blog/BlogCategory";
 import ManageTestimonials from "../pages/Testimonials";
+import ManageQuiz from "../pages/Quiz";
 
 
 
@@ -93,6 +94,7 @@ export default function AppRoutes() {
 
           <Route path="/dashboard/blog/form" element={<BlogForm />} />
           <Route path="/dashboard/blog/form/:id" element={<BlogForm />} />
+          <Route path="/dashboard/quiz" element={<ManageQuiz />} />
 
         </Route>
       </Route>

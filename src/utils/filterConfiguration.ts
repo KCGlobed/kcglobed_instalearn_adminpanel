@@ -425,3 +425,23 @@ export const testimonialFilterConfig: FilterField[] = [
     },
 ];
 
+export const quizFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Quiz Name', name: 'name', placeholder: 'Filter by quiz name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];

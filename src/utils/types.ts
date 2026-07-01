@@ -1004,3 +1004,20 @@ export interface Testimonials{
   status:boolean,
   created_at:string,
 }
+
+
+export interface Quiz{
+  id:number,
+  name:string,
+  description:string,
+  thumbnail:string,
+  chapter:{
+    id:number,
+    name:string,
+  },
+  status:boolean,
+  pass_percentage:number,
+  total_question:number,
+  created_at:string,
+}
+
