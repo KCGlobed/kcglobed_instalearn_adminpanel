@@ -953,3 +953,32 @@ export const assignMcqsToQuizApi = async (payload: { quiz_id: string | number; m
 };
 
 //-------------quiz end-----------------------------//
+
+//----------------- help and support topic start ------------------//
+
+export async function fetchSupportTopic(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-help-support-topic-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createSupportTopic = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-help-support-topic/`, 'POST', payload);
+};
+
+export const updateSupportTopicApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-help-support-topic/${id}`, 'POST', payload);
+};
+
+export const deleteSupportTopicApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-help-support-topic/${id}`, 'DELETE');
+};
+
+export const updateSupportTopicStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-help-support-topic-status/${id}`, 'POST', payload);
+};
+
+//----------------- help and support topic end ------------------//

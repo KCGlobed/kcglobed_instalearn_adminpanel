@@ -28,6 +28,7 @@ import couponReducer from "./slices/couponSlice";
 import promotionalCampaignReducer from "./slices/promotionalCampaignSlice";
 import testimonialReducer from "./slices/testimonialSlice";
 import quizReducer from "./slices/QuizSlice";
+import supportTopicReducer from "./slices/supportTopicSlice";
 
 export const store = configureStore({
   reducer: {
@@ -58,7 +59,7 @@ export const store = configureStore({
     promotionalCampaigns: promotionalCampaignReducer,
     testimonial:testimonialReducer,
     quiz:quizReducer,
-    
+    supportTopic: supportTopicReducer,
   },
 });
 

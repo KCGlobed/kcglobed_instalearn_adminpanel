@@ -41,6 +41,9 @@ import BlogForm from "../components/Forms/BlogForm";
 import ManageBlogCategory from "../pages/Blog/BlogCategory";
 import ManageTestimonials from "../pages/Testimonials";
 import ManageQuiz from "../pages/Quiz";
+import ManageSupportTopic from "../pages/HelpAndSupport/SupportTopic";
+import ManageSupportSubTopic from "../pages/HelpAndSupport/SupportSubTopic";
+import ManageSupportArticle from "../pages/HelpAndSupport/SupportArticle";
 
 
 
@@ -90,11 +93,14 @@ export default function AppRoutes() {
           <Route path="/dashboard/coupons" element={<ManageCoupons />} />
           <Route path="/dashboard/promotional-campaign" element={<ManagePromotionalCampign/>} />
           <Route path ="/dashboard/testimonials"  element={<ManageTestimonials/>}/>
-          
-
           <Route path="/dashboard/blog/form" element={<BlogForm />} />
           <Route path="/dashboard/blog/form/:id" element={<BlogForm />} />
           <Route path="/dashboard/quiz" element={<ManageQuiz />} />
+          <Route path ="/dashboard/help-and-support-topic" element={<ManageSupportTopic/>}/>
+          <Route path ="/dashboard/help-and-support-subtopic" element={<ManageSupportSubTopic/>}/>
+          <Route path ="/dashboard/help-and-support-article" element={<ManageSupportArticle/>}/>
+
+
 
         </Route>
       </Route>

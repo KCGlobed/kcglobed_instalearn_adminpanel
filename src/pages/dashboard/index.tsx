@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -101,6 +101,16 @@ const Dashboard: React.FC = () => {
     },
     {
       name:'Manage Quiz', icon:<MdOutlineQuiz className="mr-2"/>, path:'/dashboard/quiz'
+    },
+     {
+      name: 'Manage Help and Support ',
+      icon: <FaHeadset className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Help and support topic', path: '/dashboard/help-and-support-topic' },
+        { name: 'Help and support subtopic', path: '/dashboard/help-and-support-subtopic' },
+        { name:'Help and support Article', path:'/dashboard/help-and-support-article'}
+      ]
     },
     {
       name: 'Settings', icon: <FaCog className="mr-2" />, path: '#',

@@ -1021,3 +1021,12 @@ export interface Quiz{
   created_at:string,
 }
 
+export interface SupportTopic{
+  id:number,
+  slug:string,
+  title:string,
+  description:string,
+  image:string,
+  status:boolean,
+  created_at:string,
+}
