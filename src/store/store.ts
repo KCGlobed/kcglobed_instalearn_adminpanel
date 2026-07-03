@@ -27,6 +27,10 @@ import blogReducer from "./slices/blogSlice";
 import couponReducer from "./slices/couponSlice";
 import promotionalCampaignReducer from "./slices/promotionalCampaignSlice";
 import testimonialReducer from "./slices/testimonialSlice";
+import quizReducer from "./slices/QuizSlice";
+import supportTopicReducer from "./slices/supportTopicSlice";
+import supportSubTopicReducer from "./slices/supportSubTopicSlice";
+import supportArticleReducer from "./slices/supportArticleSlice";
 
 export const store = configureStore({
   reducer: {
@@ -55,7 +59,11 @@ export const store = configureStore({
     blog: blogReducer,
     coupons: couponReducer,
     promotionalCampaigns: promotionalCampaignReducer,
-    testimonial:testimonialReducer
+    testimonial:testimonialReducer,
+    quiz:quizReducer,
+    supportTopic: supportTopicReducer,
+    supportSubTopic: supportSubTopicReducer,
+    supportArticle: supportArticleReducer,
   },
 });
 

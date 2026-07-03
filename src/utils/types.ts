@@ -1004,3 +1004,60 @@ export interface Testimonials{
   status:boolean,
   created_at:string,
 }
+
+
+export interface Quiz{
+  id:number,
+  name:string,
+  description:string,
+  thumbnail:string,
+  chapter:{
+    id:number,
+    name:string,
+  },
+  status:boolean,
+  pass_percentage:number,
+  total_question:number,
+  created_at:string,
+}
+
+export interface SupportTopic{
+  id:number,
+  slug:string,
+  title:string,
+  description:string,
+  image:string,
+  status:boolean,
+  created_at:string,
+}
+
+export interface supportSubTopic{
+  id:number,
+  main_topic:{
+    id:number,
+    title:string,
+  },
+  slug:string,
+  title:string,
+  status:boolean,
+  created_at:string,
+  updated_at:string,
+
+}
+
+export interface supportArticle{
+  id:number,
+  slug:string,
+  title:string,
+  description:string,
+  status:boolean,
+  created_at:string,
+  main_topic:{
+    id:number,
+    title:string,
+  },
+  sub_topic:{
+    id:number,
+    title:string,
+  }
+}
