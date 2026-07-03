@@ -103,15 +103,30 @@ const promotionalCampaignSlice = createSlice({
             })
             .addCase(addPromoCamp.fulfilled, (state, action) => {
                 state.loading = false;
+                if (action.payload.status === true) {
+                    state.data = state.data.map(item => ({ ...item, status: false }));
+                }
                 state.data.unshift(action.payload);
             })
             .addCase(editPromoCamp.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = state.data.map(item => item.id.toString() === action.payload.id.toString() ? action.payload : item);
+                if (action.payload.status === true) {
+                    state.data = state.data.map(item => 
+                        item.id.toString() === action.payload.id.toString() ? action.payload : { ...item, status: false }
+                    );
+                } else {
+                    state.data = state.data.map(item => item.id.toString() === action.payload.id.toString() ? action.payload : item);
+                }
             })
             .addCase(updatePromoCampStatus.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = state.data.map(item => item.id.toString() === action.payload.id.toString() ? action.payload : item);
+                if (action.payload.status === true) {
+                    state.data = state.data.map(item => 
+                        item.id.toString() === action.payload.id.toString() ? action.payload : { ...item, status: false }
+                    );
+                } else {
+                    state.data = state.data.map(item => item.id.toString() === action.payload.id.toString() ? action.payload : item);
+                }
             });
     }
 });

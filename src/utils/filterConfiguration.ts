@@ -425,3 +425,73 @@ export const testimonialFilterConfig: FilterField[] = [
     },
 ];
 
+export const quizFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Quiz Name', name: 'name', placeholder: 'Filter by quiz name...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const supportTopicFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Topic Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'text',
+        label: 'Description',
+        name: 'description',
+        placeholder: 'Filter by description...',
+        gridCols: "col-span-2"
+    },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const supportSubTopicFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const supportArticleFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Article Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
