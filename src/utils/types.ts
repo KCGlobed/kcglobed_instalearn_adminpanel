@@ -1030,3 +1030,34 @@ export interface SupportTopic{
   status:boolean,
   created_at:string,
 }
+
+export interface supportSubTopic{
+  id:number,
+  main_topic:{
+    id:number,
+    title:string,
+  },
+  slug:string,
+  title:string,
+  status:boolean,
+  created_at:string,
+  updated_at:string,
+
+}
+
+export interface supportArticle{
+  id:number,
+  slug:string,
+  title:string,
+  description:string,
+  status:boolean,
+  created_at:string,
+  main_topic:{
+    id:number,
+    title:string,
+  },
+  sub_topic:{
+    id:number,
+    title:string,
+  }
+}

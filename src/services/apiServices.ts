@@ -982,3 +982,69 @@ export const updateSupportTopicStatusApi = async (id: string | number, payload: 
 };
 
 //----------------- help and support topic end ------------------//
+
+//----------------- help and support subtopic start ------------------//
+
+export async function fetchSupportSubTopic(page = 1, search: string = "", title: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-help-support-subtopic-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createSupportSubTopic = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-help-support-subtopic/`, 'POST', payload);
+};
+
+export const updateSupportSubTopicApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-help-support-subtopic/${id}`, 'POST', payload);
+};
+
+export const deleteSupportSubTopicApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-help-support-subtopic/${id}`, 'DELETE');
+};
+
+export const updateSupportSubTopicStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-help-support-subtopic-status/${id}`, 'POST', payload);
+};
+
+export const fetchSupportTopicList = async (): Promise<any> => {
+  return await apiRequest(`cms/get-help-support-topic-list/`, 'GET');
+};
+
+//----------------- help and support subtopic end ------------------//
+
+//----------------- help and support article start ------------------//
+
+export async function fetchSupportArticle(page = 1, search: string = "", title: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `cms/get-help-support-article-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createSupportArticle = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-help-support-article/`, 'POST', payload);
+};
+
+export const updateSupportArticleApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-help-support-article/${id}`, 'POST', payload);
+};
+
+export const deleteSupportArticleApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-help-support-article/${id}`, 'DELETE');
+};
+
+export const updateSupportArticleStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-help-support-article-status/${id}`, 'POST', payload);
+};
+
+export const fetchSupportTopicAndSubList = async (): Promise<any> => {
+  return await apiRequest(`cms/get-help-support-topic-and-sub-list/`, 'GET');
+};
+
+//----------------- help and support article end ------------------//

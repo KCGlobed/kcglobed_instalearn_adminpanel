@@ -207,7 +207,7 @@ const ManageSupportTopic: React.FC = () => {
                                 content: <DeleteConfirmationModal
                                     id={row}
                                     name={row.title}
-                                    onDelete={async (id) => {
+                                    onDelete={async () => {
                                         await deleteSupportTopicApi(row.id);
                                         dispatch(removeSupportTopic(row.id));
                                     }}

@@ -466,3 +466,32 @@ export const supportTopicFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const supportSubTopicFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const supportArticleFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Article Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+

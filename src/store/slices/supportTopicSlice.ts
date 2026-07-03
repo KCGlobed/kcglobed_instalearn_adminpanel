@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
 import type { SupportTopic, Pagination } from "../../utils/types";
-import { createSupportTopic, fetchSupportTopic, updateSupportTopicApi, updateSupportTopicStatusApi, deleteSupportTopicApi } from "../../services/apiServices";
+import { createSupportTopic, fetchSupportTopic, updateSupportTopicApi, updateSupportTopicStatusApi,  } from "../../services/apiServices";
 
 interface SupportTopicState extends Pagination<SupportTopic> { }
 
