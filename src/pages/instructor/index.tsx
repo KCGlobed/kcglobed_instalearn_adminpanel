@@ -12,8 +12,7 @@ import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiTrash, FiSettings } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteInstructorApi, downloadInstructorExcelApi, downloadInstructorPdfApi } from '../../services/apiServices';
-import ExportFile from '../../components/Forms/ExportFile';
+import { deleteInstructorApi,} from '../../services/apiServices';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
@@ -45,7 +44,7 @@ const ManageInstructors: React.FC = () => {
     const [filters, setFilters] = useState({
         first_name: '',
         last_name: '',
-        status: 'all' as 'all' | 'active' | 'deactive',
+        is_active: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -78,7 +77,7 @@ const ManageInstructors: React.FC = () => {
             first_name: debouncedFilters.first_name,
             last_name: debouncedFilters.last_name,
             ordering,
-            status: debouncedFilters.status,
+            status: debouncedFilters.is_active,
             startDate,
             endDate
         }));
@@ -99,7 +98,7 @@ const ManageInstructors: React.FC = () => {
         setFilters({
             first_name: '',
             last_name: '',
-            status: 'all',
+            is_active: 'all',
         });
     };
 
@@ -161,7 +160,7 @@ const ManageInstructors: React.FC = () => {
             width: '180px',
         },
         {
-            key: 'status',
+            key: 'is_active',
             title: 'Status',
             render: (_: any, row: any) => {
                 const isActive = row.is_active !== undefined ? row.is_active : row.status;
@@ -299,25 +298,6 @@ const ManageInstructors: React.FC = () => {
                     />
 
                     <div className="flex items-center gap-4">
-                        <ExportFile
-                            pdfApi={() => downloadInstructorPdfApi({
-                                search: debouncedSearchTerm,
-                                first_name: debouncedFilters.first_name,
-                                last_name: debouncedFilters.last_name,
-                                status: debouncedFilters.status,
-                                start_date: startDate,
-                                end_date: endDate
-                            })}
-                            excelApi={() => downloadInstructorExcelApi({
-                                search: debouncedSearchTerm,
-                                first_name: debouncedFilters.first_name,
-                                last_name: debouncedFilters.last_name,
-                                status: debouncedFilters.status,
-                                start_date: startDate,
-                                end_date: endDate
-                            })}
-                            fileNamePrefix="instructors"
-                        />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
                                 showModal({

@@ -254,7 +254,18 @@ const ManageQuiz: React.FC = () => {
                         onClick={() =>
                             showModal({
                                 title: 'Assign MCQs',
-                                content: <AssignMcqForm quizId={row.id} />,
+                                content: <AssignMcqForm quizId={row.id} onSuccess={() => {
+                                    dispatch(getQuiz({
+                                        page: currentPage,
+                                        search: debouncedSearchTerm,
+                                        name: debouncedFilters.name,
+                                        description: debouncedFilters.description,
+                                        ordering,
+                                        status: debouncedFilters.status !== 'all' ? debouncedFilters.status : undefined,
+                                        startDate,
+                                        endDate
+                                    }));
+                                }} />,
                                 type: 'custom',
                                 size: 'lg',
                             })

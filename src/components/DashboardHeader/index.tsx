@@ -21,7 +21,14 @@ const DashboardHeader: React.FC = () => {
     
     // 1. Specific check: If the last segment is an ID (detected by seeing 'view' before it)
     const secondLast = segments[segments.length - 2];
-    if (secondLast === 'view') return 'Course Details';
+    if (secondLast === 'view') {
+      const entity = segments[segments.length - 3] || 'Course';
+      // Format 'students' to 'Student Details', 'course' to 'Course Details'
+      let formattedEntity = entity.replace(/-/g, ' ');
+      if (formattedEntity.endsWith('s')) formattedEntity = formattedEntity.slice(0, -1);
+      formattedEntity = formattedEntity.charAt(0).toUpperCase() + formattedEntity.slice(1);
+      return `${formattedEntity} Details`;
+    }
 
     // 2. Default dashboard title
     if (!last || last === 'dashboard') return 'Dashboard';

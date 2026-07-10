@@ -133,7 +133,6 @@ const ManageFaqTopics: React.FC = () => {
                     {value || 'N/A'}
                 </div>
             ),
-            sortable: true,
             width: '300px',
         },
         {

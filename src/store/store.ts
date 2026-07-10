@@ -31,6 +31,7 @@ import quizReducer from "./slices/QuizSlice";
 import supportTopicReducer from "./slices/supportTopicSlice";
 import supportSubTopicReducer from "./slices/supportSubTopicSlice";
 import supportArticleReducer from "./slices/supportArticleSlice";
+import trailStudentReducer from "./slices/trailStudent";
 
 export const store = configureStore({
   reducer: {
@@ -64,6 +65,7 @@ export const store = configureStore({
     supportTopic: supportTopicReducer,
     supportSubTopic: supportSubTopicReducer,
     supportArticle: supportArticleReducer,
+    trailStudent: trailStudentReducer,
   },
 });
 

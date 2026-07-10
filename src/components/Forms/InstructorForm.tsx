@@ -253,10 +253,14 @@ const InstructorForm = ({ instructorData }: Props) => {
                             type="text"
                             {...register('pincode', {
                                 pattern: {
-                                    value: /^[0-9]+$/,
+                                    value: /^[0-9]{1,6}$/,
                                     message: 'Enter a valid pincode'
                                 }
                             })}
+                            maxLength={6}
+                            onInput={(e: any) => {
+                                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+                            }}
                             className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
                             placeholder="Enter the Pincode"
                         />
