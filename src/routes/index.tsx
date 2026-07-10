@@ -26,7 +26,7 @@ import CourseForm from "../components/Forms/CourseForm";
 import CourseView from "../components/View/CourseView";
 import PaymentSettings from "../pages/Settings/PaymentSettings";
 import ManageStudents from "../pages/Students";
-import StudentProfile from "../pages/Students/StudentProfile";
+import StudentProfile from "../components/View/StudentView";
 import ManageTrailCourse from "../pages/trailCourse";
 import CourseReview from "../pages/CourseReview";
 import ManageCourseAnnoucement from "../pages/ManageCourseAnnoucement";
@@ -44,6 +44,7 @@ import ManageQuiz from "../pages/Quiz";
 import ManageSupportTopic from "../pages/HelpAndSupport/SupportTopic";
 import ManageSupportSubTopic from "../pages/HelpAndSupport/SupportSubTopic";
 import ManageSupportArticle from "../pages/HelpAndSupport/SupportArticle";
+import ManageTrailStudentReport from "../pages/ManageReports/ManageTrailStudentReport";
 
 
 
@@ -99,6 +100,7 @@ export default function AppRoutes() {
           <Route path ="/dashboard/help-and-support-topic" element={<ManageSupportTopic/>}/>
           <Route path ="/dashboard/help-and-support-subtopic" element={<ManageSupportSubTopic/>}/>
           <Route path ="/dashboard/help-and-support-article" element={<ManageSupportArticle/>}/>
+          <Route path="/dashboard/trail-user-report" element={<ManageTrailStudentReport />} />
 
 
 

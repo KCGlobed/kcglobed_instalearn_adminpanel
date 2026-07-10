@@ -50,22 +50,16 @@ export const instructorFilterConfig: FilterField[] = [
         placeholder: 'Filter by last name...',
     },
     {
-        name: 'location',
-        label: 'Location',
-        type: 'text',
-        placeholder: 'Filter by location...',
-    },
-    {
-        name: 'status',
+        name: 'is_active',
         label: 'Status',
-        type: 'select',
+        type: 'status',
         options: [
             { label: 'All', value: 'all' },
             { label: 'Active', value: 'active' },
-            { label: 'Inactive', value: 'deactive' },
-        ],
-    },
-]
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
 
 //------------------------------Abhishek Faq Topics Start------------//
 
@@ -491,6 +485,26 @@ export const supportArticleFilterConfig: FilterField[] = [
             { label: 'All', value: 'all' },
             { label: 'Active', value: 'active' },
             { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const trailStudentFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    {
+        type: 'select',
+        label: 'Subscription Status',
+        name: 'subscription_status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Initiate', value: '1' },
+            { label: 'Active', value: '2' },
+            { label: 'Expired', value: '3' },
+            { label: 'Paused', value: '4' },
+            { label: 'Cancelled', value: '5' }
         ]
     }
 ];

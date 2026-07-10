@@ -6,8 +6,9 @@ import { createStudent, updateStudent, getStudents } from '../../store/slices/st
 import { viewStudentDetailApi } from '../../services/apiServices';
 import { Country, State, City } from 'country-state-city';
 import Select from 'react-select'
-
 import toast from 'react-hot-toast';
+import { CropperModal } from '../ImageCropper/components/CropperModal';
+import type { CropResult } from '../ImageCropper/utils/cropCanvas';
 
 type StudentFormValues = {
     first_name: string;
@@ -20,7 +21,7 @@ type StudentFormValues = {
     country: string;
     pincode: string;
     dob: string;
-    Image: FileList | null;
+    Image: any;
 };
 
 type Props = {
@@ -60,13 +61,43 @@ const StudentForm = ({ studentData }: Props) => {
 
     const studentImage = watch('Image');
 
+    // Cropper states
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
+    const [rawImageSrc, setRawImageSrc] = useState<string>('');
+    const [originalImageFormat, setOriginalImageFormat] = useState<'image/png' | 'image/jpeg'>('image/png');
+
     useEffect(() => {
-        if (studentImage && studentImage.length > 0) {
+        if (studentImage instanceof File) {
+            const url = URL.createObjectURL(studentImage);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        } else if (studentImage && studentImage.length > 0) {
             const url = URL.createObjectURL(studentImage[0]);
             setPreviewUrl(url);
             return () => URL.revokeObjectURL(url);
         }
     }, [studentImage]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
+            setOriginalImageFormat(isJpeg ? 'image/jpeg' : 'image/png');
+
+            const r = new FileReader();
+            r.onloadend = () => {
+                setRawImageSrc(r.result as string);
+                setIsCropperOpen(true);
+            };
+            r.readAsDataURL(file);
+            e.target.value = '';
+        }
+    };
+
+    const handleCropComplete = (result: CropResult) => {
+        setValue("Image", result.file, { shouldValidate: true });
+        setPreviewUrl(result.dataUrl);
+    };
 
     const watchCountry = watch('country');
     const watchState = watch('state');
@@ -188,7 +219,9 @@ const StudentForm = ({ studentData }: Props) => {
             formdata.append("pincode", data.pincode);
             if (data.dob) formdata.append("dob", data.dob);
 
-            if (data.Image && data.Image.length > 0) {
+            if (data.Image instanceof File) {
+                formdata.append("Image", data.Image);
+            } else if (data.Image && data.Image.length > 0) {
                 formdata.append("Image", data.Image[0]);
             }
 
@@ -214,7 +247,7 @@ const StudentForm = ({ studentData }: Props) => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative max-h-[75vh] overflow-y-auto custom-scrollbar px-2">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* First Name */}
@@ -286,11 +319,16 @@ const StudentForm = ({ studentData }: Props) => {
                             type="text"
                             {...register('phone1', {
                                 required: 'Phone number is required',
-                                pattern: {
-                                    value: /^[0-9]{10}$/,
-                                    message: 'Enter a valid 10-digit phone number'
+                                validate: (value) => {
+                                    if (value && !/^[6-9]/.test(value)) return 'Please enter a valid number';
+                                    if (value && value.length !== 10) return 'Enter a valid 10-digit phone number';
+                                    return true;
                                 }
                             })}
+                            maxLength={10}
+                            onInput={(e: any) => {
+                                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                            }}
                             className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2 rounded-xl transition-all"
                             placeholder="Enter 10-digit Phone"
                         />
@@ -352,9 +390,10 @@ const StudentForm = ({ studentData }: Props) => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    {...register('Image')}
+                                    onChange={handleImageChange}
                                     className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 px-2 py-2 rounded-xl file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer transition-all"
                                 />
+                                <input type="hidden" {...register('Image')} />
                                 {errors.Image && (
                                     <p className="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">{errors.Image.message as string}</p>
                                 )}
@@ -485,6 +524,13 @@ const StudentForm = ({ studentData }: Props) => {
                     </button>
                 </div>
             </form>
+            <CropperModal
+                imageSrc={rawImageSrc}
+                isOpen={isCropperOpen}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+                initialFormat={originalImageFormat}
+            />
         </div>
     );
 };

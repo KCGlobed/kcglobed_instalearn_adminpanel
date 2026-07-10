@@ -704,12 +704,19 @@ export interface StudentDetail {
     end_date: string;
     subscription_status: number;
     created_at: string;
-  } | null;
+  } | Record<string, never> | null;
   courses: {
     id: number;
+    progress?: number;
     course_detail: {
       id: number;
       name: string;
+      image?: string | null;
+      category?: {
+        name: string;
+      } | null;
+      duration?: string | null;
+      lessons?: number | null;
     };
   }[];
   user_devices: {
@@ -1060,4 +1067,24 @@ export interface supportArticle{
     id:number,
     title:string,
   }
+}
+
+export interface TrailStudent{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  phone:string,
+  total_amount:number,
+  start_date:string,
+  next_due:string,
+  end_date:string,
+  subscription_type:number,
+  subscription_status:number,
+  ordered_courses:{
+    id:number
+    name:string
+  }[]
+  trail_mode:boolean,
+  created_at:string,
 }

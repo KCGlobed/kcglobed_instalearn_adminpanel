@@ -5,13 +5,16 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { addSubcategory, editSubcategory } from '../../store/slices/subcategorySlice';
 import { fetchSubCategoryParentList } from '../../services/apiServices';
 import toast from 'react-hot-toast';
+import { CropperModal } from '../ImageCropper/components/CropperModal';
+import type { CropResult } from '../ImageCropper/utils/cropCanvas';
+
 type SubCategoryFormValues = {
     name: string;
     description: string;
     parent: number | string;
     bg_code: string;
     text_code: string;
-    icon: FileList | string | null;
+    icon: any;
 };
 
 type ParentCategory = {
@@ -66,18 +69,24 @@ const SubCategoryForm = ({ categoryData }: Props) => {
     const bgCode = watch('bg_code');
     const textCode = watch('text_code');
 
-    // Helper to ensure color picker always receives a valid hex
     const isValidHex = (hex: string) => /^#[0-9A-Fa-f]{6}$/i.test(hex);
 
     const iconFile = watch('icon');
     const [previewUrl, setPreviewUrl] = useState<string | null>(categoryData?.icon || null);
 
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
+    const [rawImageSrc, setRawImageSrc] = useState<string>('');
+    const [originalImageFormat, setOriginalImageFormat] = useState<"image/png" | "image/jpeg">('image/png');
+
     useEffect(() => {
-        if (iconFile) {
-            if (typeof iconFile === 'string') {
-                setPreviewUrl(iconFile);
-            } else if (iconFile.length > 0) {
-                const url = URL.createObjectURL(iconFile[0]);
+        if (iconFile instanceof File) {
+            const url = URL.createObjectURL(iconFile);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        } else if (iconFile && typeof iconFile !== 'string' && iconFile.length > 0) {
+            const fileObj = (iconFile as FileList)[0];
+            if (fileObj && typeof fileObj !== 'string') {
+                const url = URL.createObjectURL(fileObj);
                 setPreviewUrl(url);
                 return () => URL.revokeObjectURL(url);
             }
@@ -88,7 +97,27 @@ const SubCategoryForm = ({ categoryData }: Props) => {
         }
     }, [iconFile, categoryData]);
 
-    // Set default values on edit
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
+            setOriginalImageFormat(isJpeg ? 'image/jpeg' : 'image/png');
+
+            const r = new FileReader();
+            r.onloadend = () => {
+                setRawImageSrc(r.result as string);
+                setIsCropperOpen(true);
+            };
+            r.readAsDataURL(file);
+            e.target.value = '';
+        }
+    };
+
+    const handleCropComplete = (result: CropResult) => {
+        setValue("icon", result.file, { shouldValidate: true });
+        setPreviewUrl(result.dataUrl);
+    };
+
     useEffect(() => {
         if (categoryData) {
             reset({
@@ -124,10 +153,12 @@ const SubCategoryForm = ({ categoryData }: Props) => {
             formData.append('bg_code', data.bg_code);
             formData.append('text_code', data.text_code);
 
-            const isNewFileSelected = data.icon && typeof data.icon !== 'string' && (data.icon as FileList).length > 0;
+            const isNewFileSelected = data.icon instanceof File || (data.icon && typeof data.icon !== 'string' && data.icon.length > 0);
 
-            if (isNewFileSelected) {
-                formData.append('icon', (data.icon as FileList)[0]);
+            if (data.icon instanceof File) {
+                formData.append('icon', data.icon);
+            } else if (isNewFileSelected) {
+                formData.append('icon', data.icon[0]);
             } else if (!categoryData?.id) {
                 formData.append('icon', '');
             }
@@ -307,14 +338,18 @@ const SubCategoryForm = ({ categoryData }: Props) => {
                                 <input
                                     type="file"
                                     accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                />
+                                <input 
+                                    type="hidden" 
                                     {...register('icon', {
                                         validate: (value) => {
                                             if (categoryData?.id) return true;
-                                            if (value && value.length > 0) return true;
+                                            if (value) return true;
                                             return 'Icon file is required';
                                         }
-                                    })}
-                                    className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                    })} 
                                 />
                                 {errors.icon && (
                                     <p className="mt-1 text-sm text-red-600">{errors.icon.message as string}</p>
@@ -359,6 +394,14 @@ const SubCategoryForm = ({ categoryData }: Props) => {
                     </button>
                 </div>
             </form>
+
+            <CropperModal
+                imageSrc={rawImageSrc}
+                isOpen={isCropperOpen}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+                initialFormat={originalImageFormat}
+            />
         </div>
     );
 };

@@ -4,13 +4,15 @@ import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { addCategory, editCategory } from '../../store/slices/categorySlice';
 import toast from 'react-hot-toast';
+import { CropperModal } from '../ImageCropper/components/CropperModal';
+import type { CropResult } from '../ImageCropper/utils/cropCanvas';
 
 type CategoryFormValues = {
     name: string;
     description: string;
     bg_code: string;
     text_code: string;
-    icon: FileList | null;
+    icon: any;
 };
 
 type Props = {
@@ -54,9 +56,18 @@ const CategoryForm = ({ categoryData }: Props) => {
 
     const iconFile = watch('icon');
     const [previewUrl, setPreviewUrl] = useState<string | null>(categoryData?.icon || null);
+    
+    // Cropper states
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
+    const [rawImageSrc, setRawImageSrc] = useState<string>('');
+    const [originalImageFormat, setOriginalImageFormat] = useState<"image/png" | "image/jpeg">('image/png');
 
     useEffect(() => {
-        if (iconFile && iconFile.length > 0) {
+        if (iconFile instanceof File) {
+            const url = URL.createObjectURL(iconFile);
+            setPreviewUrl(url);
+            return () => URL.revokeObjectURL(url);
+        } else if (iconFile && iconFile.length > 0) {
             const url = URL.createObjectURL(iconFile[0]);
             setPreviewUrl(url);
             return () => URL.revokeObjectURL(url);
@@ -64,6 +75,27 @@ const CategoryForm = ({ categoryData }: Props) => {
             setPreviewUrl(categoryData.icon);
         }
     }, [iconFile, categoryData]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const isJpeg = file.type === 'image/jpeg' || file.type === 'image/jpg';
+            setOriginalImageFormat(isJpeg ? 'image/jpeg' : 'image/png');
+
+            const r = new FileReader();
+            r.onloadend = () => {
+                setRawImageSrc(r.result as string);
+                setIsCropperOpen(true);
+            };
+            r.readAsDataURL(file);
+            e.target.value = '';
+        }
+    };
+
+    const handleCropComplete = (result: CropResult) => {
+        setValue("icon", result.file, { shouldValidate: true });
+        setPreviewUrl(result.dataUrl);
+    };
 
     // Set default values on edit
     useEffect(() => {
@@ -87,7 +119,9 @@ const CategoryForm = ({ categoryData }: Props) => {
             formData.append('bg_code', data.bg_code);
             formData.append('text_code', data.text_code);
 
-            if (data.icon && data.icon.length > 0) {
+            if (data.icon instanceof File) {
+                formData.append('icon', data.icon);
+            } else if (data.icon && data.icon.length > 0) {
                 formData.append('icon', data.icon[0]);
             }
 
@@ -218,14 +252,18 @@ const CategoryForm = ({ categoryData }: Props) => {
                                 <input
                                     type="file"
                                     accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                />
+                                <input 
+                                    type="hidden" 
                                     {...register('icon', {
                                         validate: (value) => {
                                             if (categoryData?.id) return true;
-                                            if (value && value.length > 0) return true;
+                                            if (value) return true;
                                             return 'Icon file is required';
                                         }
-                                    })}
-                                    className="w-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-2 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                    })} 
                                 />
                                 {errors.icon && (
                                     <p className="mt-1 text-sm text-red-600">{errors.icon.message as string}</p>
@@ -270,6 +308,14 @@ const CategoryForm = ({ categoryData }: Props) => {
                     </button>
                 </div>
             </form>
+
+            <CropperModal
+                imageSrc={rawImageSrc}
+                isOpen={isCropperOpen}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+                initialFormat={originalImageFormat}
+            />
         </div>
     );
 };

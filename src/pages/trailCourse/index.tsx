@@ -7,7 +7,7 @@ import { getTrailCourse, } from '../../store/slices/trailCourseSlice';
 import GlassButton from '../../components/Button/Button';
 import { FiEye, } from 'react-icons/fi';
 import AddTrailCourseForm from '../../components/Forms/AddTrailCourseForm';
-import { Filter, Plus } from 'lucide-react';
+import { Filter, Plus, Calendar } from 'lucide-react';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -87,6 +87,8 @@ const ManageTrailCourse: React.FC = () => {
             name: '',
             status: 'all',
         });
+        setStartDate('');
+        setEndDate('');
     };
 
     const handleSort = (key: string, direction: 'asc' | 'desc') => {
@@ -170,6 +172,15 @@ const ManageTrailCourse: React.FC = () => {
                             sortRef={sortRef}
                         />
 
+                        {/* Date Filter Button */}
+                        <button
+                            onClick={() => { setShowDate(!showDate); setShowFilter(false); }}
+                            className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showDate || startDate ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                }`}
+                        >
+                            <Calendar size={16} className={showDate || startDate ? 'text-indigo-500' : 'text-gray-400 group-hover:text-indigo-500'} />
+                            {startDate ? `${startDate} - ${endDate}` : 'Date Range'}
+                        </button>
 
                     </div>
 
