@@ -17,9 +17,10 @@ interface AssignMcqFormValues {
 
 interface AssignMcqFormProps {
     quizId: number | string;
+    onSuccess?: () => void;
 }
 
-const AssignMcqForm: React.FC<AssignMcqFormProps> = ({ quizId }) => {
+const AssignMcqForm: React.FC<AssignMcqFormProps> = ({ quizId, onSuccess }) => {
     const [options, setOptions] = useState<Option[]>([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
     const { hideModal } = useModal();
@@ -106,6 +107,7 @@ const AssignMcqForm: React.FC<AssignMcqFormProps> = ({ quizId }) => {
             
             // Assuming successful response structure (adjust if needed)
             toast.success(res?.message || 'MCQs assigned successfully');
+            if (onSuccess) onSuccess();
             reset();
             hideModal();
         } catch (error: any) {

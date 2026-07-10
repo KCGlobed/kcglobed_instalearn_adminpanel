@@ -1047,4 +1047,35 @@ export const fetchSupportTopicAndSubList = async (): Promise<any> => {
   return await apiRequest(`cms/get-help-support-topic-and-sub-list/`, 'GET');
 };
 
-//----------------- help and support article end ------------------//
+//----------------- help and support article end ------------------//
+
+//----------------- trail student report start ------------------//
+
+export async function fetchTrailStudentListing(page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", start_date: string = "", end_date: string = "", subscription_status: string = ""): Promise<any> {
+  const statusVal = subscription_status === 'all' ? '' : subscription_status;
+  let query = `reports/get-trail-user-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&subscription_status=${encodeURIComponent(statusVal)}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const createTrailRegistration = async (payload: any): Promise<any> => {
+  return await apiRequest(`subscription/trail-registration/`, 'POST', payload);
+};
+
+export const fetchTrailCoursesListApi = async (): Promise<any> => {
+  return await apiRequest(`course/get-trail-courses/`, 'GET');
+};
+
+export const downloadTrailStudentPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", start_date = "", end_date = "", subscription_status = "" }: any): Promise<any> => {
+    const statusVal = subscription_status === 'all' ? '' : subscription_status;
+    return await apiRequest(`reports/get-trail-user-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}${statusVal ? `&subscription_status=${encodeURIComponent(statusVal)}` : ""}`, 'GET');
+}
+
+export const downloadTrailStudentExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", start_date = "", end_date = "", subscription_status = "" }: any): Promise<any> => {
+    const statusVal = subscription_status === 'all' ? '' : subscription_status;
+    return await apiRequest(`reports/get-trail-user-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}${statusVal ? `&subscription_status=${encodeURIComponent(statusVal)}` : ""}`, 'GET');
+}
+
+//----------------- trail student report end ------------------//

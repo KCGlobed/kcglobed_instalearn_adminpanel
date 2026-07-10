@@ -175,7 +175,7 @@ const ManageStudents: React.FC = () => {
             key: 'is_active',
             title: 'Status',
             render: (_, row: any) => {
-                const isActive = typeof row.status !== 'undefined' ? row.status : row.is_active;
+                const isActive = (row.status ?? row.is_active) !== false;
                 return (
                     <button
                         onClick={() => {

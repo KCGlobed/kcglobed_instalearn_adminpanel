@@ -94,6 +94,7 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Student Order', path: '/dashboard/report-student-order' },
         { name: 'Manage Student Performance', path: '/dashboard/student-performance-report' },
         { name: 'Manage Student Notes', path: '/dashboard/student-notes-report' },
+        { name: 'Manage Trail Student', path:'/dashboard/trail-user-report'}
       ]
     },
     {
@@ -102,8 +103,9 @@ const Dashboard: React.FC = () => {
     {
       name:'Manage Quiz', icon:<MdOutlineQuiz className="mr-2"/>, path:'/dashboard/quiz'
     },
+
      {
-      name: 'Manage Help and Support ',
+      name: 'Manage Support ',
       icon: <FaHeadset className="mr-2" />,
       path: '#',
       submenu: [
