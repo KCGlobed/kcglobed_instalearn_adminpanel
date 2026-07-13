@@ -154,6 +154,21 @@ const CourseReview: React.FC = () => {
             sortable: true,
             width: '220px',
         },
+        {
+            key: 'reviewer',
+            title: 'Reviewer',
+            render: (_: any, row: any) => (
+                <div className="flex flex-col max-w-[200px]">
+                    <span className="font-semibold text-gray-900 text-sm truncate" title={row.user ? `${row.user.first_name} ${row.user.last_name}` : '-'}>
+                        {row.user ? `${row.user.first_name} ${row.user.last_name}` : '-'}
+                    </span>
+                    <span className="text-[11px] text-gray-500 truncate" title={row.user?.email || ''}>
+                        {row.user?.email || ''}
+                    </span>
+                </div>
+            ),
+            width: '180px',
+        },
 
         {
             key: 'rating',
