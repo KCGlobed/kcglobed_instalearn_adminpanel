@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar, BookOpen, User } from 'lucide-react';
+import { Filter, Calendar, Plus } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getInstructor, removeInstructor, updateInstructorStatus } from '../../store/slices/instructorSlice';
+import { getSubscription, removeSubscription, statusSubscription } from '../../store/slices/subscriptionSlice';
+import { deleteSubscriptionApi, updateSubscriptionStatusApi } from '../../services/apiServices';
+import toast from 'react-hot-toast';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
-import InstructorForm from '../../components/Forms/InstructorForm';
-import { useModal } from '../../context/ModalContext';
-import toast from 'react-hot-toast';
-import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash, FiSettings } from 'react-icons/fi';
-import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteInstructorApi, } from '../../services/apiServices';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
-import { instructorFilterConfig } from '../../utils/filterConfiguration';
-import TabsModal from '../../components/Modal/TabsModal';
-import InstructorPasswordForm from '../../components/Forms/InstructorPasswordForm';
-import InstructorPublicProfileForm from '../../components/Forms/InstructorPublicProfileForm';
+import { subscriptionFilterConfig } from '../../utils/filterConfiguration';
+import type { Subscription } from '../../utils/types';
+import { useModal } from '../../context/ModalContext';
+import SubscriptionForm from '../../components/Forms/SubscriptionForm';
+import GlassButton from '../../components/Button/Button';
+import { FiEdit, FiTrash } from 'react-icons/fi';
+import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -32,7 +30,7 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageInstructors: React.FC = () => {
+const ManageSubscription: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -43,9 +41,8 @@ const ManageInstructors: React.FC = () => {
 
     // Filter states
     const [filters, setFilters] = useState({
-        first_name: '',
-        last_name: '',
-        is_active: 'all' as 'all' | 'active' | 'deactive',
+        plan_name: '',
+        status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -54,8 +51,8 @@ const ManageInstructors: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.instructor);
-    const pageSize = 5;
+    const { data, loading, pagination } = useAppSelector((state) => state.subscription);
+    const pageSize = 10;
 
     // Refs for clicking outside to close
     const sortRef = useRef<HTMLDivElement>(null);
@@ -72,24 +69,20 @@ const ManageInstructors: React.FC = () => {
 
     // Fetch data whenever page, search, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getInstructor({
+        dispatch(getSubscription({
             page: currentPage,
             search: debouncedSearchTerm,
-            first_name: debouncedFilters.first_name,
-            last_name: debouncedFilters.last_name,
+            plan_name: debouncedFilters.plan_name,
             ordering,
-            status: debouncedFilters.is_active,
+            status: debouncedFilters.status !== 'all' ? debouncedFilters.status : undefined,
             startDate,
             endDate
         }));
     }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, startDate, endDate, ordering]);
 
-    // Reset to first page when search or filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
-
-
 
     const handleFilterChange = (name: string, value: any) => {
         setFilters(prev => ({ ...prev, [name]: value }));
@@ -97,9 +90,8 @@ const ManageInstructors: React.FC = () => {
 
     const clearFilters = () => {
         setFilters({
-            first_name: '',
-            last_name: '',
-            is_active: 'all',
+            plan_name: '',
+            status: 'all',
         });
     };
 
@@ -109,44 +101,94 @@ const ManageInstructors: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'first_name';
+        const currentKey = ordering.replace(/^-/, '') || 'plan_name';
         handleSort(currentKey, direction);
         setShowSort(false);
+    };
+
+    const handleToggleStatus = async (row: Subscription) => {
+        try {
+            const newStatus = !row.status;
+            await updateSubscriptionStatusApi(row.id, { status: newStatus });
+            dispatch(statusSubscription(row.id));
+            toast.success(`Subscription ${newStatus ? 'activated' : 'deactivated'} successfully`);
+        } catch (error: any) {
+            toast.error(error || "Failed to update status");
+        }
+    };
+
+    const handleDelete = async (row: Subscription) => {
+        try {
+            await deleteSubscriptionApi(row.id);
+            dispatch(removeSubscription(row.id));
+            toast.success("Subscription plan deleted successfully");
+        } catch (error: any) {
+            toast.error(error?.message || "Failed to delete subscription");
+        }
     };
 
     // Column definitions
     const columns: ColumnDef[] = [
         {
-            key: 'first_name',
-            title: 'Instructor',
-            render: (_: any, row: any) => (
-                <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100"
-                    >
-                        {row.first_name ? row.first_name.charAt(0).toUpperCase() : '#'}
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.first_name} {row.last_name}</span>
-                        {row.email && (
-                            <span className="text-[11px] text-gray-500 font-medium whitespace-nowrap">{row.email}</span>
-                        )}
-                    </div>
+            key: 'plan_name',
+            title: 'Plan Name',
+            render: (value: string, row: Subscription) => (
+                <div className="flex flex-col gap-1 py-1">
+                    <span className="font-bold text-gray-900 text-sm whitespace-nowrap">{value}</span>
+                    {row.banner_text && (
+                        <span className="text-[10px] text-white bg-indigo-500 rounded-md px-1.5 py-0.5 w-max font-semibold tracking-wide">
+                            {row.banner_text}
+                        </span>
+                    )}
                 </div>
             ),
             sortable: true,
-            width: '250px',
+            width: '180px',
         },
         {
-            key: 'location',
-            title: 'Location',
-            render: (_: any, row: any) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2">
-                    {row.city && row.country ? `${row.city}, ${row.country}` : row.city || row.country || 'N/A'}
+            key: 'plan_description',
+            title: 'Description',
+            render: (value: string) => (
+                <div className="text-gray-600 text-xs w-full max-w-[200px] line-clamp-2" title={value}>
+                    {value || 'N/A'}
                 </div>
             ),
-            sortable: true,
-            width: '200px',
+            width: '220px',
+        },
+        {
+            key: 'amount',
+            title: 'Pricing',
+            render: (_: any, row: Subscription) => (
+                <div className="flex flex-col">
+                    <div className="flex items-end gap-1.5">
+                        <span className="text-gray-900 font-bold text-sm">
+                            {row.currency === 'INR' ? '₹' : row.currency === 'USD' ? '$' : row.currency} {row.amount}
+                        </span>
+                        {row.original_price && row.original_price > row.amount && (
+                            <span className="text-gray-400 text-xs line-through mb-0.5">
+                                {row.original_price}
+                            </span>
+                        )}
+                    </div>
+                    {row.monthly_amount > 0 && (
+                        <span className="text-indigo-600 font-medium text-[11px]">
+                            {row.currency === 'INR' ? '₹' : row.currency === 'USD' ? '$' : row.currency} {row.monthly_amount} / month
+                        </span>
+                    )}
+                </div>
+            ),
+            width: '160px',
+        },
+        {
+            key: 'no_of_licence',
+            title: 'Licenses',
+            render: (value: number) => (
+                <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold border border-blue-100">
+                    {value}
+                </span>
+            ),
+            width: '110px',
+            align: 'center',
         },
         {
             key: 'created_at',
@@ -158,76 +200,36 @@ const ManageInstructors: React.FC = () => {
                 </div>
             ),
             sortable: true,
-            width: '180px',
+            width: '140px',
         },
         {
-            key: 'is_active',
+            key: 'status',
             title: 'Status',
-            render: (_: any, row: any) => {
-                const isActive = row.is_active !== undefined ? row.is_active : row.status;
-                return (
-                    <button
-                        onClick={() => {
-                            dispatch(updateInstructorStatus({ id: row.id, status: !isActive }))
-                                .unwrap()
-                                .then(() => toast.success(`Instructor ${!isActive ? 'activated' : 'deactivated'} successfully`))
-                                .catch((err) => toast.error(err || "Failed to update status"));
-                        }}
-                        className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${isActive ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
-                    >
-                        {isActive ? 'Active' : 'Inactive'}
-                    </button>
-                );
-            },
-            width: '120px',
+            render: (value: boolean, row: Subscription) => (
+                <button
+                    onClick={() => handleToggleStatus(row)}
+                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
+                >
+                    {value ? 'Active' : 'Inactive'}
+                </button>
+            ),
+            width: '100px',
             align: 'center',
             sortable: true,
         },
         {
-            key: 'id',
+            key: 'actions',
             title: 'Actions',
-            render: (_, row) => (
+            render: (_, row: Subscription) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"
-                        title="Edit"
-                        onClick={() =>
-                            showModal({
-                                title: 'Edit Instructor',
-                                content: <InstructorForm instructorData={row} />,
-                                type: 'success',
-                                size: 'lg',
-                            })
-                        }
-                    />
-                    <GlassButton
-                        icon={<FiSettings />}
-                        color="gray"
-                        title="Manage"
+                        title="Edit Plan"
                         onClick={() => {
                             showModal({
-                                title: 'Manage Instructor',
-                                content: (
-                                    <TabsModal
-                                        defaultActiveKey="password"
-                                        tabs={[
-                                            {
-                                                key: 'password',
-                                                label: 'Change Password',
-                                                icon: <BookOpen size={15} />,
-                                                component: <InstructorPasswordForm instructorId={row.id} />,
-                                            },
-                                            {
-                                                key: 'public profile',
-                                                label: 'Public Profile',
-                                                icon: <User size={15} />,
-                                                component: <InstructorPublicProfileForm instructorId={row.id} />,
-                                            }
-                                        ]}
-                                    />
-
-                                ),
+                                title: 'Edit Subscription Plan',
+                                content: <SubscriptionForm subscriptionData={row} />,
                                 type: 'custom',
                                 size: 'xl',
                             });
@@ -236,17 +238,15 @@ const ManageInstructors: React.FC = () => {
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
                         color="red"
-                        title="Delete"
+                        title="Delete Plan"
                         onClick={() => {
                             showModal({
-                                title: 'Delete Instructor',
+                                title: 'Delete Subscription Plan',
                                 content: <DeleteConfirmationModal
-                                    id={row}
-                                    name={`${row.first_name} ${row.last_name}`}
+                                    id={row.id}
+                                    name={row.plan_name}
                                     onDelete={async () => {
-
-                                        await deleteInstructorApi(row.id);
-                                        dispatch(removeInstructor(row.id));
+                                        await handleDelete(row);
                                     }}
                                 />,
                                 type: 'custom',
@@ -256,13 +256,13 @@ const ManageInstructors: React.FC = () => {
                     />
                 </div>
             ),
-            width: '180px',
+            width: '160px',
             align: 'right',
         },
     ];
 
     return (
-        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6 animate-in fade-in duration-500">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
@@ -301,31 +301,30 @@ const ManageInstructors: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search instructors..."
-                        className="mx-4"
+                        placeholder="Search plans..."
+                        className="mx-4 flex-1 max-w-sm"
                     />
 
-                    <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
-                            onClick={() =>
-                                showModal({
-                                    title: "Add Instructor",
-                                    content: <InstructorForm />,
-                                    type: 'custom',
-                                    size: 'lg',
-                                })
-                            }
-                        >
-                            <Plus size={18} strokeWidth={3} />
-                            Add Instructor
-                        </button>
-                    </div>
+                    <button
+                        className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
+                        onClick={() =>
+                            showModal({
+                                title: "Create Subscription Plan",
+                                content: <SubscriptionForm />,
+                                type: 'custom',
+                                size: 'xl',
+                            })
+                        }
+                    >
+                        <Plus size={18} strokeWidth={3} />
+                        Add Plan
+                    </button>
                 </div>
 
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={instructorFilterConfig}
+                    config={subscriptionFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -363,4 +362,4 @@ const ManageInstructors: React.FC = () => {
     );
 };
 
-export default ManageInstructors;
+export default ManageSubscription;

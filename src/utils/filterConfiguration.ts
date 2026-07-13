@@ -509,3 +509,16 @@ export const trailStudentFilterConfig: FilterField[] = [
     }
 ];
 
+export const subscriptionFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Plan Name', name: 'plan_name', placeholder: 'Filter by plan name...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
