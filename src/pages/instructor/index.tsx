@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar, BookOpen } from 'lucide-react';
+import { Filter, Plus, Calendar, BookOpen, User } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiTrash, FiSettings } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteInstructorApi,} from '../../services/apiServices';
+import { deleteInstructorApi, } from '../../services/apiServices';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
@@ -20,6 +20,7 @@ import DynamicFilter from '../../components/common/DynamicFilter';
 import { instructorFilterConfig } from '../../utils/filterConfiguration';
 import TabsModal from '../../components/Modal/TabsModal';
 import InstructorPasswordForm from '../../components/Forms/InstructorPasswordForm';
+import InstructorPublicProfileForm from '../../components/Forms/InstructorPublicProfileForm';
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -206,7 +207,7 @@ const ManageInstructors: React.FC = () => {
                         title="Manage"
                         onClick={() => {
                             showModal({
-                                title: 'Manage Password',
+                                title: 'Manage Instructor',
                                 content: (
                                     <TabsModal
                                         defaultActiveKey="password"
@@ -217,8 +218,15 @@ const ManageInstructors: React.FC = () => {
                                                 icon: <BookOpen size={15} />,
                                                 component: <InstructorPasswordForm instructorId={row.id} />,
                                             },
+                                            {
+                                                key: 'public profile',
+                                                label: 'Public Profile',
+                                                icon: <User size={15} />,
+                                                component: <InstructorPublicProfileForm instructorId={row.id} />,
+                                            }
                                         ]}
                                     />
+
                                 ),
                                 type: 'custom',
                                 size: 'xl',

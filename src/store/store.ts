@@ -32,6 +32,8 @@ import supportTopicReducer from "./slices/supportTopicSlice";
 import supportSubTopicReducer from "./slices/supportSubTopicSlice";
 import supportArticleReducer from "./slices/supportArticleSlice";
 import trailStudentReducer from "./slices/trailStudent";
+import subscriptionReducer from "./slices/subscriptionSlice";
+import studentAccessLockReducer from "./slices/studentAccessLockSlice";
 
 export const store = configureStore({
   reducer: {
@@ -66,6 +68,8 @@ export const store = configureStore({
     supportSubTopic: supportSubTopicReducer,
     supportArticle: supportArticleReducer,
     trailStudent: trailStudentReducer,
+    subscription: subscriptionReducer,
+    studentAccessLock: studentAccessLockReducer,
   },
 });
 

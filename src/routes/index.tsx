@@ -45,6 +45,8 @@ import ManageSupportTopic from "../pages/HelpAndSupport/SupportTopic";
 import ManageSupportSubTopic from "../pages/HelpAndSupport/SupportSubTopic";
 import ManageSupportArticle from "../pages/HelpAndSupport/SupportArticle";
 import ManageTrailStudentReport from "../pages/ManageReports/ManageTrailStudentReport";
+import ManageSubscripiton from "../pages/manageSubscription";
+import ManageStudentAccessLockReport from "../pages/ManageReports/ManageStudentAccessLockReport";
 
 
 
@@ -89,6 +91,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/report-student-order" element={<ManageStudentOrder />} />
           <Route path="/dashboard/student-performance-report" element={<StudentPerformace />} />
           <Route path="/dashboard/student-notes-report" element={<ManageStudentNotesReport />} />
+          <Route path="/dashboard/student-access-lock-report" element={<ManageStudentAccessLockReport />} />
           <Route path="/dashboard/blog-category" element={<ManageBlogCategory />} />
           <Route path="/dashboard/blog" element={<ManageBlogPost />} />
           <Route path="/dashboard/coupons" element={<ManageCoupons />} />
@@ -101,6 +104,7 @@ export default function AppRoutes() {
           <Route path ="/dashboard/help-and-support-subtopic" element={<ManageSupportSubTopic/>}/>
           <Route path ="/dashboard/help-and-support-article" element={<ManageSupportArticle/>}/>
           <Route path="/dashboard/trail-user-report" element={<ManageTrailStudentReport />} />
+          <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton/>}/>
 
 
 

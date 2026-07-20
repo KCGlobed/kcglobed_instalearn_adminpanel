@@ -1088,3 +1088,20 @@ export interface TrailStudent{
   trail_mode:boolean,
   created_at:string,
 }
+
+export interface Subscription{
+id:number,
+plan_id:number,
+plan_name:string,
+plan_description:string,
+banner_text:string,
+original_price:number,
+monthly_amount:number,
+amount:number,
+currency:String,
+plan_type:number,
+status:boolean,
+feature:[],
+no_of_licence:number,
+created_at:string,
+}

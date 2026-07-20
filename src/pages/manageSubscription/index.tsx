@@ -1,22 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Calendar, Star } from 'lucide-react';
+import { Filter, Calendar, Plus } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getCourseReview,updateCourseReviewStatus } from '../../store/slices/courseReview';
+import { getSubscription, removeSubscription, statusSubscription } from '../../store/slices/subscriptionSlice';
+import { deleteSubscriptionApi, updateSubscriptionStatusApi } from '../../services/apiServices';
+import toast from 'react-hot-toast';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
-import { useModal } from '../../context/ModalContext';
-import toast from 'react-hot-toast';
-import GlassButton from '../../components/Button/Button';
-import { FiEye} from 'react-icons/fi';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
-import DynamicFilter from '../../components/common/DynamicFilter';
 import SearchInput from '../../components/common/SearchInput';
-import { courseReviewFilterConfig } from '../../utils/filterConfiguration';
-import ReviewDetailModal from '../../components/View/ReviewDetail';
+import DynamicFilter from '../../components/common/DynamicFilter';
+import { subscriptionFilterConfig } from '../../utils/filterConfiguration';
+import type { Subscription } from '../../utils/types';
+import { useModal } from '../../context/ModalContext';
+import SubscriptionForm from '../../components/Forms/SubscriptionForm';
+import GlassButton from '../../components/Button/Button';
+import { FiEdit, FiTrash } from 'react-icons/fi';
+import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 
+// Interface matching the Table component's column requirement
 interface ColumnDef {
     key: string;
     title: string;
@@ -26,24 +30,20 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const CourseReview: React.FC = () => {
+const ManageSubscription: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const { showModal, hideModal } = useModal();
+    const { showModal } = useModal();
 
     // Filter states
     const [filters, setFilters] = useState({
-        first_name: '',
-        last_name: '',
-        name: '',
+        plan_name: '',
         status: 'all' as 'all' | 'active' | 'deactive',
-        approved: 'all',
     });
-
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
 
@@ -51,8 +51,8 @@ const CourseReview: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.ReviewCourse);
-    const pageSize = 5;
+    const { data, loading, pagination } = useAppSelector((state) => state.subscription);
+    const pageSize = 10;
 
     // Refs for clicking outside to close
     const sortRef = useRef<HTMLDivElement>(null);
@@ -67,24 +67,19 @@ const CourseReview: React.FC = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Fetch data whenever page, filters, dates or ordering changes
+    // Fetch data whenever page, search, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getCourseReview({
+        dispatch(getSubscription({
             page: currentPage,
             search: debouncedSearchTerm,
-            first_name: debouncedFilters.first_name,
-            last_name: debouncedFilters.last_name,
-            name: debouncedFilters.name,
-            chapter: '',
+            plan_name: debouncedFilters.plan_name,
             ordering,
-            status: debouncedFilters.status,
+            status: debouncedFilters.status !== 'all' ? debouncedFilters.status : undefined,
             startDate,
-            endDate,
-            approved: debouncedFilters.approved === 'all' ? '' : debouncedFilters.approved,
+            endDate
         }));
-    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, ordering, startDate, endDate]);
+    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, startDate, endDate, ordering]);
 
-    // Reset to first page when filters, startDate or endDate change
     useEffect(() => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
@@ -95,11 +90,8 @@ const CourseReview: React.FC = () => {
 
     const clearFilters = () => {
         setFilters({
-            first_name: '',
-            last_name: '',
-            name: '',
+            plan_name: '',
             status: 'all',
-            approved: 'all',
         });
     };
 
@@ -109,133 +101,114 @@ const CourseReview: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'course';
+        const currentKey = ordering.replace(/^-/, '') || 'plan_name';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
 
-    const renderStars = (rating: number) => {
-        return (
-            <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, index) => {
-                    const starVal = index + 1;
-                    return (
-                        <Star
-                            key={index}
-                            size={14}
-                            className={
-                                starVal <= rating
-                                    ? 'text-amber-400 fill-amber-400'
-                                    : 'text-gray-200'
-                            }
-                        />
-                    );
-                })}
-            </div>
-        );
+    const handleToggleStatus = async (row: Subscription) => {
+        try {
+            const newStatus = !row.status;
+            await updateSubscriptionStatusApi(row.id, { status: newStatus });
+            dispatch(statusSubscription(row.id));
+            toast.success(`Subscription ${newStatus ? 'activated' : 'deactivated'} successfully`);
+        } catch (error: any) {
+            toast.error(error || "Failed to update status");
+        }
     };
 
+    const handleDelete = async (row: Subscription) => {
+        try {
+            await deleteSubscriptionApi(row.id);
+            dispatch(removeSubscription(row.id));
+            toast.success("Subscription plan deleted successfully");
+        } catch (error: any) {
+            toast.error(error?.message || "Failed to delete subscription");
+        }
+    };
+
+    // Column definitions
     const columns: ColumnDef[] = [
         {
-            key: 'course__name',
-            title: 'Course',
-            render: (_: any, row: any) => (
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
-                        {row.course?.name ? row.course.name.charAt(0).toUpperCase() : 'C'}
-                    </div>
-                    <div className="flex flex-col max-w-[200px]">
-                        <span className="font-semibold text-gray-900 text-sm truncate" title={row.course?.name || '-'}>
-                            {row.course?.name || '-'}
+            key: 'plan_name',
+            title: 'Plan Name',
+            render: (value: string, row: Subscription) => (
+                <div className="flex flex-col gap-1 py-1">
+                    <span className="font-bold text-gray-900 text-sm whitespace-nowrap">{value}</span>
+                    {row.banner_text && (
+                        <span className="text-[10px] text-white bg-indigo-500 rounded-md px-1.5 py-0.5 w-max font-semibold tracking-wide">
+                            {row.banner_text}
                         </span>
-                    </div>
+                    )}
                 </div>
             ),
             sortable: true,
+            width: '180px',
+        },
+        {
+            key: 'plan_description',
+            title: 'Description',
+            render: (value: string) => (
+                <div className="text-gray-600 text-xs w-full max-w-[200px] line-clamp-2" title={value}>
+                    {value || 'N/A'}
+                </div>
+            ),
             width: '220px',
         },
         {
-            key: 'reviewer',
-            title: 'Reviewer',
-            render: (_: any, row: any) => (
-                <div className="flex flex-col max-w-[200px]">
-                    <span className="font-semibold text-gray-900 text-sm truncate" title={row.user ? `${row.user.first_name} ${row.user.last_name}` : '-'}>
-                        {row.user ? `${row.user.first_name} ${row.user.last_name}` : '-'}
-                    </span>
-                    <span className="text-[11px] text-gray-500 truncate" title={row.user?.email || ''}>
-                        {row.user?.email || ''}
-                    </span>
-                </div>
-            ),
-            width: '180px',
-        },
-
-        {
-            key: 'rating',
-            title: 'Rating',
-            render: (value: number) => (
-                <div className="flex flex-col gap-1">
-                    <span className="font-bold text-gray-900 text-sm">{value || 0} / 5</span>
-                    {renderStars(value || 0)}
-                </div>
-            ),
-            sortable: false,
-            width: '120px',
-        },
-        {
-            key: 'review',
-            title: 'Review',
-            render: (value: string, row: any) => (
-                <div className="flex flex-col gap-2 max-w-[300px]">
-                    <span className="text-gray-600 text-xs line-clamp-2" title={value}>
-                        {value || '-'}
-                    </span>
-                    <div className="flex items-center gap-2 mt-1">
-                        
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${row.approved === 1
-                                ? 'text-white bg-green-500'
-                                : row.approved === 2
-                                    ? 'text-white bg-red-500'
-                                    : 'text-white bg-amber-500'
-                            }`}>
-                            
-                            {row.approved === 1 ? 'Approved' : row.approved === 2 ? 'Rejected' : 'New'}
-                            
+            key: 'amount',
+            title: 'Pricing',
+            render: (_: any, row: Subscription) => (
+                <div className="flex flex-col">
+                    <div className="flex items-end gap-1.5">
+                        <span className="text-gray-900 font-bold text-sm">
+                            {row.currency === 'INR' ? '₹' : row.currency === 'USD' ? '$' : row.currency} {row.amount}
                         </span>
+                        {row.original_price && row.original_price > row.amount && (
+                            <span className="text-gray-400 text-xs line-through mb-0.5">
+                                {row.original_price}
+                            </span>
+                        )}
                     </div>
+                    {row.monthly_amount > 0 && (
+                        <span className="text-indigo-600 font-medium text-[11px]">
+                            {row.currency === 'INR' ? '₹' : row.currency === 'USD' ? '$' : row.currency} {row.monthly_amount} / month
+                        </span>
+                    )}
                 </div>
             ),
-            width: '300px',
+            width: '160px',
+        },
+        {
+            key: 'no_of_licence',
+            title: 'Licenses',
+            render: (value: number) => (
+                <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold border border-blue-100">
+                    {value}
+                </span>
+            ),
+            width: '110px',
+            align: 'center',
         },
         {
             key: 'created_at',
-            title: 'Reviewed On',
+            title: 'Created On',
             render: (value: string) => (
                 <div className="flex flex-col">
-                    <span className="text-gray-800 text-xs font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
+                    <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
                     <span className="text-gray-400 text-[10px] uppercase font-bold">{value ? moment(value).format('hh:mm A') : ''}</span>
                 </div>
             ),
             sortable: true,
-            width: '130px',
+            width: '140px',
         },
         {
             key: 'status',
             title: 'Status',
-            render: (value: boolean, row: any) => (
+            render: (value: boolean, row: Subscription) => (
                 <button
-                    onClick={async () => {
-                        try {
-                            await dispatch(updateCourseReviewStatus({ id: row.id, status: !value })).unwrap();
-                            toast.success(`Review ${!value ? 'activated' : 'deactivated'} successfully`);
-                        } catch (err: any) {
-                            toast.error(err || "Failed to update review status");
-                        }
-                    }}
-                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value
-                        ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200'
-                        : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'
-                        }`}
+                    onClick={() => handleToggleStatus(row)}
+                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
                     {value ? 'Active' : 'Inactive'}
                 </button>
@@ -245,48 +218,58 @@ const CourseReview: React.FC = () => {
             sortable: true,
         },
         {
-            key: 'id',
+            key: 'actions',
             title: 'Actions',
-            render: (_, row) => (
+            render: (_, row: Subscription) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
-                        icon={<FiEye />}
-                        color="blue"
-                        title="View Details"
-                        onClick={() =>
+                        icon={<FiEdit />}
+                        color="green"
+                        title="Edit Plan"
+                        onClick={() => {
                             showModal({
-                                title: 'Course Review Details',
-                                content: (
-                                    <ReviewDetailModal
-                                        reviewId={row.id}
-                                        onClose={hideModal}
-                                        renderStars={renderStars}
-                                    />
-                                ),
+                                title: 'Edit Subscription Plan',
+                                content: <SubscriptionForm subscriptionData={row} />,
                                 type: 'custom',
-                                size: 'lg',
-                            })
-                        }
+                                size: 'xl',
+                            });
+                        }}
+                    />
+                    <GlassButton
+                        icon={<FiTrash className="text-base" />}
+                        color="red"
+                        title="Delete Plan"
+                        onClick={() => {
+                            showModal({
+                                title: 'Delete Subscription Plan',
+                                content: <DeleteConfirmationModal
+                                    id={row.id}
+                                    name={row.plan_name}
+                                    onDelete={async () => {
+                                        await handleDelete(row);
+                                    }}
+                                />,
+                                type: 'custom',
+                                size: 'md',
+                            });
+                        }}
                     />
                 </div>
             ),
-            width: '120px',
+            width: '160px',
             align: 'right',
         },
     ];
 
     return (
-        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6 animate-in fade-in duration-500">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
                     <div className="flex items-center gap-4">
                         {/* Filter Toggle Button */}
                         <button
-                            onClick={() => {
-                                setShowFilter(!showFilter);
-                                setShowDate(false);
-                            }}
+                            onClick={() => { setShowFilter(!showFilter); setShowDate(false); }}
                             className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showFilter ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
@@ -305,10 +288,7 @@ const CourseReview: React.FC = () => {
 
                         {/* Date Filter Button */}
                         <button
-                            onClick={() => {
-                                setShowDate(!showDate);
-                                setShowFilter(false);
-                            }}
+                            onClick={() => { setShowDate(!showDate); setShowFilter(false); }}
                             className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showDate || startDate ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
@@ -321,15 +301,30 @@ const CourseReview: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search reviews..."
-                        className="mx-4"
+                        placeholder="Search plans..."
+                        className="mx-4 flex-1 max-w-sm"
                     />
+
+                    <button
+                        className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
+                        onClick={() =>
+                            showModal({
+                                title: "Create Subscription Plan",
+                                content: <SubscriptionForm />,
+                                type: 'custom',
+                                size: 'xl',
+                            })
+                        }
+                    >
+                        <Plus size={18} strokeWidth={3} />
+                        Add Plan
+                    </button>
                 </div>
 
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={courseReviewFilterConfig}
+                    config={subscriptionFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -367,4 +362,4 @@ const CourseReview: React.FC = () => {
     );
 };
 
-export default CourseReview;
+export default ManageSubscription;

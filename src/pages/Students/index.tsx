@@ -22,6 +22,8 @@ import { downloadStudentExcelApi, downloadStudentPdfApi } from '../../services/a
 import TabsModal from '../../components/Modal/TabsModal';
 import StudentPasswordForm from '../../components/Forms/StudentPasswordForm';
 import StudentReportView from '../../components/View/StudentReportView';
+import StudentLoginActivityView from '../../components/View/StudentLoginActivityView';
+import { Activity } from 'lucide-react';
 
 
 
@@ -231,10 +233,20 @@ const ManageStudents: React.FC = () => {
                                         tabs={[
                                             {
                                                 key: 'chapter',
-                                                label: 'Download Reports',
+                                                label: 'Video Reports',
                                                 icon: <Download size={15} />,
                                                 component: (
                                                     <StudentReportView
+                                                        studentId={row.id}
+                                                    />
+                                                ),
+                                            },
+                                            {
+                                                key: 'loginActivity',
+                                                label: 'Login Activity Reports',
+                                                icon: <Activity size={15} />,
+                                                component: (
+                                                    <StudentLoginActivityView
                                                         studentId={row.id}
                                                     />
                                                 ),
