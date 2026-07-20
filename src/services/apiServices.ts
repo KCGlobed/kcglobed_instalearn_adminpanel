@@ -287,6 +287,10 @@ export const downloadInstructorExcelApi = async ({ search = "", first_name = "",
 
 
 
+export const updateInstructorPublicProfileApi = async (id: string | number, payload: FormData): Promise<any> => {
+  return await apiRequest(`user/update-instructor-public-profile/${id}`, 'POST', payload);
+};
+
 //----------------------------------------Abhishek Manage Instructor end ---------------------------------------------------------//
 
 //==============================Abhishek Manage Faq Topics ===================
@@ -628,6 +632,18 @@ export const changeInstructorPasswordApi = async (payload: any): Promise<any> =>
 
 
 //----------------Abhishek Manage Student End----------//
+
+export const fetchStudentLoginActivityApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-student-login-activity/${id}`, 'GET');
+}
+
+export const downloadStudentLoginActivityPdfApi = async (id: string | number) => {
+  return await apiRequest(`reports/get-student-login-activity-pdf-report/${id}`, 'GET');
+}
+
+export const downloadStudentLoginActivityExcelApi = async (id: string | number) => {
+  return await apiRequest(`reports/get-student-login-activity-excel-report/${id}`, 'GET');
+}
 
 
 
@@ -1079,3 +1095,51 @@ export const downloadTrailStudentExcelApi = async ({ search = "", first_name = "
 }
 
 //----------------- trail student report end ------------------//
+
+export async function fetchSubscription(page = 1, search: string = "", plan_name: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `subscription/get-subscription-plan-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${plan_name ? `&plan_name=${encodeURIComponent(plan_name)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createSubscription = async (payload: any): Promise<any> => {
+  return await apiRequest('subscription/create-subscription-plan/', 'POST', payload);
+};
+
+export const editSubscriptionApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`subscription/edit-subscription-plan/${id}`, 'POST', payload);
+};
+
+export const updateSubscriptionStatusApi = async (id: number | string, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`subscription/update-subscription-plan-status/${id}`, 'POST', payload);
+};
+
+export const deleteSubscriptionApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`subscription/delete-subscription-plan/${id}`, 'DELETE');
+};
+
+//----------------- student access lock report start ------------------//
+export const fetchStudentAccessLockReportApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `reports/get-student-access-lock-report/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const downloadStudentAccessLockPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-student-access-lock-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadStudentAccessLockExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-student-access-lock-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const updateStudentAccountStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`reports/update-student-account-status/${id}`, 'POST', payload);
+};
