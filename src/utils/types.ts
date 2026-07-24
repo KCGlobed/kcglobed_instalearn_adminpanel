@@ -634,19 +634,19 @@ type TagItem = {
 export interface Courses {
   id: number;
   name: string;
-  level:number;
-  short_description:string;
+  level: number;
+  short_description: string;
   description: string;
   categories: CategoryItem[];
-  tags:TagItem[];
+  tags: TagItem[];
   duration: string;
   status: boolean;
-  price:number;
-  discount:number;
-  objective_summary:string[];
-  feature_json:string[];
-  image:string;
-  banner_image:string;
+  price: number;
+  discount: number;
+  objective_summary: string[];
+  feature_json: string[];
+  image: string;
+  banner_image: string;
   created_at?: string;
   actions?: any,
 }
@@ -663,18 +663,18 @@ export interface Chapter {
 
 // -----------------Abhishek  Manage students -----------
 
-export interface Students{
-  id:number;
-  first_name:string;
-  last_name:string;
-  email:string;
-  phone1:string;
-  is_active:boolean;
-  status:boolean;
-  date_joined:string,
-  reference_id:string | null,
-  category:string,
-  student_type:string | null,
+export interface Students {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  is_active: boolean;
+  status: boolean;
+  date_joined: string,
+  reference_id: string | null,
+  category: string,
+  student_type: string | null,
   actions?: any,
 }
 
@@ -731,145 +731,145 @@ export interface StudentDetail {
 // -----------------Abhishek  Manage Trail Courses ----------
 
 export interface TrailCourses {
+  id: number;
+  status: boolean;
+  course_detail: {
     id: number;
-   status:boolean;
-    course_detail: {
-        id: number;
-        name: string;
+    name: string;
+  };
+  chapter_info: {
+    id: number;
+
+    chapter: string | number;
+
+    chapter_detail: {
+      id: number;
+
+      name: string | null;
+
+      description: string | null;
+
+      created_at: string;
     };
-    chapter_info: {
-        id: number;
-
-        chapter: string | number;
-
-        chapter_detail: {
-            id: number;
-
-            name: string | null;
-
-            description: string | null;
-
-            created_at: string;
-        };
-    }[];
+  }[];
 }
 
 
 export interface Review {
+  id: number;
+  rating: number;
+  review: string;
+  status: boolean;
+  approved: number;
+  created_at: string;
+
+  course: {
     id: number;
-    rating: number;
-    review: string;
-    status: boolean;
-    approved: number;
-    created_at: string;
+    name: string;
+  } | null;
 
-    course: {
-        id: number;
-        name: string;
-    } | null;
-
-    user: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        image: string | null;
-        email: string;
-    } | null;
+  user: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    image: string | null;
+    email: string;
+  } | null;
 }
 
 export interface Announcement {
+  id: number;
+  title: string;
+  description: string;
+  status: boolean;
+  created_at: string;
+
+  course: {
     id: number;
-    title: string;
-    description: string;
-    status: boolean;
+    name: string;
+  };
+
+  instructor: {
+    id: number;
+    text_1: string;
+    text_2: string;
+    text_3: string;
+    image: string;
+    experience: string;
+    company_image_1: string | null;
+    company_image_2: string | null;
+  };
+
+  announcement_comments?: {
+    id: number;
+    user: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      image: string | null;
+      email: string;
+    };
+    content: string;
     created_at: string;
-
-    course: {
-        id: number;
-        name: string;
-    };
-
-    instructor: {
-        id: number;
-        text_1: string;
-        text_2: string;
-        text_3: string;
-        image: string;
-        experience: string;
-        company_image_1: string | null;
-        company_image_2: string | null;
-    };
-
-    announcement_comments?: {
-        id: number;
-        user: {
-            id: number;
-            first_name: string;
-            last_name: string;
-            image: string | null;
-            email: string;
-        };
-        content: string;
-        created_at: string;
-    }[];
+  }[];
 }
 
 
-export interface contact{
-  id:number,
-  first_name:string,
-  last_name:string,
-  email:string,
-  phone:number,
-  message:string,
+export interface contact {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: number,
+  message: string,
   status?: boolean,
-  created_at:string,
+  created_at: string,
 }
 
-export interface student{
-  id:number,
-  first_name:string,
-  last_name:string,
-  email:string,
-  phone:string,
-  total_amount:number,
-  start_date:string,
-  next_due:string,
-  end_date:string,
-  subscription_status:number,
-  created_at:string,
+export interface student {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: string,
+  total_amount: number,
+  start_date: string,
+  next_due: string,
+  end_date: string,
+  subscription_status: number,
+  created_at: string,
   subscription_type: number;
   ordered_courses: {
     id: number,
     name: string
   }[],
-  trail_mode:boolean
-  
+  trail_mode: boolean
+
 }
 
 export interface StudentPerformance {
   id: number;
   user_detail: {
-      id: number;
-      first_name: string;
-      last_name: string;
-      email: string;
-      phone1: string;
-      category: string;
-      reference_id: string | null;
-      student_type: string | null;
-      date_joined: string;
-      created_at: string;
-      is_locked: boolean;
-      unlocked_on: string | null;
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone1: string;
+    category: string;
+    reference_id: string | null;
+    student_type: string | null;
+    date_joined: string;
+    created_at: string;
+    is_locked: boolean;
+    unlocked_on: string | null;
   };
   course_detail: {
-      id: number;
-      name: string;
+    id: number;
+    name: string;
   };
   performance_report: {
-      watch_time: number;
-      total_video_watched: number;
+    watch_time: number;
+    total_video_watched: number;
   };
 }
 
@@ -901,8 +901,8 @@ export interface StudentNoteListing {
 export interface StudentNoteItem {
   id: number;
   chapter_lecture: {
-      id: number;
-      name: string;
+    id: number;
+    name: string;
   };
   duration: string;
   note_content: string;
@@ -921,30 +921,30 @@ export interface StudentNotesState extends Pagination<StudentNoteListing> {
   detailLoading: boolean;
 }
 
-export interface Instructor{
-    id: number,
-    first_name: string,
-    last_name: string,
-    email: string,
-    address: string,
-    city: string,
-    state: string,
-    country: string,
-    pincode: string,
-    dob: string,
-    is_active: boolean,
-    status:boolean,
-    role: number,
-    created_at: string,
+export interface Instructor {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  address: string,
+  city: string,
+  state: string,
+  country: string,
+  pincode: string,
+  dob: string,
+  is_active: boolean,
+  status: boolean,
+  role: number,
+  created_at: string,
 }
 
-export interface BlogCategory{
-  id:number,
-  title:string,
-  description:string,
-  status:boolean,
-  image:string,
-  created_at:string,
+export interface BlogCategory {
+  id: number,
+  title: string,
+  description: string,
+  status: boolean,
+  image: string,
+  created_at: string,
 }
 
 export interface Blog {
@@ -968,140 +968,197 @@ export interface Blog {
   created_at: string;
 }
 
-export interface coupons{
-  id:number,
-  code:string,
-  discount_type:string,
-  discount_value:number,
-  valid_from:string,
-  valid_to:string,
-  max_usage:number,
-  usages_count:number,
-  minimum_cart_value:number,
-  status:boolean,
-  created_at:string,
+export interface coupons {
+  id: number,
+  code: string,
+  discount_type: string,
+  discount_value: number,
+  valid_from: string,
+  valid_to: string,
+  max_usage: number,
+  usages_count: number,
+  minimum_cart_value: number,
+  status: boolean,
+  created_at: string,
 }
 
 
 
-export interface promotionalCampaign{
-  id:number,
-  title:string,
-  display_text:string,
-  start_time:string,
-  end_time:string,
-  status:boolean,
-  created_at:string,
-  updated_at:string,
-  coupon_info:{
-    id:number,
-    name:string
+export interface promotionalCampaign {
+  id: number,
+  title: string,
+  display_text: string,
+  start_time: string,
+  end_time: string,
+  status: boolean,
+  created_at: string,
+  updated_at: string,
+  coupon_info: {
+    id: number,
+    name: string
+  }
+  thumbnail: string,
+}
+
+
+export interface Testimonials {
+  id: number,
+  testimonials_type: number,
+  name: string,
+  qualification: string,
+  college: string,
+  content: string,
+  image: string,
+  status: boolean,
+  created_at: string,
+}
+
+
+export interface Quiz {
+  id: number,
+  name: string,
+  description: string,
+  thumbnail: string,
+  chapter: {
+    id: number,
+    name: string,
+  },
+  status: boolean,
+  pass_percentage: number,
+  total_question: number,
+  created_at: string,
+}
+
+export interface SupportTopic {
+  id: number,
+  slug: string,
+  title: string,
+  description: string,
+  image: string,
+  status: boolean,
+  created_at: string,
+}
+
+export interface supportSubTopic {
+  id: number,
+  main_topic: {
+    id: number,
+    title: string,
+  },
+  slug: string,
+  title: string,
+  status: boolean,
+  created_at: string,
+  updated_at: string,
+
+}
+
+export interface supportArticle {
+  id: number,
+  slug: string,
+  title: string,
+  description: string,
+  status: boolean,
+  created_at: string,
+  main_topic: {
+    id: number,
+    title: string,
+  },
+  sub_topic: {
+    id: number,
+    title: string,
   }
 }
 
-
-export interface Testimonials{
-  id:number,
-  testimonials_type:number,
-  name:string,
-  qualification:string,
-  college:string,
-  content:string,
-  image:string,
-  status:boolean,
-  created_at:string,
-}
-
-
-export interface Quiz{
-  id:number,
-  name:string,
-  description:string,
-  thumbnail:string,
-  chapter:{
-    id:number,
-    name:string,
-  },
-  status:boolean,
-  pass_percentage:number,
-  total_question:number,
-  created_at:string,
-}
-
-export interface SupportTopic{
-  id:number,
-  slug:string,
-  title:string,
-  description:string,
-  image:string,
-  status:boolean,
-  created_at:string,
-}
-
-export interface supportSubTopic{
-  id:number,
-  main_topic:{
-    id:number,
-    title:string,
-  },
-  slug:string,
-  title:string,
-  status:boolean,
-  created_at:string,
-  updated_at:string,
-
-}
-
-export interface supportArticle{
-  id:number,
-  slug:string,
-  title:string,
-  description:string,
-  status:boolean,
-  created_at:string,
-  main_topic:{
-    id:number,
-    title:string,
-  },
-  sub_topic:{
-    id:number,
-    title:string,
-  }
-}
-
-export interface TrailStudent{
-  id:number,
-  first_name:string,
-  last_name:string,
-  email:string,
-  phone:string,
-  total_amount:number,
-  start_date:string,
-  next_due:string,
-  end_date:string,
-  subscription_type:number,
-  subscription_status:number,
-  ordered_courses:{
-    id:number
-    name:string
+export interface TrailStudent {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  phone: string,
+  total_amount: number,
+  start_date: string,
+  next_due: string,
+  end_date: string,
+  subscription_type: number,
+  subscription_status: number,
+  ordered_courses: {
+    id: number
+    name: string
   }[]
-  trail_mode:boolean,
-  created_at:string,
+  trail_mode: boolean,
+  created_at: string,
 }
 
-export interface Subscription{
-id:number,
-plan_id:number,
-plan_name:string,
-plan_description:string,
-banner_text:string,
-original_price:number,
-monthly_amount:number,
-amount:number,
-currency:String,
-plan_type:number,
-status:boolean,
-feature:[],
-no_of_licence:number,
-created_at:string,
+export interface Subscription {
+  id: number,
+  plan_id: number,
+  plan_name: string,
+  plan_description: string,
+  banner_text: string,
+  original_price: number,
+  monthly_amount: number,
+  amount: number,
+  currency: String,
+  plan_type: number,
+  status: boolean,
+  feature: [],
+  no_of_licence: number,
+  created_at: string,
+}
+
+export interface CorporateAdmin {
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string,
+  is_active: boolean,
+  created_at: string,
+  "counters": {
+    "no_of_licences": number,
+    "license_used": number,
+    "remaning_licence": number,
+    "registered_users": number,
+    "assigned_courses": number
+  },
+  "active_suscription": {
+    "id": number,
+    "start_date": string,
+    "next_due": string,
+    "end_date": string,
+    "subscription_type": number,
+    "subscription_status": number,
+    "plan_info": {
+      "id": number,
+      "plan_name": string
+    }
+
+  }
+}
+
+export interface CorporateSubcription {
+  "id": number,
+  "first_name": string,
+  "last_name": string,
+  "email": string,
+  "phone": number,
+  "address": string,
+  "city": string,
+  "state": string,
+  "country": string,
+  "pincode": string,
+  "image":string,
+  "total_amount": number,
+  "gst_amount": number,
+  "amount": number,
+  "start_date": string,
+  "next_due": string,
+  "end_date": string,
+  "subscription_type": number,
+  "subscription_status": number,
+  "created_at": string,
+  "plan_info": {
+    "id": number,
+    "plan_name": string
+  }
 }

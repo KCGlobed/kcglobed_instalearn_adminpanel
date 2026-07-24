@@ -76,7 +76,6 @@ export const useCropper = (
     );
     const startScale = Math.min(1, containerFitScale);
 
-    const imgRatio = originalSize.width / originalSize.height;
     
     let baseScale = startScale;
     let initialW = originalSize.width * baseScale;
@@ -91,8 +90,8 @@ export const useCropper = (
     baseScale *= fitMax;
 
     // Min constraints
-    if (initialW < 192 || initialH < 192) {
-      const fitMin = Math.max(192 / initialW, 192 / initialH);
+    if (initialW < 60 || initialH < 60) {
+      const fitMin = Math.max(60 / initialW, 60 / initialH);
       initialW *= fitMin;
       initialH *= fitMin;
       baseScale *= fitMin;
@@ -241,7 +240,6 @@ export const useCropper = (
     );
     const startScale = Math.min(1, containerFitScale);
 
-    const imgRatio = imageSize.width / imageSize.height;
     
     let baseScale = startScale;
     let initialW = imageSize.width * baseScale;
@@ -256,8 +254,8 @@ export const useCropper = (
     baseScale *= fitMax;
 
     // Min constraints
-    if (initialW < 192 || initialH < 192) {
-      const fitMin = Math.max(192 / initialW, 192 / initialH);
+    if (initialW < 60 || initialH < 60) {
+      const fitMin = Math.max(60 / initialW, 60 / initialH);
       initialW *= fitMin;
       initialH *= fitMin;
       baseScale *= fitMin;
@@ -372,8 +370,8 @@ export const useCropper = (
       }
     }
 
-    // 3. Minimum constraints (192px)
-    const MIN_SIZE = 192;
+    // 3. Minimum constraints (60px)
+    const MIN_SIZE = 60;
     if (newWidth < MIN_SIZE) {
       newWidth = MIN_SIZE;
       if (aspectRatio !== 'free') newHeight = newWidth / aspectRatio;

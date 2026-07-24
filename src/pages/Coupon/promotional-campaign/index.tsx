@@ -106,15 +106,24 @@ const ManagePromotionalCampaign: React.FC = () => {
             key: 'title',
             title: 'Title',
             render: (value: string, row: any) => (
-                <div className="flex flex-col">
-                    <span className="font-bold text-gray-900">{value}</span>
-                    {row.display_text && (
-                        <span className="text-xs text-gray-500 line-clamp-1">{row.display_text}</span>
+                <div className="flex items-center gap-3">
+                    {row.thumbnail ? (
+                        <img src={row.thumbnail} alt={value} className="w-10 h-10 rounded-lg object-cover border border-gray-200 shadow-sm" />
+                    ) : (
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 border border-indigo-100 text-indigo-600 shrink-0">
+                            {value ? value.charAt(0).toUpperCase() : '?'}
+                        </div>
                     )}
+                    <div className="flex flex-col">
+                        <span className="font-bold text-gray-900">{value}</span>
+                        {row.display_text && (
+                            <span className="text-xs text-gray-500 line-clamp-1">{row.display_text}</span>
+                        )}
+                    </div>
                 </div>
             ),
             sortable: true,
-            width: '200px',
+            width: '250px',
         },
         {
             key: 'coupon_info',
@@ -201,7 +210,7 @@ const ManagePromotionalCampaign: React.FC = () => {
                                 content: <DeleteConfirmationModal
                                     id={row.id}
                                     name={row.title}
-                                    onDelete={async (id) => {
+                                    onDelete={async () => {
                                         await deletePromoCampApi(row.id);
                                         dispatch(removeCampaign(row.id));
                                     }}
