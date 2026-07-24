@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Bell, Search } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { FaChevronDown, FaChevronUp, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
@@ -11,7 +11,8 @@ const DashboardHeader: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const userType = localStorage.getItem('userID');
+  const userTypeRaw = localStorage.getItem('userID') || '';
+  const userType = userTypeRaw.split(',')[0];
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 

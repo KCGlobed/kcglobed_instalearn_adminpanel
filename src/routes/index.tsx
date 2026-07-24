@@ -47,6 +47,8 @@ import ManageSupportArticle from "../pages/HelpAndSupport/SupportArticle";
 import ManageTrailStudentReport from "../pages/ManageReports/ManageTrailStudentReport";
 import ManageSubscripiton from "../pages/manageSubscription";
 import ManageStudentAccessLockReport from "../pages/ManageReports/ManageStudentAccessLockReport";
+import ManageCorporateAdmin from "../pages/ManageCorporateAdmin";
+import ManageCorporateAdminSubcription from "../pages/CorporativeAdminSubcription";
 
 
 
@@ -105,13 +107,15 @@ export default function AppRoutes() {
           <Route path ="/dashboard/help-and-support-article" element={<ManageSupportArticle/>}/>
           <Route path="/dashboard/trail-user-report" element={<ManageTrailStudentReport />} />
           <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton/>}/>
+          <Route path="/dashboard/corporate-admin" element={<ManageCorporateAdmin/>}/>
+          <Route path="/dashboard/corporate-admin-subscription"  element={<ManageCorporateAdminSubcription/>}/>
 
 
 
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<NotFound />} /> 
     </Routes>
   );
 }

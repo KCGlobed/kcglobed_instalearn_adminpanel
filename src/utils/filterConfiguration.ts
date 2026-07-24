@@ -278,6 +278,28 @@ export const studentOrderFilterConfig: FilterField[] = [
     
 ];
 
+export const corporateAdminFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const coAdminSubscriptionFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+];
+
 export const studentPerformanceFilterConfig: FilterField[] = [
     {
         name: "first_name",

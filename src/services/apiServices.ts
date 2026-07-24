@@ -629,6 +629,10 @@ export const changeInstructorPasswordApi = async (payload: any): Promise<any> =>
   return await apiRequest(`user/admin-update-password/`, 'POST', payload);
 }
 
+export const changeCorporateAdminPasswordApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/admin-update-password/`, 'POST', payload);
+};
+
 
 
 //----------------Abhishek Manage Student End----------//
@@ -1142,4 +1146,71 @@ export const downloadStudentAccessLockExcelApi = async ({ search = "", first_nam
 
 export const updateStudentAccountStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`reports/update-student-account-status/${id}`, 'POST', payload);
-};
+};
+
+//----------------- Corporate Admin Reports start ------------------//
+
+export const fetchCorporateAdminsApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `reports/get-corporare-admin-user-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const fetchCorporateAdminDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-corporare-admin-user/${id}`, 'GET');
+};
+
+export const downloadCorporateAdminPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-corporare-admin-user-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadCorporateAdminExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-corporare-admin-user-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+//----------------- Corporate Admin Subscription Reports start ------------------//
+
+export const createCorporateAdminApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`reports/create-corporate-admin-user/`, 'POST', payload);
+};
+
+export const updateCorporateAdminApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`reports/update-corporare-admin-user/${id}`, 'POST', payload);
+};
+
+export const updateCorporateAdminStatusApi = async (id: string | number, payload: { status: number }): Promise<any> => {
+  return await apiRequest(`reports/update-corporare-admin-user-status/${id}`, 'POST', payload);
+};
+
+export const assignCorporateAdminSubscriptionApi = async (id: string | number, payload: { plan_id: number; user_id: number }): Promise<any> => {
+  return await apiRequest(`reports/assign-subscription-to-corporare-admin/${id}`, 'POST', payload);
+};
+
+export const getSubscriptionPlanDropdownApi = async (): Promise<any> => {
+  return await apiRequest(`subscription/get-subscription-plan-list/`, 'GET');
+};
+export const fetchCoAdminSubscriptionsApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "") => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `reports/get-subscription-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+}
+
+export const downloadCoAdminSubscriptionPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-subscription-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadCoAdminSubscriptionExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-subscription-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+
