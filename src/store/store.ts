@@ -34,6 +34,8 @@ import supportArticleReducer from "./slices/supportArticleSlice";
 import trailStudentReducer from "./slices/trailStudent";
 import subscriptionReducer from "./slices/subscriptionSlice";
 import studentAccessLockReducer from "./slices/studentAccessLockSlice";
+import corporateAdminReducer from "./slices/corporateAdminSlice";
+import CoAdminSubscriptionReducer from "./slices/CoAdminSubscriptionSlice";
 
 export const store = configureStore({
   reducer: {
@@ -70,6 +72,8 @@ export const store = configureStore({
     trailStudent: trailStudentReducer,
     subscription: subscriptionReducer,
     studentAccessLock: studentAccessLockReducer,
+    corporateAdmin: corporateAdminReducer,
+    CoAdminSubscription: CoAdminSubscriptionReducer,
   },
 });
 

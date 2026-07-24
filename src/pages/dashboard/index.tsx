@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem, FaBuilding } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -55,6 +55,12 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Manage Students', icon: <FaUser className="mr-2" />, path: '/dashboard/students'
+    },
+    {
+      name:'Manage Corporate Admin', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin'
+    },
+    {
+      name:'Manage Admin Subcription', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin-subscription'
     },
     {
       name: 'Manage Trail Courses', icon: <FaDiscourse className="mr-2" />, path: '/dashboard/trail-course'

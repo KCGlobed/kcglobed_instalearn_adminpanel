@@ -20,7 +20,7 @@ import {
     Layers,
     ChevronRight,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchCourseDetailApi } from "../../services/apiServices";
 import moment from "moment";
@@ -59,17 +59,6 @@ const SkeletonLoader = () => (
 );
 
 
-const InfoRow = ({ icon: Icon, label, value, isLast = false }: { icon: any, label: string, value: React.ReactNode, isLast?: boolean }) => (
-    <div className={`flex items-start gap-3 py-3 ${!isLast ? 'border-b border-gray-100' : ''} group/row`}>
-        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 shrink-0 transition-all duration-300 group-hover/row:bg-indigo-50 group-hover/row:text-indigo-600 group-hover/row:-translate-y-0.5">
-            <Icon size={14} />
-        </div>
-        <div className="min-w-0 flex-1">
-            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">{label}</p>
-            <div className="text-xs font-semibold text-gray-900 leading-relaxed break-words">{value}</div>
-        </div>
-    </div>
-);
 
 interface CourseDetail {
     id: number;
@@ -443,29 +432,36 @@ const CourseView = ({ courseId }: { courseId?: number | string }) => {
                         <div className={`${CARD} p-6`}>
                             <h3 className="text-sm font-bold text-gray-900 mb-5">Course Information</h3>
                             <div className="flex flex-col">
-                                <InfoRow
-                                    icon={Calendar}
-                                    label="Created On"
-                                    value={course.created_at ? moment(course.created_at).format('MMM DD, YYYY') : '-'}
-                                />
-                                <InfoRow
-                                    icon={Layout}
-                                    label="Categories"
-                                    value={
-                                        <div className="flex flex-wrap gap-1 mt-1">
-                                            {course.categories && course.categories.length > 0 ? (
-                                                course.categories.map((cat, i) => (
-                                                    <span key={i} className="inline-block bg-gray-50 border border-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                                                        {cat.category_info.name}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-gray-400">No categories</span>
-                                            )}
+                                <div className="flex items-start gap-3 py-3 border-b border-gray-100 group/row">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 shrink-0 transition-all duration-300 group-hover/row:bg-indigo-50 group-hover/row:text-indigo-600 group-hover/row:-translate-y-0.5">
+                                        <Calendar size={14} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Created On</p>
+                                        <div className="text-xs font-semibold text-gray-900 leading-relaxed break-words">{course.created_at ? moment(course.created_at).format('MMM DD, YYYY') : '-'}</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3 py-3 group/row">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 shrink-0 transition-all duration-300 group-hover/row:bg-indigo-50 group-hover/row:text-indigo-600 group-hover/row:-translate-y-0.5">
+                                        <Layout size={14} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Categories</p>
+                                        <div className="text-xs font-semibold text-gray-900 leading-relaxed break-words">
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {course.categories && course.categories.length > 0 ? (
+                                                    course.categories.map((cat, i) => (
+                                                        <span key={i} className="inline-block bg-gray-50 border border-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                                            {cat.category_info.name}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-400">No categories</span>
+                                                )}
+                                            </div>
                                         </div>
-                                    }
-                                    isLast={true}
-                                />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
