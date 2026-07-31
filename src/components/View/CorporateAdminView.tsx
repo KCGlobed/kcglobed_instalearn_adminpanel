@@ -19,6 +19,12 @@ import {
 import { fetchCorporateAdminDetailApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
 import CorporateAdminForm from '../Forms/CorporateAdminForm';
+import TabsModal from '../../components/Modal/TabsModal';
+import CorporateStudentVideoReport from './CorporateStudentVideoReport';
+import CorporateStudentNotes from './CorporateStudentNotes';
+import CorporateStudentQuizReport from './CorporateStudentQuizReport';
+import CorporateStudentLoginActivityView from './CorporateStudentLoginActivityView';
+import { PlayCircle, FileText, HelpCircle, Eye } from 'lucide-react';
 
 const CARD = 'bg-white rounded-[22px] border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300';
 const CARD_HOVER = 'hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-gray-200';
@@ -245,6 +251,50 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                                                     <span className={`px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-full ${student.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                                                         {student.is_active ? 'Active' : 'Inactive'}
                                                     </span>
+                                                    <button
+                                                        onClick={() => {
+                                                            showModal({
+                                                                title: `${student.first_name} ${student.last_name} - Reports`,
+                                                                content: (
+                                                                    <TabsModal
+                                                                        defaultActiveKey="video"
+                                                                        tabs={[
+                                                                            {
+                                                                                key: 'video',
+                                                                                label: 'Video Reports',
+                                                                                icon: <PlayCircle size={15} />,
+                                                                                component: <CorporateStudentVideoReport studentId={student.id} courses={student.courses || []} />
+                                                                            },
+                                                                            {
+                                                                                key: 'notes',
+                                                                                label: 'Notes',
+                                                                                icon: <FileText size={15} />,
+                                                                                component: <CorporateStudentNotes studentId={student.id} courses={student.courses || []} />
+                                                                            },
+                                                                            {
+                                                                                key: 'quizzes',
+                                                                                label: 'Attempted Quizzes',
+                                                                                icon: <HelpCircle size={15} />,
+                                                                                component: <CorporateStudentQuizReport studentId={student.id} courses={student.courses || []} />
+                                                                            },
+                                                                            {
+                                                                                key: 'login-activity',
+                                                                                label: 'Login Activity',
+                                                                                icon: <Activity size={15} />,
+                                                                                component: <CorporateStudentLoginActivityView studentId={student.id} />
+                                                                            }
+                                                                        ]}
+                                                                    />
+                                                                ),
+                                                                type: 'custom',
+                                                                size: 'xxl'
+                                                            });
+                                                        }}
+                                                        className="w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
+                                                        title="View Reports"
+                                                    >
+                                                        <Eye size={16} />
+                                                    </button>
                                                 </div>
                                             </div>
 

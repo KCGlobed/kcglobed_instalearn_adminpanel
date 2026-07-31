@@ -207,11 +207,21 @@ const ManageCorporateAdminSubcription: React.FC = () => {
                         {row.start_date ? moment(row.start_date).format('MMM DD, YY') : '-'}
                     </span>
                     <span className="text-gray-400 text-[10px] font-medium">
-                        to {row.end_date ? moment(row.end_date).format('MMM DD, YY') : '-'}
+                        to {row.next_due ? moment(row.next_due).format('MMM DD, YY') : '-'}
                     </span>
                 </div>
             ),
             width: '130px',
+        },
+         {
+            key: 'end_date',
+            title: 'End Date',
+            render: (_: any, row: any) => (
+                <span className="font-bold text-gray-800">
+                    {row.end_date ? moment(row.end_date).format('MMM DD, YY') : '-'}
+                </span>
+            ),
+            width: '120px',
         },
         {
             key: 'created_at',
