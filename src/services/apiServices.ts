@@ -617,6 +617,23 @@ export const downloadVideoWatchReportPdfApi = async (id: string | number, course
 export const downloadVideoWatchReportExcelApi = async (id: string | number, courseId: string | number) => {
   return await apiRequest(`reports/download-video-report-csv/${id}/${courseId}`, 'GET');
 }
+
+export const downloadCorporateStudentVideoReportPdfApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/download-student-video-report-pdf/${id}/${courseId}`, 'GET');
+}
+
+export const downloadCorporateStudentVideoReportExcelApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/download-student-video-report-csv/${id}/${courseId}`, 'GET');
+}
+
+export const downloadCorporateStudentNotesReportPdfApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/get-notes-listing-report-pdf/${id}/${courseId}`, 'GET');
+}
+
+export const downloadCorporateStudentNotesReportExcelApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/get-notes-listing-report-excel/${id}/${courseId}`, 'GET');
+}
+
 export const fetchStudentVideoReportsApi = async (id: string | number, courseId: string | number) => {
   return await apiRequest(`reports/get-video-report/${id}/${courseId}`, 'GET');
 }
@@ -647,6 +664,18 @@ export const downloadStudentLoginActivityPdfApi = async (id: string | number) =>
 
 export const downloadStudentLoginActivityExcelApi = async (id: string | number) => {
   return await apiRequest(`reports/get-student-login-activity-excel-report/${id}`, 'GET');
+}
+
+export const fetchCorporateStudentActivityLogApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-students-activity-log/${id}`, 'GET');
+}
+
+export const downloadCorporateStudentActivityLogPdfApi = async (id: string | number) => {
+  return await apiRequest(`reports/export-students-activity-log-pdf/${id}`, 'GET');
+}
+
+export const downloadCorporateStudentActivityLogExcelApi = async (id: string | number) => {
+  return await apiRequest(`reports/export-students-activity-log-excel/${id}`, 'GET');
 }
 
 
@@ -1161,6 +1190,22 @@ export const fetchCorporateAdminsApi = async (page = 1, search: string = "", fir
 
 export const fetchCorporateAdminDetailApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`reports/view-corporare-admin-user/${id}`, 'GET');
+};
+
+export const fetchCorporateStudentDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-corporate-user-detail/${id}`, 'GET');
+};
+
+export const fetchStudentCourseVideoReportApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-student-video-report/${userId}/${courseId}`, 'GET');
+};
+
+export const fetchCorporateStudentNotesApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-student-notes-listing/${userId}/${courseId}`, 'GET');
+};
+
+export const fetchStudentAttemptedQuizApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-attempted-quiz-list/${userId}/${courseId}`, 'GET');
 };
 
 export const downloadCorporateAdminPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
