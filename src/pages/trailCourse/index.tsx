@@ -136,7 +136,7 @@ const ManageTrailCourse: React.FC = () => {
                                 title: 'View Trail Course',
                                 content: <TrailCourseView trailCourseData={row} />,
                                 type: 'success',
-                                size: 'lg',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -200,7 +200,7 @@ const ManageTrailCourse: React.FC = () => {
                                     title: "Add Trail Course",
                                     content: <AddTrailCourseForm />,
                                     type: 'custom',
-                                    size: 'md',
+                                    size: 'xxl',
                                 })
                             }
                         >

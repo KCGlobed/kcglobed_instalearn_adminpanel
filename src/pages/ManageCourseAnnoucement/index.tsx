@@ -210,7 +210,7 @@ const ManageCourseAnnoucement: React.FC = () => {
                                 title: 'Edit Course Announcement',
                                 content: <CourseAnnouncementForm announcementId={row.id} />,
                                 type: 'custom',
-                                size: 'lg'
+                                size: 'xxl'
                             })
                         }
                     />
@@ -302,7 +302,7 @@ const ManageCourseAnnoucement: React.FC = () => {
                                 title: 'Add Course Announcement',
                                 content: <CourseAnnouncementForm />,
                                 type: 'custom',
-                                size: 'lg'
+                                size: 'xxl'
                             });
                         }}
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all active:scale-95 shadow-sm"

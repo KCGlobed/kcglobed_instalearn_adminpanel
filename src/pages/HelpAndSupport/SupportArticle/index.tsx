@@ -179,7 +179,7 @@ const ManageSupportArticle: React.FC = () => {
                                 title: 'Edit Support Article',
                                 content: <SupportArticleForm articleData={row} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             });
                         }}
                     />
@@ -261,7 +261,7 @@ const ManageSupportArticle: React.FC = () => {
                                     title: 'Add Support Article',
                                     content: <SupportArticleForm />,
                                     type: 'custom',
-                                    size: 'xl',
+                                    size: 'xxl',
                                 });
                             }}
                         >

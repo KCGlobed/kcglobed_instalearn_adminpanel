@@ -13,7 +13,6 @@ import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
 import { testimonialFilterConfig } from '../../utils/filterConfiguration';
-import { useNavigate } from 'react-router-dom';
 import TestimonialForm from '../../components/Forms/TestimonialForm';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiTrash } from 'react-icons/fi';
@@ -47,7 +46,6 @@ const ManageTestimonials: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
-    const navigate = useNavigate();
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -157,11 +155,14 @@ const ManageTestimonials: React.FC = () => {
         {
             key: 'content',
             title: 'Content',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'No content provided.'}
-                </div>
-            ),
+            render: (value: string) => {
+                const plainText = value ? value.replace(/<[^>]*>?/gm, '').trim() : '';
+                return (
+                    <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={plainText || value}>
+                        {plainText || value || 'No content provided.'}
+                    </div>
+                );
+            },
             width: '320px',
         },
         {
@@ -210,7 +211,7 @@ const ManageTestimonials: React.FC = () => {
                                 title: 'Edit Testimonial',
                                 content: <TestimonialForm testimonialData={row} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             });
                         }}
                     />
@@ -292,7 +293,7 @@ const ManageTestimonials: React.FC = () => {
                                     title: 'Add Testimonial',
                                     content: <TestimonialForm />,
                                     type: 'custom',
-                                    size: 'xl',
+                                    size: 'xxl',
                                 });
                             }}
                         >

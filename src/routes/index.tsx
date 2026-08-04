@@ -49,6 +49,8 @@ import ManageSubscripiton from "../pages/manageSubscription";
 import ManageStudentAccessLockReport from "../pages/ManageReports/ManageStudentAccessLockReport";
 import ManageCorporateAdmin from "../pages/ManageCorporateAdmin";
 import ManageCorporateAdminSubcription from "../pages/CorporativeAdminSubcription";
+import Profile from "../pages/dashboard/Profile";
+import ChangePassword from "../pages/dashboard/ChangePassword";
 
 
 
@@ -109,6 +111,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton/>}/>
           <Route path="/dashboard/corporate-admin" element={<ManageCorporateAdmin/>}/>
           <Route path="/dashboard/corporate-admin-subscription"  element={<ManageCorporateAdminSubcription/>}/>
+          <Route path="/dashboard/profile" element={<Profile />} />
+          <Route path="/dashboard/forgot-password" element={<ChangePassword />} />
 
 
 

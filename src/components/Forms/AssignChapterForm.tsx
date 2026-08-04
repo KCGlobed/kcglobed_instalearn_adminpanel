@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 import { assignChapterApi, courseDetailApi, fetchChapterOptionsApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
 import { BookOpen, Loader2, AlertCircle } from 'lucide-react';
-import { useAppDispatch } from '../../hooks/useAppDispatch';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,7 +27,6 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
     const [options, setOptions] = useState<Option[]>([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
     const { hideModal } = useModal();
-    const dispatch = useAppDispatch();
 
     const {
         control,
@@ -71,8 +69,7 @@ const AssignChapterForm: React.FC<AssignChapterFormProps> = ({ courseId }) => {
             const res = await assignChapterApi(courseId, payload);
             if (res.status) {
                 toast.success(res.message);
-                reset();
-                hideModal();
+                // hideModal();
             } else {
                 toast.error(res.message);
             }

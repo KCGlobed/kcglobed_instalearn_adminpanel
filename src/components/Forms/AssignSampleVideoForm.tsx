@@ -144,7 +144,7 @@ const AssignSampleVideoForm: React.FC<AssignSampleVideoFormProps> = ({ courseId 
 
             if (res.status) {
                 toast.success(res.message || 'Sample video assigned successfully!');
-                hideModal();
+                // hideModal();
             } else {
                 toast.error(res.message || 'Failed to assign sample video.');
             }

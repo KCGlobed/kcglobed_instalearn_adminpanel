@@ -81,7 +81,7 @@ const AssignInstructorForm: React.FC<AssignInstructorFormProps> = ({ courseId })
             });
             if (res?.status) {
                 toast.success(res?.message || 'Instructor assigned successfully');
-                hideModal();
+                // hideModal();
             } else {
                 toast.error(res?.message || 'Failed to assign instructor');
             }

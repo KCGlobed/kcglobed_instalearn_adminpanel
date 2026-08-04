@@ -10,6 +10,7 @@ import { fetchSupportTopicList } from "../../services/apiServices";
 import toast from "react-hot-toast";
 import { MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import type { supportSubTopic } from "../../utils/types";
+import LexicalEditor from "../TextEditor";
 
 const schema = yup.object().shape({
     title: yup.string().required("Title is mandatory").min(2, "Title must be at least 2 characters"),
@@ -176,18 +177,14 @@ const SupportSubTopicForm: React.FC<Props> = ({ subTopicData }) => {
                         <Controller
                             name="title"
                             control={control}
-                            render={({ field }) => (
-                                <input
-                                    {...field}
-                                    type="text"
-                                    placeholder="e.g. Account Security"
-                                    disabled={saving}
-                                    className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                        errors.title 
-                                        ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                        : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                    }`}
-                                />
+                            render={({ field: { value, onChange } }) => (
+                                <div className={`rounded-xl overflow-hidden border ${errors.title ? 'border-red-400' : 'border-gray-200'}`}>
+                                    <LexicalEditor
+                                        type="title"
+                                        value={value || ''}
+                                        onChange={onChange}
+                                    />
+                                </div>
                             )}
                         />
                         {errors.title && (

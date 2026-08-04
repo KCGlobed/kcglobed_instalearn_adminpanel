@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useModal } from '../../context/ModalContext';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { addBlogCategory, editBlogCategory } from '../../store/slices/blogCategorySlice';
@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import type { BlogCategory } from '../../utils/types';
 import { CropperModal } from "../ImageCropper/components/CropperModal";
 import type { CropResult } from "../ImageCropper/utils/cropCanvas";
+import LexicalEditor from "../TextEditor";
 
 type BlogCategoryFormValues = {
     title: string;
@@ -29,11 +30,11 @@ const BlogCategoryForm = ({ categoryData }: Props) => {
 
     const {
         register,
+        control,
         handleSubmit,
         formState: { errors },
         reset,
         setValue,
-        watch,
     } = useForm<BlogCategoryFormValues>({
         defaultValues: {
             title: '',
@@ -122,18 +123,26 @@ const BlogCategoryForm = ({ categoryData }: Props) => {
                 <div className="grid grid-cols-1 gap-6">
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-bold font-medium text-gray-700 mb-1">
                             Title <span className="text-red-500">*</span>
                         </label>
-                        <input
-                            type="text"
-                            {...register('title', {
+                        <Controller
+                            name="title"
+                            control={control}
+                            rules={{
                                 required: 'Title is required',
-                                minLength: { value: 2, message: 'Title must be at least 2 characters' },
-                                validate: value => value.trim().length > 0 || 'Title cannot be empty or only spaces'
-                            })}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
-                            placeholder="Enter blog category title"
+                                validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Title cannot be empty'
+                            }}
+                            render={({ field }) => (
+                                <div className={`rounded-md border ${errors.title ? 'border-red-400 focus-within:ring-red-500/20' : 'border-gray-300 focus-within:ring-blue-500/20'} overflow-hidden focus-within:ring-2 focus-within:border-blue-500 transition-all bg-white`}>
+                                    <LexicalEditor
+                                        type="title"
+                                        value={field.value || ""}
+                                        onChange={field.onChange}
+                                        placeholder="Enter blog category title"
+                                    />
+                                </div>
+                            )}
                         />
                         {errors.title && (
                             <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
@@ -142,18 +151,26 @@ const BlogCategoryForm = ({ categoryData }: Props) => {
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-bold font-medium text-gray-700 mb-1">
                             Description <span className="text-red-500">*</span>
                         </label>
-                        <textarea
-                            {...register('description', {
+                        <Controller
+                            name="description"
+                            control={control}
+                            rules={{
                                 required: 'Description is required',
-                                minLength: { value: 2, message: 'Description must be at least 2 characters' },
-                                validate: value => value.trim().length > 0 || 'Description cannot be empty or only spaces'
-                            })}
-                            rows={4}
-                            placeholder="Enter blog category description"
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
+                                validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Description cannot be empty'
+                            }}
+                            render={({ field }) => (
+                                <div className={`rounded-md border ${errors.description ? 'border-red-400 focus-within:ring-red-500/20' : 'border-gray-300 focus-within:ring-blue-500/20'} overflow-hidden focus-within:ring-2 focus-within:border-blue-500 transition-all bg-white`}>
+                                    <LexicalEditor
+                                        type="description"
+                                        value={field.value || ""}
+                                        onChange={field.onChange}
+                                        placeholder="Enter blog category description"
+                                    />
+                                </div>
+                            )}
                         />
                         {errors.description && (
                             <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
@@ -162,7 +179,7 @@ const BlogCategoryForm = ({ categoryData }: Props) => {
 
                     {/* Image */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-bold font-medium text-gray-700 mb-1">
                             Category Image <span className="text-red-500">{categoryData?.id ? '' : '*'}</span>
                         </label>
                         <div className="flex items-center gap-4">

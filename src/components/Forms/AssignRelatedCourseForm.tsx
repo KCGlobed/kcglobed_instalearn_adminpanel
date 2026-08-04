@@ -36,7 +36,6 @@ const AssignRelatedCourseForm: React.FC<AssignRelatedCourseFormProps> = ({ cours
         control,
         handleSubmit,
         formState: { errors, isSubmitting },
-        reset,
         setValue,
     } = useForm<AssignRelatedCourseFormValues>({
         defaultValues: { related_courses: [] },
@@ -109,7 +108,7 @@ const AssignRelatedCourseForm: React.FC<AssignRelatedCourseFormProps> = ({ cours
 
         if (res.status) {
             toast.success(res.message || 'Related courses updated!');
-            hideModal();
+            // hideModal();
         } else {
             toast.error(res.message || 'Failed to update.');
         }

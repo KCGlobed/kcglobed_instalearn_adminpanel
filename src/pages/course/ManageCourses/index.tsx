@@ -36,6 +36,26 @@ interface ColumnDef {
 
 
 
+const CourseThumbnail = ({ row }: { row: any }) => {
+    const [imgErr, setImgErr] = useState(false);
+    const courseImg = row.image || row.thumbnail || row.icon;
+
+    return (
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden shrink-0">
+            {courseImg && !imgErr ? (
+                <img
+                    src={courseImg}
+                    alt={row.name || 'Course'}
+                    className="w-full h-full object-cover"
+                    onError={() => setImgErr(true)}
+                />
+            ) : (
+                <BookOpen size={20} className="text-indigo-600" />
+            )}
+        </div>
+    );
+};
+
 const ManageCourses: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
@@ -124,11 +144,7 @@ const ManageCourses: React.FC = () => {
             title: 'Course',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
-
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
-                        {row.name ? row.name.charAt(0).toUpperCase() : '?'}
-                    </div>
-
+                    <CourseThumbnail row={row} />
                     <div className="flex flex-col max-w-[200px]">
                         <span className="font-semibold text-gray-900 text-sm truncate" title={row.name}>{row.name}</span>
                         {row.categories && row.categories.length > 0 && (
@@ -182,11 +198,11 @@ const ManageCourses: React.FC = () => {
                     {(!row.tags || row.tags.length === 0) && <span className="text-gray-400 text-xs">-</span>}
                 </div>
             ),
-            width: '200px',
+            width: '150px',
         },
         {
             key: 'enrolled_students',
-            title: 'Enrolled Students',
+            title: 'Total Students',
             render: (_: any, row: any) => (
                 <div
                     className="text-gray-600 text-[11px] w-full max-w-[200px] line-clamp-2 prose prose-sm prose-p:my-0 prose-ul:my-0 leading-tight"
@@ -194,7 +210,7 @@ const ManageCourses: React.FC = () => {
                     dangerouslySetInnerHTML={{ __html: row.enrolled_students || '0' }}
                 />
             ),
-            width: '220px',
+            width: '100px',
         },
 
         {

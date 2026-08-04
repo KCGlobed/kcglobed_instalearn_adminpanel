@@ -52,11 +52,12 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
       {modalData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={hideModal}>
           <div
-            className={`bg-white rounded-xl shadow-xl w-full p-6 relative ${getSizeClass(
+            className={`bg-white rounded-xl shadow-xl w-full p-6 relative max-h-[90vh] overflow-y-auto ${getSizeClass(
               modalData.size
             )}`}
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={hideModal}

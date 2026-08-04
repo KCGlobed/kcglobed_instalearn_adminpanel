@@ -9,7 +9,7 @@ import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import { deleteSubCategory, downloadSubCategoryExcelApi, downloadSubCategoryPdfApi } from '../../../services/apiServices';
 import ExportFile from '../../../components/Forms/ExportFile';
@@ -19,6 +19,8 @@ import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
 import { filterConfig } from '../../../utils/filterConfiguration';
 import SubCategoryForm from '../../../components/Forms/SubCategoryForm';
+import SubCategoryView from '../../../components/View/SubCategoryView';
+
 
 // Interface matching the Table component's column requirement
 interface ColumnDef {
@@ -208,6 +210,19 @@ const ManageSubCategories: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() =>
+                            showModal({
+                                title: 'Subcategory Details',
+                                content: <SubCategoryView categoryData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            })
+                        }
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Pagination, Review } from "../../utils/types";
-import { getCourseReviewApi, approveRejectCourseReviewApi, updateCourseReviewStatusApi } from "../../services/apiServices";
+import { getCourseReviewApi, approveRejectCourseReviewApi, updateCourseReviewStatusApi, deleteCourseReviewApi } from "../../services/apiServices";
 
 
 interface CourseReviwState extends Pagination<Review>{};
@@ -74,6 +74,23 @@ export const updateCourseReviewStatus = createAsyncThunk<
 );
 
 
+export const deleteCourseReview = createAsyncThunk<
+    string | number,
+    string | number,
+    { rejectValue: string }
+>(
+    "CourseReview/delete",
+    async (id, { rejectWithValue }) => {
+        try {
+            await deleteCourseReviewApi(id);
+            return id;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
 const courseReviewSlice = createSlice({
     name:"courseReview",
     initialState,
@@ -116,6 +133,9 @@ const courseReviewSlice = createSlice({
                     ? { ...item, status: action.payload.status }
                     : item
             );
+        })
+        .addCase(deleteCourseReview.fulfilled, (state, action) => {
+            state.data = state.data.filter((item) => item.id.toString() !== action.payload.toString());
         })
     }
 })

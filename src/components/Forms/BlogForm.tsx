@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { addBlog, editBlog } from '../../store/slices/blogSlice';
@@ -9,6 +9,7 @@ import { CropperModal } from "../ImageCropper/components/CropperModal";
 import type { CropResult } from "../ImageCropper/utils/cropCanvas";
 import { ArrowLeft, FileText, Image as ImageIcon, Globe, Save } from 'lucide-react';
 import type { BlogCategory } from '../../utils/types';
+import LexicalEditor from "../TextEditor";
 
 type BlogFormValues = {
   title: string;
@@ -43,6 +44,7 @@ const BlogForm = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
     reset,
@@ -212,7 +214,7 @@ const BlogForm = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-6 px-4 animate-in fade-in duration-500">
+    <div className="w-full py-6 px-4 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
@@ -265,15 +267,23 @@ const BlogForm = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Description <span className="text-red-500">*</span>
                 </label>
-                <textarea
-                  {...register('description', {
+                <Controller
+                  name="description"
+                  control={control}
+                  rules={{
                     required: 'Description is required',
-                    minLength: { value: 10, message: 'Description must be at least 10 characters' },
-                    validate: value => value.trim().length > 0 || 'Description cannot be empty'
-                  })}
-                  rows={8}
-                  className="w-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 px-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 font-sans"
-                  placeholder="Write your blog post content here..."
+                    validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Description cannot be empty'
+                  }}
+                  render={({ field }) => (
+                    <div className={`rounded-xl border ${errors.description ? 'border-red-400 focus-within:ring-red-500/20' : 'border-gray-200 focus-within:ring-indigo-500/20'} overflow-hidden focus-within:ring-2 focus-within:border-indigo-500 transition-all bg-white`}>
+                      <LexicalEditor
+                        type="description"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Write your blog post content here..."
+                      />
+                    </div>
+                  )}
                 />
                 {errors.description && (
                   <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
