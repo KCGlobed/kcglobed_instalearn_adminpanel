@@ -193,7 +193,7 @@ const ManageBlogPost: React.FC = () => {
                                 title: 'View Blog Post',
                                 content: <BlogView id={row.id} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             });
                         }}
                     />

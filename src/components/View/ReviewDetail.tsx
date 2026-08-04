@@ -25,7 +25,7 @@ const ReviewDetailModal: React.FC<{ reviewId: number; onClose: () => void; rende
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1 bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reviewer</span>
                     <span className="text-sm font-semibold text-slate-800 truncate" title={review.user ? `${review.user.first_name} ${review.user.last_name}` : '-'}>
@@ -42,41 +42,6 @@ const ReviewDetailModal: React.FC<{ reviewId: number; onClose: () => void; rende
                     <span className="text-xs text-slate-500 mt-1">
                         {review.created_at ? moment(review.created_at).format('MMM DD, YYYY') : '-'}
                     </span>
-                </div>
-                <div className="flex flex-col gap-1 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Approval Status</span>
-                    <div className="flex items-center gap-2 mt-2">
-                        <button
-                            onClick={async () => {
-                                const nextApproved = review.approved === 1 ? 2 : 1;
-                                try {
-                                    await dispatch(toggleApproveReview({ id: review.id, approved: nextApproved })).unwrap();
-                                    toast.success(`Review ${nextApproved === 1 ? 'approved' : 'rejected'} successfully`);
-                                } catch (err: any) {
-                                    onClose();
-                                    toast.error(err || "Failed to update review approval");
-                                }
-                            }}
-                            type="button"
-                            role="switch"
-                            aria-checked={review.approved === 1}
-                            className={`relative cursor-pointer inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none ${review.approved === 1 ? 'bg-emerald-500' : 'bg-gray-300'
-                                }`}
-                        >
-                            <span
-                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${review.approved === 1 ? 'translate-x-6' : 'translate-x-1'
-                                    }`}
-                            />
-                        </button>
-                        <span className={`text-xs font-semibold ${review.approved === 1
-                                ? 'text-emerald-600'
-                                : review.approved === 2
-                                    ? 'text-red-500'
-                                    : 'text-amber-500'
-                            }`}>
-                            {review.approved === 1 ? 'Approved' : review.approved === 2 ? 'Rejected' : 'New'}
-                        </span>
-                    </div>
                 </div>
             </div>
 

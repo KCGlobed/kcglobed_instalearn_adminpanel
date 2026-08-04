@@ -56,113 +56,96 @@ const CourseAnnouncementView: React.FC<CourseAnnouncementViewProps> = ({ id, hid
     const { course, title, description, created_at, status, instructor } = currentAnnouncement;
 
     return (
-        <div className="flex flex-col w-full max-h-[85vh] overflow-y-auto bg-gray-50/30 custom-scrollbar relative animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Header Gradient Banner */}
-            <div className="relative w-full h-32 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 shrink-0 overflow-hidden rounded-2xl">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
-
-                <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white shadow-sm border border-white/20">
-                            <Megaphone size={22} className="text-white" />
+        <div className="flex flex-col w-full max-h-[85vh] overflow-y-auto bg-white custom-scrollbar">
+            {/* Header Area */}
+            <div className="px-8 pt-8 pb-6 border-b border-gray-100 flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                                Announcement
+                            </span>
+                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${status
+                                ? 'bg-green-50 text-green-700'
+                                : 'bg-red-50 text-red-700'
+                                }`}>
+                                {status ? 'Active' : 'Inactive'}
+                            </span>
                         </div>
-                        <span className="text-white/90 text-xs font-bold uppercase tracking-widest">Course Announcement</span>
+                        <h1 className="text-2xl font-black text-gray-900 leading-tight">
+                            {title || 'Untitled Announcement'}
+                        </h1>
+                        <p className="text-sm font-medium text-gray-500 mt-1">
+                            {course?.name || 'No Course Associated'}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-6 mt-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Calendar size={16} className="text-gray-400" />
+                        <span className="font-medium">{created_at ? moment(created_at).format('MMMM DD, YYYY') : '-'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock size={16} className="text-gray-400" />
+                        <span className="font-medium">{created_at ? moment(created_at).format('hh:mm A') : '-'}</span>
                     </div>
                 </div>
             </div>
 
             {/* Content Section */}
-            <div className="flex flex-col gap-6 px-6 py-8 -mt-6 relative z-10">
-                {/* Title & Status */}
-                <div className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-xl shadow-indigo-100/20 border border-gray-200">
-                    <div className="flex items-start justify-between gap-4">
-                        <h1 className="text-xl font-black text-gray-900 leading-tight">
-                            {title || 'Untitled Announcement'}
-                        </h1>
-                        <span className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border-gray-200 ${status
-                            ? 'bg-green-50 text-green-700 border-green-200'
-                            : 'bg-red-50 text-red-700 border-red-200'
-                            }`}>
-                            {status ? 'Active' : 'Inactive'}
-                        </span>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-2">
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <BookOpen size={14} className="text-indigo-500" />
-                            <span className="font-semibold text-gray-800">{course?.name || '-'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Calendar size={14} className="text-purple-500" />
-                            <span className="font-medium">{created_at ? moment(created_at).format('MMM DD, YYYY') : '-'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Clock size={14} className="text-orange-400" />
-                            <span className="font-medium">{created_at ? moment(created_at).format('hh:mm A') : '-'}</span>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="px-8 py-8 flex flex-col gap-8">
                 {/* Announcement Body */}
-                <div className="flex flex-col gap-2 bg-white p-5 rounded-2xl shadow-xl shadow-indigo-100/20 border border-gray-200">
-                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Message Content</h2>
-                    <div className="prose prose-sm max-w-none text-gray-700">
-                        <p className="whitespace-pre-wrap leading-relaxed">
-                            {description || <span className="text-gray-400 italic">No detailed message provided for this announcement.</span>}
-                        </p>
+                <div className="flex flex-col gap-4 p-6 rounded-2xl border border-gray-200 bg-white shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)]">
+                    <div className="prose prose-base max-w-none text-gray-800 editor-content leading-relaxed">
+                        {description ? (
+                            <div dangerouslySetInnerHTML={{ __html: description }} />
+                        ) : (
+                            <span className="text-gray-400 italic">No detailed message provided for this announcement.</span>
+                        )}
                     </div>
                 </div>
 
                 {/* Instructor Details */}
                 {instructor && (
-                    <div className="flex flex-col gap-2">
-                        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">Posted By</h2>
-                        <div className="flex items-center justify-between bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-4 rounded-2xl border border-indigo-100/50 shadow-sm transition-all hover:shadow-md group">
-                            <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    {instructor.image ? (
-                                        <img
-                                            src={instructor.image}
-                                            alt={instructor.text_1}
-                                            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
-                                            onError={(e) => {
-                                                (e.target as HTMLElement).style.display = 'none';
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center font-bold text-indigo-700 border-2 border-white shadow-sm text-lg">
-                                            {instructor.text_1 ? instructor.text_1.charAt(0).toUpperCase() : 'I'}
-                                        </div>
-                                    )}
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                    <div className="flex flex-col gap-4 p-6 rounded-2xl border border-indigo-100 bg-indigo-50/30">
+                        <h2 className="text-xs font-bold text-indigo-500 uppercase tracking-widest">Posted By</h2>
+                        <div className="flex items-center gap-4">
+                            {instructor.image ? (
+                                <img
+                                    src={instructor.image}
+                                    alt={instructor.text_1}
+                                    className="w-14 h-14 rounded-full object-cover bg-white border-2 border-white shadow-sm"
+                                    onError={(e) => {
+                                        (e.target as HTMLElement).style.display = 'none';
+                                    }}
+                                />
+                            ) : (
+                                <div className="w-14 h-14 rounded-full bg-white text-indigo-600 flex items-center justify-center font-bold text-xl border-2 border-white shadow-sm">
+                                    {instructor.text_1 ? instructor.text_1.charAt(0).toUpperCase() : 'I'}
                                 </div>
-                                <div className="flex flex-col w-full">
-                                    <span className="font-bold text-gray-900 text-sm group-hover:text-indigo-600 transition-colors">{instructor.text_1 || 'Unknown Instructor'}</span>
-
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
-                                        {instructor.text_2 && (
-                                            <span className="text-gray-500 font-medium text-[11px] sm:text-xs flex items-center gap-1">
-                                                <ShieldCheck size={12} className="text-indigo-400" />
-                                                {instructor.text_2}
-                                            </span>
-                                        )}
-
-                                        {instructor.text_3 && (
-                                            <span className="text-gray-500 font-medium text-[11px] sm:text-xs flex items-center gap-1">
-                                                <Briefcase size={12} className="text-purple-400" />
-                                                {instructor.text_3}
-                                            </span>
-                                        )}
-
-                                        {instructor.experience && (
-                                            <span className="text-gray-500 font-medium text-[11px] sm:text-xs flex items-center gap-1">
-                                                <Award size={12} className="text-orange-400" />
-                                                {instructor.experience}
-                                            </span>
-                                        )}
-                                    </div>
+                            )}
+                            <div className="flex flex-col">
+                                <span className="font-bold text-gray-900">{instructor.text_1 || 'Unknown Instructor'}</span>
+                                <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-500 font-medium">
+                                    {instructor.text_2 && (
+                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-gray-100">
+                                            <ShieldCheck size={14} className="text-indigo-400" />
+                                            {instructor.text_2}
+                                        </span>
+                                    )}
+                                    {instructor.text_3 && (
+                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-gray-100">
+                                            <Briefcase size={14} className="text-purple-400" />
+                                            {instructor.text_3}
+                                        </span>
+                                    )}
+                                    {instructor.experience && (
+                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-gray-100">
+                                            <Award size={14} className="text-orange-400" />
+                                            {instructor.experience}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -171,40 +154,37 @@ const CourseAnnouncementView: React.FC<CourseAnnouncementViewProps> = ({ id, hid
 
                 {/* Comments Section */}
                 {currentAnnouncement.announcement_comments && currentAnnouncement.announcement_comments.length > 0 && (
-                    <div className="flex flex-col gap-3 mt-2">
-                        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">
+                    <div className="flex flex-col gap-5 p-6 rounded-2xl border border-gray-100 bg-gray-50/50">
+                        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                             Comments ({currentAnnouncement.announcement_comments.length})
                         </h2>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-4">
                             {currentAnnouncement.announcement_comments.map((comment:any) => (
-                                <div key={comment.id} className="flex gap-3 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all hover:shadow-md">
+                                <div key={comment.id} className="flex gap-4 p-4 rounded-xl border border-gray-200 bg-white shadow-sm">
                                     {comment.user.image ? (
                                         <img
                                             src={comment.user.image}
                                             alt={comment.user.first_name}
-                                            className="w-10 h-10 rounded-full object-cover border border-gray-100 shrink-0 shadow-sm"
+                                            className="w-10 h-10 rounded-full object-cover border border-gray-100 shrink-0"
                                             onError={(e) => {
                                                 (e.target as HTMLElement).style.display = 'none';
                                             }}
                                         />
                                     ) : (
-                                        <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0 border border-indigo-100 shadow-sm">
+                                        <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-sm shrink-0 border border-gray-200">
                                             {comment.user.first_name.charAt(0).toUpperCase()}
                                         </div>
                                     )}
-                                    <div className="flex flex-col gap-1.5 w-full">
-                                        <div className="flex justify-between items-start w-full">
+                                    <div className="flex flex-col gap-1 w-full pt-1">
+                                        <div className="flex items-center justify-between gap-2">
                                             <span className="font-bold text-gray-900 text-sm">
                                                 {comment.user.first_name} {comment.user.last_name}
                                             </span>
-                                            <span className="text-[10px] text-gray-400 font-semibold tracking-wide">
-                                                {moment(comment.created_at).format('MMM DD, YYYY - hh:mm A')}
+                                            <span className="text-[10px] text-gray-400 font-medium">
+                                                {moment(comment.created_at).fromNow()}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-600 leading-relaxed">
-                                            {comment.user.email}
-                                        </p>
-                                        <p className="text-sm text-gray-600 leading-relaxed">
+                                        <p className="text-sm text-gray-700 leading-relaxed mt-1">
                                             {comment.content}
                                         </p>
                                     </div>
@@ -214,7 +194,6 @@ const CourseAnnouncementView: React.FC<CourseAnnouncementViewProps> = ({ id, hid
                     </div>
                 )}
             </div>
-
         </div>
     );
 };

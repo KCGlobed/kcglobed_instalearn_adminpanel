@@ -14,6 +14,8 @@ import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import { deleteCategory, downloadCategoryExcelApi, downloadCategoryPdfApi } from '../../../services/apiServices';
 import ExportFile from '../../../components/Forms/ExportFile';
+import CategoryView from '../../../components/View/CategoryView';
+import { FiEye } from 'react-icons/fi';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
@@ -209,6 +211,19 @@ const ManageCategories: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() =>
+                            showModal({
+                                title: 'Category Details',
+                                content: <CategoryView categoryData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            })
+                        }
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"

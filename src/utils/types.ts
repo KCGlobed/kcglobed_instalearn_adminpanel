@@ -1105,6 +1105,8 @@ export interface Subscription {
   feature: [],
   no_of_licence: number,
   created_at: string,
+  amount_without_gst: number,
+  gst_amount: number,
 }
 
 export interface CorporateAdmin {

@@ -9,6 +9,7 @@ import { useModal } from '../../context/ModalContext';
 import { Megaphone, Loader2, AlertCircle, UserCheck } from 'lucide-react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { getCourseAnnouncement, updateCourseAnnouncement } from '../../store/slices/courseAnnouncementSlice';
+import LexicalEditor from '../TextEditor';
 
 interface Option { label: string; value: any; meta?: any; }
 
@@ -17,15 +18,10 @@ const schema = yup.object().shape({
         label: yup.string().required(),
         value: yup.mixed().required(),
     }).required("Please select a course").nullable(),
-    instructor: yup.array()
-        .of(
-            yup.object().shape({
-                label: yup.string().required(),
-                value: yup.mixed().required(),
-            })
-        )
-        .min(1, "Please select at least one instructor")
-        .required("Please select at least one instructor"),
+    instructor: yup.object().shape({
+        label: yup.string().required(),
+        value: yup.mixed().required(),
+    }).required("Please select an instructor").nullable(),
     title: yup.string().required("Title is mandatory"),
     description: yup.string().required("Description is mandatory"),
 });
@@ -55,7 +51,7 @@ const CourseAnnouncementForm: React.FC<CourseAnnouncementFormProps> = ({ announc
         resolver: yupResolver(schema),
         defaultValues: {
             course: null,
-            instructor: [],
+            instructor: null,
             title: '',
             description: '',
         },
@@ -136,30 +132,27 @@ const CourseAnnouncementForm: React.FC<CourseAnnouncementFormProps> = ({ announc
             
             // If editing and we just loaded options, we don't want to clear the selected instructor 
             // if it exists in the new options list.
-            const currentInstructors = watch('instructor') || [];
-            if (currentInstructors.length > 0) {
-                 const validInstructors = currentInstructors.filter((ci: any) => 
-                     iOptions.some((io: any) => io.value === ci.value)
-                 );
-                 if (validInstructors.length !== currentInstructors.length) {
-                     setValue('instructor', validInstructors);
+            const currentInstructor = watch('instructor') as any;
+            if (currentInstructor) {
+                 const validInstructor = iOptions.find((io: any) => io.value === currentInstructor.value);
+                 if (!validInstructor) {
+                     setValue('instructor', null as any);
                  }
             } else {
-                 // Clear existing instructor selection if it's no longer valid for the new course
-                 setValue('instructor', []);
+                 setValue('instructor', null as any);
             }
         } else {
             setInstructorOptions([]);
-            setValue('instructor', []);
+            setValue('instructor', null as any);
         }
     }, [selectedCourse, courses, setValue, watch]);
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmit = async (data: any) => {
         try {
             setSaving(true);
             const payload = {
                 course_id: data.course?.value,
-                instructor_id: data.instructor.map((item: any) => item.value).join(","),
+                instructor_id: (data.instructor as any)?.value,
                 title: data.title,
                 description: data.description
             };
@@ -255,11 +248,9 @@ const CourseAnnouncementForm: React.FC<CourseAnnouncementFormProps> = ({ announc
                     render={({ field }) => (
                         <Select
                             {...field}
-                            isMulti
                             options={instructorOptions}
                             placeholder={!selectedCourse ? "Select a course first..." : "Search and select instructor..."}
                             classNamePrefix="react-select"
-                            closeMenuOnSelect={false}
                             isDisabled={saving || !selectedCourse || instructorOptions.length === 0}
                             formatOptionLabel={(option: any, { context }: any) => (
                                 context === 'menu' ? (
@@ -342,28 +333,30 @@ const CourseAnnouncementForm: React.FC<CourseAnnouncementFormProps> = ({ announc
                 )}
             </div>
 
-            {/* Description Textarea */}
+
+            {/* Description */}
             <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
-                    Description <span className="text-red-500">*</span>
+                    Description
                 </label>
-                <Controller
-                    name="description"
-                    control={control}
-                    render={({ field }) => (
-                        <textarea
-                            {...field}
-                            placeholder="Type the full announcement message here..."
-                            rows={4}
-                            disabled={saving}
-                            className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all resize-y ${
-                                errors.description 
-                                ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                            }`}
-                        />
-                    )}
-                />
+                <div className={`rounded-xl border overflow-hidden transition-all bg-gray-50/10 ${errors.description ? 'border-red-500' : 'border-gray-200 focus-within:border-indigo-400'}`}>
+                    <Controller
+                        name="description"
+                        control={control}
+                        rules={{
+                            required: 'Description is required',
+                            validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Description cannot be empty'
+                        }}
+                        render={({ field }) => (
+                            <LexicalEditor
+                                type="description"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                placeholder="Enter announcement description..."
+                            />
+                        )}
+                    />
+                </div>
                 {errors.description && (
                     <p className="flex items-center gap-1.5 mt-2 text-xs font-medium text-red-500">
                         <AlertCircle size={13} /> {errors.description.message}

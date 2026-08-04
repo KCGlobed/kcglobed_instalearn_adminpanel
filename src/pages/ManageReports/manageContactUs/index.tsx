@@ -12,6 +12,10 @@ import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../../components/Table/Table';
 import ExportFile from '../../../components/Forms/ExportFile';
 import { downloadContactExcelApi, downloadContactPdfApi } from '../../../services/apiServices';
+import { useModal } from '../../../context/ModalContext';
+import GlassButton from '../../../components/Button/Button';
+import { FiEye } from 'react-icons/fi';
+import ContactUsView from '../../../components/View/ContactUsView';
 
 interface ColumnDef {
     key: string;
@@ -23,6 +27,7 @@ interface ColumnDef {
 }
 
 const ManageReportContact: React.FC = () => {
+    const { showModal } = useModal();
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -164,6 +169,29 @@ const ManageReportContact: React.FC = () => {
             ),
             sortable: true,
             width: '150px',
+        },
+        {
+            key: 'id',
+            title: 'Actions',
+            render: (_: any, row: any) => (
+                <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View Details"
+                        onClick={() =>
+                            showModal({
+                                title: 'Contact Us Details',
+                                content: <ContactUsView contact={row} />,
+                                type: 'custom',
+                                size: 'lg',
+                            })
+                        }
+                    />
+                </div>
+            ),
+            width: '100px',
+            align: 'right',
         }
     ];
 

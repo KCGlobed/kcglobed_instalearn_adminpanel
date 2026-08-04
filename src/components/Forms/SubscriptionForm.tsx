@@ -9,6 +9,7 @@ import { addSubscription, editSubscription } from "../../store/slices/subscripti
 import toast from "react-hot-toast";
 import { Package, Loader2, AlertCircle, Plus, Trash2 } from "lucide-react";
 import type { Subscription } from "../../utils/types";
+import LexicalEditor from "../TextEditor";
 
 interface Option { label: string; value: string; }
 
@@ -23,7 +24,8 @@ const schema = yup.object().shape({
     banner_text: yup.string().nullable().default(""),
     plan_description: yup.string().required("Description is mandatory"),
     currency: yup.string().required("Currency is mandatory"),
-    amount: yup.number().typeError("Amount must be a number").min(0, "Cannot be negative").required("Amount is mandatory"),
+    amount_without_gst: yup.number().typeError("Amount without GST must be a number").min(0, "Cannot be negative").required("Amount without GST is mandatory"),
+    gst_amount: yup.number().typeError("GST Amount must be a number").min(0, "Cannot be negative").required("GST Amount is mandatory"),
     original_price: yup.number().transform((value, originalValue) => (String(originalValue).trim() === '' ? null : value)).nullable(),
     monthly_amount: yup.number().transform((value, originalValue) => (String(originalValue).trim() === '' ? null : value)).nullable(),
     plan_type: yup.object().shape({
@@ -61,7 +63,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
             banner_text: "",
             plan_description: "",
             currency: "INR",
-            amount: "" as any,
+            amount_without_gst: "" as any,
+            gst_amount: "" as any,
             original_price: "" as any,
             monthly_amount: "" as any,
             plan_type: planTypeOptions[0],
@@ -81,11 +84,12 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
             setValue("banner_text", subscriptionData.banner_text || "");
             setValue("plan_description", subscriptionData.plan_description || "");
             setValue("currency", subscriptionData.currency as string || "INR");
-            setValue("amount", subscriptionData.amount);
+            setValue("amount_without_gst", subscriptionData.amount_without_gst);
+            setValue("gst_amount", subscriptionData.gst_amount);
             setValue("original_price", subscriptionData.original_price || ("" as any));
             setValue("monthly_amount", subscriptionData.monthly_amount || ("" as any));
             setValue("no_of_licence", subscriptionData.no_of_licence);
-            
+
             const typeOption = planTypeOptions.find(opt => opt.value === String(subscriptionData.plan_type));
             if (typeOption) {
                 setValue("plan_type", typeOption);
@@ -102,13 +106,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
     const onSubmit = async (data: FormData) => {
         try {
             setSaving(true);
-            
+
             const payload = {
                 plan_name: data.plan_name.trim(),
                 banner_text: data.banner_text?.trim() || "",
                 plan_description: data.plan_description.trim(),
                 currency: data.currency,
-                amount: Number(data.amount),
+                amount_without_gst: Number(data.amount_without_gst),
+                gst_amount: Number(data.gst_amount),
                 original_price: data.original_price ? Number(data.original_price) : 0,
                 monthly_amount: data.monthly_amount ? Number(data.monthly_amount) : 0,
                 plan_type: Number(data.plan_type.value),
@@ -163,11 +168,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                         type="text"
                                         placeholder="e.g. Business"
                                         disabled={saving}
-                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                            errors.plan_name 
-                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
+                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${errors.plan_name
+                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30'
                                             : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                        }`}
+                                            }`}
                                     />
                                 )}
                             />
@@ -193,11 +197,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                         type="text"
                                         placeholder="e.g. Recommended"
                                         disabled={saving}
-                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                            errors.banner_text 
-                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
+                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${errors.banner_text
+                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30'
                                             : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                        }`}
+                                            }`}
                                     />
                                 )}
                             />
@@ -258,11 +261,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                         type="number"
                                         placeholder="e.g. 50"
                                         disabled={saving}
-                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                            errors.no_of_licence 
-                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
+                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${errors.no_of_licence
+                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30'
                                             : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                        }`}
+                                            }`}
                                     />
                                 )}
                             />
@@ -281,21 +283,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                             <Controller
                                 name="plan_description"
                                 control={control}
-                                render={({ field: { value, onChange, onBlur, ref } }) => (
-                                    <textarea
-                                        value={value || ''}
-                                        onChange={onChange}
-                                        onBlur={onBlur}
-                                        ref={ref}
-                                        placeholder="Enter plan description..."
-                                        rows={2}
-                                        disabled={saving}
-                                        className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all resize-y ${
-                                            errors.plan_description 
-                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                            : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                        }`}
-                                    />
+                                render={({ field: { value, onChange } }) => (
+                                    <div className={`rounded-xl border ${errors.plan_description ? 'border-red-400 focus-within:ring-red-500/20' : 'border-gray-200 focus-within:ring-indigo-500/20'} overflow-hidden focus-within:ring-4 transition-all bg-white`}>
+                                        <LexicalEditor
+                                            type="description"
+                                            value={value || ''}
+                                            onChange={(htmlContent: string) => onChange(htmlContent)}
+                                            placeholder="Enter plan description..."
+                                        />
+                                    </div>
                                 )}
                             />
                             {errors.plan_description && (
@@ -328,19 +324,46 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">Amount *</label>
+                                <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">Amount w/o GST *</label>
                                 <Controller
-                                    name="amount"
+                                    name="amount_without_gst"
+                                    control={control}
+                                    render={({ field: { onChange, ...field } }) => (
+                                        <input
+                                            {...field}
+                                            type="number"
+                                            placeholder="Amount w/o GST"
+                                            disabled={saving}
+                                            onChange={(e) => {
+                                                onChange(e);
+                                                const val = parseFloat(e.target.value);
+                                                if (!isNaN(val)) {
+                                                    const calculatedGst = Number((val * 0.18).toFixed(2));
+                                                    setValue("gst_amount", calculatedGst);
+                                                } else {
+                                                    setValue("gst_amount", "" as any);
+                                                }
+                                            }}
+                                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 transition-all bg-white ${errors.amount_without_gst ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20'
+                                                }`}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">GST (18%) *</label>
+                                <Controller
+                                    name="gst_amount"
                                     control={control}
                                     render={({ field }) => (
                                         <input
                                             {...field}
                                             type="number"
-                                            placeholder="Final Price"
+                                            readOnly
+                                            placeholder="GST Amount"
                                             disabled={saving}
-                                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 transition-all bg-white ${
-                                                errors.amount ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20'
-                                            }`}
+                                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium border bg-gray-50 focus:outline-none focus:ring-2 transition-all ${errors.gst_amount ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20'
+                                                }`}
                                         />
                                     )}
                                 />
@@ -363,7 +386,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                 />
                             </div>
                             <div>
-                                <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">Monthly Eqv.</label>
+                                <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">Monthly Amt.</label>
                                 <Controller
                                     name="monthly_amount"
                                     control={control}
@@ -380,9 +403,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                 />
                             </div>
                         </div>
-                        {errors.amount && (
+                        {errors.amount_without_gst && (
                             <p className="flex items-center gap-1.5 mt-2 text-xs font-medium text-red-500">
-                                <AlertCircle size={13} /> {errors.amount.message}
+                                <AlertCircle size={13} /> {errors.amount_without_gst.message}
+                            </p>
+                        )}
+                        {errors.gst_amount && (
+                            <p className="flex items-center gap-1.5 mt-2 text-xs font-medium text-red-500">
+                                <AlertCircle size={13} /> {errors.gst_amount.message}
                             </p>
                         )}
                     </div>
@@ -415,11 +443,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({ subscriptionData })
                                                     {...inputField}
                                                     placeholder={`e.g. Premium Support`}
                                                     disabled={saving}
-                                                    className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                                        errors.feature?.[index]?.value 
-                                                        ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
+                                                    className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${errors.feature?.[index]?.value
+                                                        ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30'
                                                         : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                                    }`}
+                                                        }`}
                                                 />
                                             )}
                                         />
