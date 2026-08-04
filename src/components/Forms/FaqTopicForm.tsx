@@ -3,7 +3,9 @@ import { addFaqTopic, updateFaqTopic } from '../../store/slices/faqTopicSlice';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useModal } from '../../context/ModalContext';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { FiAlertCircle } from 'react-icons/fi';
+import LexicalEditor from '../TextEditor';
 
 type FaqFormValue = {
     title: string,
@@ -26,7 +28,7 @@ const FaqFrom = ({ faqData }: Props) => {
     const dispatch = useAppDispatch();
     const { hideModal } = useModal();
 
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<FaqFormValue>({
+    const { register, handleSubmit, formState: { errors }, reset, watch, control } = useForm<FaqFormValue>({
         defaultValues: {
             title: faqData?.title || "",
             description: faqData?.description || "",
@@ -79,42 +81,58 @@ const FaqFrom = ({ faqData }: Props) => {
         <div className="relative">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            FAQ Topic Title <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            {...register('title', {
-                                required: 'Title is required',
-                                minLength: { value: 2, message: 'Title must be at least 2 characters' },
-                                validate: value => value.trim().length > 0 || 'Title cannot be empty or only spaces'
-                            })}
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
-                            placeholder="Enter FAQ topic title"
-                        />
+                    <div className="md:col-span-2 space-y-4">
+                        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                            <span className="w-2 h-2 bg-indigo-600 rounded-full"></span> 1. FAQ Topic Title
+                        </h2>
+                        <div className={`rounded-xl border overflow-hidden transition-all bg-gray-50/10 ${errors.title ? 'border-red-500 ring-4 ring-red-50' : 'border-gray-200 focus-within:border-indigo-400'}`}>
+                            <Controller
+                                name="title"
+                                control={control}
+                                rules={{
+                                    required: 'Title is required',
+                                    validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Title cannot be empty'
+                                }}
+                                render={({ field }) => (
+                                    <LexicalEditor
+                                        type="title"
+                                        value={field.value || ""}
+                                        onChange={field.onChange}
+                                        placeholder="Enter FAQ topic title"
+                                    />
+                                )}
+                            />
+                        </div>
                         {errors.title && (
-                            <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                            <p className="text-xs text-red-500 font-bold flex items-center gap-1.5 ml-2 tracking-tight"><FiAlertCircle /> {errors.title.message}</p>
                         )}
                     </div>
 
                     {/* Description */}
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Description <span className="text-red-500">*</span>
-                        </label>
-                        <textarea
-                            {...register('description', {
-                                required: 'Description is required',
-                                minLength: { value: 2, message: 'Description must be at least 2 characters' },
-                                validate: value => value.trim().length > 0 || 'Description cannot be empty or only spaces'
-                            })}
-                            rows={3}
-                            placeholder="Enter category description"
-                            className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-4 py-2 rounded-md"
-                        />
+                    <div className="md:col-span-2 space-y-4">
+                        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                            <span className="w-2 h-2 bg-indigo-600 rounded-full"></span> 2. Description
+                        </h2>
+                        <div className={`rounded-xl border overflow-hidden transition-all bg-gray-50/10 ${errors.description ? 'border-red-500 ring-4 ring-red-50' : 'border-gray-200 focus-within:border-indigo-400'}`}>
+                            <Controller
+                                name="description"
+                                control={control}
+                                rules={{
+                                    required: 'Description is required',
+                                    validate: value => (value && value.replace(/<[^>]*>?/gm, '').trim().length > 0) || 'Description cannot be empty'
+                                }}
+                                render={({ field }) => (
+                                    <LexicalEditor
+                                        type="description"
+                                        value={field.value || ""}
+                                        onChange={field.onChange}
+                                        placeholder="Enter category description"
+                                    />
+                                )}
+                            />
+                        </div>
                         {errors.description && (
-                            <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                            <p className="text-xs text-red-500 font-bold flex items-center gap-1.5 ml-2 tracking-tight"><FiAlertCircle /> {errors.description.message}</p>
                         )}
                     </div>
                 </div>

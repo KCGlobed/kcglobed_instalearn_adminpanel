@@ -193,7 +193,7 @@ const ManageSupportTopic: React.FC = () => {
                                 title: 'Edit Support Topic',
                                 content: <SupportTopicForm topicData={row} />,
                                 type: 'success',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -275,7 +275,7 @@ const ManageSupportTopic: React.FC = () => {
                                     title: "Add Support Topic",
                                     content: <SupportTopicForm />,
                                     type: 'custom',
-                                    size: 'lg',
+                                    size: 'xxl',
                                 })
                             }
                         >

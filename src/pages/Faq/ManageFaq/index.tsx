@@ -184,7 +184,7 @@ const ManageFaq: React.FC = () => {
                 title: 'Edit FAQ',
                 content: <ManageFaqForm faqData={row} />,
                 type: 'success',
-                size: 'md',
+                size: 'xxl',
               })
             }
           />
@@ -265,7 +265,7 @@ const ManageFaq: React.FC = () => {
                   title: "Add FAQ",
                   content: <ManageFaqForm />,
                   type: 'custom',
-                  size: 'md',
+                  size: 'xxl',
                 })
               }
             >

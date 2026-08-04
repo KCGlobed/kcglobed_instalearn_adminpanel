@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Filter, Calendar, Plus, BookOpen, Download } from 'lucide-react';
+import { Filter, Calendar, Plus, BookOpen } from 'lucide-react';
 import { useModal } from '../../context/ModalContext';
 import useDebounce from '../../hooks/useDebounce';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -9,7 +9,7 @@ import { getStudents, updateStudentStatus } from '../../store/slices/studentSlic
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiDownload, FiEdit, FiEye, FiSettings } from 'react-icons/fi';
+import { FiEdit, FiEye, FiSettings } from 'react-icons/fi';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -21,9 +21,6 @@ import ExportFile from '../../components/Forms/ExportFile';
 import { downloadStudentExcelApi, downloadStudentPdfApi } from '../../services/apiServices';
 import TabsModal from '../../components/Modal/TabsModal';
 import StudentPasswordForm from '../../components/Forms/StudentPasswordForm';
-import StudentReportView from '../../components/View/StudentReportView';
-import StudentLoginActivityView from '../../components/View/StudentLoginActivityView';
-import { Activity } from 'lucide-react';
 
 
 
@@ -219,45 +216,6 @@ const ManageStudents: React.FC = () => {
                                 size: 'xl',
                             })
                         }
-                    />
-                    <GlassButton
-                        icon={<FiDownload className="text-base" />}
-                        color="green"
-                        title="Download"
-                        onClick={() => {
-                            showModal({
-                                title: "Reports",
-                                content: (
-                                    <TabsModal
-                                        defaultActiveKey="chapter"
-                                        tabs={[
-                                            {
-                                                key: 'chapter',
-                                                label: 'Video Reports',
-                                                icon: <Download size={15} />,
-                                                component: (
-                                                    <StudentReportView
-                                                        studentId={row.id}
-                                                    />
-                                                ),
-                                            },
-                                            {
-                                                key: 'loginActivity',
-                                                label: 'Login Activity Reports',
-                                                icon: <Activity size={15} />,
-                                                component: (
-                                                    <StudentLoginActivityView
-                                                        studentId={row.id}
-                                                    />
-                                                ),
-                                            },
-                                        ]}
-                                    />
-                                ),
-                                type: 'custom',
-                                size: 'xl',
-                            });
-                        }}
                     />
                     <GlassButton
                         icon={<FiSettings />}

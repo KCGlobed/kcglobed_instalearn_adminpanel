@@ -231,7 +231,7 @@ const ManageSubscription: React.FC = () => {
                                 title: 'Edit Subscription Plan',
                                 content: <SubscriptionForm subscriptionData={row} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             });
                         }}
                     />
@@ -312,7 +312,7 @@ const ManageSubscription: React.FC = () => {
                                 title: "Create Subscription Plan",
                                 content: <SubscriptionForm />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     >

@@ -181,7 +181,7 @@ const ManageSupportSubTopic: React.FC = () => {
                                 title: 'Edit Support Subtopic',
                                 content: <SupportSubTopicForm subTopicData={row} />,
                                 type: 'success',
-                                size: 'lg',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -263,7 +263,7 @@ const ManageSupportSubTopic: React.FC = () => {
                                     title: "Add Support Subtopic",
                                     content: <SupportSubTopicForm />,
                                     type: 'custom',
-                                    size: 'lg',
+                                    size: 'xxl',
                                 })
                             }
                         >

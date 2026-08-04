@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem, FaBuilding } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem, FaBuilding, FaKey } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -54,24 +54,6 @@ const Dashboard: React.FC = () => {
       ]
     },
     {
-      name: 'Manage Students', icon: <FaUser className="mr-2" />, path: '/dashboard/students'
-    },
-    {
-      name:'Manage Corporate Admin', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin'
-    },
-    {
-      name:'Manage Admin Subcription', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin-subscription'
-    },
-    {
-      name: 'Manage Trail Courses', icon: <FaDiscourse className="mr-2" />, path: '/dashboard/trail-course'
-    },
-     {
-      name: 'Manage Course Announcement', icon: <HiSpeakerphone className="mr-2" />, path: '/dashboard/manage-announcement'
-    },
-    {
-      name: 'Manage Course Review', icon: <MdRateReview className="mr-2" />, path: '/dashboard/course-review'
-    },
-    {
       name: 'Manage Blog',
       icon: <FaBlog className="mr-2" />,
       path: '#',
@@ -79,6 +61,27 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Blog Category', path: '/dashboard/blog-category' },
         { name: 'Manage Blog Post', path: '/dashboard/blog' },
       ]
+    },
+    {
+      name: 'Manage Trail Courses', icon: <FaDiscourse className="mr-2" />, path: '/dashboard/trail-course'
+    },
+    {
+      name: 'Manage Course Review', icon: <MdRateReview className="mr-2" />, path: '/dashboard/course-review'
+    },
+    {
+      name: 'Manage Students', icon: <FaUser className="mr-2" />, path: '/dashboard/students'
+    },
+    {
+      name:'Manage Testimonials', icon:<MessageSquareQuote className="mr-2"/>, path:'/dashboard/testimonials'
+    },
+    {
+     name: 'Manage Course Announcement', icon: <HiSpeakerphone className="mr-2" />, path: '/dashboard/manage-announcement'
+   },
+    {
+      name:'Manage Quiz', icon:<MdOutlineQuiz className="mr-2"/>, path:'/dashboard/quiz'
+    },
+    {
+      name:"Manage Subscription plan", icon: <FaGem className='mr-2'/>, path:'/dashboard/subscription-plan'
     },
      
      {
@@ -90,6 +93,12 @@ const Dashboard: React.FC = () => {
         { name:'Manage Promotional Campaign', path:'/dashboard/promotional-campaign'}
 
       ]
+    },
+    {
+      name:'Manage Corporate Admin', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin'
+    },
+    {
+      name:'Manage Subcription order', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin-subscription'
     },
       {
       name: 'Manage Reports',
@@ -104,16 +113,7 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Student Access Lock Report', path: '/dashboard/student-access-lock-report' }
       ]
     },
-    {
-      name:'Manage Testimonials', icon:<MessageSquareQuote className="mr-2"/>, path:'/dashboard/testimonials'
-    },
-    {
-      name:'Manage Quiz', icon:<MdOutlineQuiz className="mr-2"/>, path:'/dashboard/quiz'
-    },
 
-    {
-      name:" Manage Subscription ", icon: <FaGem className='mr-2'/>, path:'/dashboard/subscription-plan'
-    },
      {
       name: 'Manage Support ',
       icon: <FaHeadset className="mr-2" />,
@@ -220,6 +220,14 @@ const Dashboard: React.FC = () => {
               >
                 <FaUser className="w-4 h-4 mr-2" />
                 Profile
+              </button>
+
+              <button
+                onClick={() => navigate('/dashboard/forgot-password')}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <FaKey className="w-4 h-4 mr-2" />
+                Forgot Password
               </button>
               <button
                 onClick={onLogoutClick}

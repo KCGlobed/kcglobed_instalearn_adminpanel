@@ -3,13 +3,14 @@ import { Filter, Calendar, Star } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import { getCourseReview,updateCourseReviewStatus } from '../../store/slices/courseReview';
+import { getCourseReview, updateCourseReviewStatus, toggleApproveReview, deleteCourseReview } from '../../store/slices/courseReview';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEye} from 'react-icons/fi';
+import { FiEye, FiTrash } from 'react-icons/fi';
+import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -185,27 +186,52 @@ const CourseReview: React.FC = () => {
         {
             key: 'review',
             title: 'Review',
-            render: (value: string, row: any) => (
+            render: (value: string) => (
                 <div className="flex flex-col gap-2 max-w-[300px]">
                     <span className="text-gray-600 text-xs line-clamp-2" title={value}>
                         {value || '-'}
                     </span>
-                    <div className="flex items-center gap-2 mt-1">
-                        
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${row.approved === 1
-                                ? 'text-white bg-green-500'
-                                : row.approved === 2
-                                    ? 'text-white bg-red-500'
-                                    : 'text-white bg-amber-500'
-                            }`}>
-                            
-                            {row.approved === 1 ? 'Approved' : row.approved === 2 ? 'Rejected' : 'New'}
-                            
-                        </span>
-                    </div>
                 </div>
             ),
-            width: '300px',
+            width: '200px',
+        },
+        {
+            key: 'approved',
+            title: 'Approval Status',
+            render: (_: any, row: any) => (
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={async () => {
+                            const nextApproved = row.approved === 1 ? 2 : 1;
+                            try {
+                                await dispatch(toggleApproveReview({ id: row.id, approved: nextApproved })).unwrap();
+                                toast.success(`Review ${nextApproved === 1 ? 'approved' : 'rejected'} successfully`);
+                            } catch (err: any) {
+                                toast.error(err || "Failed to update review approval");
+                            }
+                        }}
+                        type="button"
+                        role="switch"
+                        aria-checked={row.approved === 1}
+                        className={`relative cursor-pointer inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 focus:outline-none ${row.approved === 1 ? 'bg-emerald-500' : 'bg-gray-300'
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform duration-300 ${row.approved === 1 ? 'translate-x-5' : 'translate-x-1'
+                                }`}
+                        />
+                    </button>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${row.approved === 1
+                        ? 'text-emerald-700 bg-emerald-50'
+                        : row.approved === 2
+                            ? 'text-red-700 bg-red-50'
+                            : 'text-amber-700 bg-amber-50'
+                        }`}>
+                        {row.approved === 1 ? 'Approved' : row.approved === 2 ? 'Rejected' : 'New'}
+                    </span>
+                </div>
+            ),
+            width: '180px',
         },
         {
             key: 'created_at',
@@ -267,6 +293,30 @@ const CourseReview: React.FC = () => {
                                 size: 'lg',
                             })
                         }
+                    />
+                    <GlassButton
+                        icon={<FiTrash className="text-base" />}
+                        color="red"
+                        title="Delete Review"
+                        onClick={() => {
+                            showModal({
+                                title: 'Delete Course Review',
+                                content: <DeleteConfirmationModal
+                                    id={row.id}
+                                    name={`Review by ${row.user ? row.user.first_name + ' ' + row.user.last_name : 'Unknown User'}`}
+                                    onDelete={async (id) => {
+                                        try {
+                                            await dispatch(deleteCourseReview(id)).unwrap();
+                                            toast.success("Review deleted successfully");
+                                        } catch (error: any) {
+                                            toast.error(typeof error === 'string' ? error : error?.message || "Failed to delete review");
+                                        }
+                                    }}
+                                />,
+                                type: 'custom',
+                                size: 'md',
+                            });
+                        }}
                     />
                 </div>
             ),

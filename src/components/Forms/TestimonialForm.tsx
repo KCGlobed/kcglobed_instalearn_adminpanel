@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import { CropperModal } from "../ImageCropper/components/CropperModal";
 import type { CropResult } from "../ImageCropper/utils/cropCanvas";
+import LexicalEditor from "../TextEditor";
 
 interface Option { label: string; value: string; }
 
@@ -21,6 +22,8 @@ const testimonialTypeOptions: Option[] = [
     { label: "Student", value: "4" },
 ];
 
+const stripHtml = (html?: string) => (html || '').replace(/<[^>]*>?/gm, '').trim();
+
 const schema = yup.object().shape({
     name: yup.string().required("Name is mandatory"),
     testimonials_type: yup.object().shape({
@@ -29,7 +32,14 @@ const schema = yup.object().shape({
     }).required("Type is mandatory"),
     qualification: yup.string().required("Qualification is mandatory"),
     college: yup.string().required("College is mandatory"),
-    content: yup.string().required("Content is mandatory").min(10, "Content must be at least 10 characters"),
+    content: yup
+        .string()
+        .test("required", "Content is mandatory", (value) => stripHtml(value).length > 0)
+        .test("min", "Content must be at least 10 characters", (value) => {
+            const text = stripHtml(value);
+            return text.length === 0 || text.length >= 10;
+        })
+        .required("Content is mandatory"),
     image: yup.mixed().nullable().default(null),
 });
 
@@ -288,7 +298,7 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonialData }) =>
                     </div>
                 </div>
 
-                {/* Content Textarea */}
+                {/* Content (Lexical Editor) */}
                 <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
                         Content <span className="text-red-500">*</span>
@@ -296,21 +306,19 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonialData }) =>
                     <Controller
                         name="content"
                         control={control}
-                        render={({ field: { value, onChange, onBlur, ref } }) => (
-                            <textarea
-                                value={value || ''}
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                ref={ref}
-                                placeholder="Enter testimonial content..."
-                                rows={4}
-                                disabled={saving}
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all resize-y ${
-                                    errors.content 
-                                    ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                    : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                }`}
-                            />
+                        render={({ field: { value, onChange } }) => (
+                            <div className={`rounded-xl overflow-hidden border transition-all ${
+                                errors.content 
+                                ? 'border-red-400 focus-within:ring-4 focus-within:ring-red-500/20 bg-red-50/30' 
+                                : 'border-gray-200 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/20 hover:border-gray-300'
+                            }`}>
+                                <LexicalEditor
+                                    type="content"
+                                    value={value || ""}
+                                    onChange={onChange}
+                                    placeholder="Enter testimonial content..."
+                                />
+                            </div>
                         )}
                     />
                     {errors.content && (
@@ -323,7 +331,7 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ testimonialData }) =>
                 {/* Image */}
                 <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
-                        Image <span className="text-red-500">{testimonialData?.id ? '' : '*'}</span>
+                       Profile Image <span className="text-red-500">{testimonialData?.id ? '' : '*'}</span>
                     </label>
                     <div className="flex items-center gap-4">
                         {previewUrl && (

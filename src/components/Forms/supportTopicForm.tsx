@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import { CropperModal } from "../ImageCropper/components/CropperModal";
 import type { CropResult } from "../ImageCropper/utils/cropCanvas";
+import LexicalEditor from "../TextEditor";
 
 const schema = yup.object().shape({
     title: yup.string().required("Title is mandatory").min(2, "Title must be at least 2 characters"),
@@ -132,18 +133,14 @@ const SupportTopicForm: React.FC<Props> = ({ topicData }) => {
                         <Controller
                             name="title"
                             control={control}
-                            render={({ field }) => (
-                                <input
-                                    {...field}
-                                    type="text"
-                                    placeholder="e.g. Account & Billing"
-                                    disabled={saving}
-                                    className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all ${
-                                        errors.title 
-                                        ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                        : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                    }`}
-                                />
+                            render={({ field: { value, onChange } }) => (
+                                <div className={`rounded-xl overflow-hidden border ${errors.title ? 'border-red-400' : 'border-gray-200'}`}>
+                                    <LexicalEditor
+                                        type="title"
+                                        value={value || ''}
+                                        onChange={onChange}
+                                    />
+                                </div>
                             )}
                         />
                         {errors.title && (
@@ -162,21 +159,14 @@ const SupportTopicForm: React.FC<Props> = ({ topicData }) => {
                     <Controller
                         name="description"
                         control={control}
-                        render={({ field: { value, onChange, onBlur, ref } }) => (
-                            <textarea
-                                value={value || ''}
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                ref={ref}
-                                placeholder="Enter support topic description..."
-                                rows={4}
-                                disabled={saving}
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-medium border focus:outline-none focus:ring-4 transition-all resize-y ${
-                                    errors.description 
-                                    ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/30' 
-                                    : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-300'
-                                }`}
-                            />
+                        render={({ field: { value, onChange } }) => (
+                            <div className={`rounded-xl overflow-hidden border ${errors.description ? 'border-red-400' : 'border-gray-200'}`}>
+                                <LexicalEditor
+                                    type="description"
+                                    value={value || ''}
+                                    onChange={onChange}
+                                />
+                            </div>
                         )}
                     />
                     {errors.description && (

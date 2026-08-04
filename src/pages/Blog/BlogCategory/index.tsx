@@ -188,7 +188,7 @@ const ManageBlogCategory: React.FC = () => {
                                 title: 'Edit Blog Category',
                                 content: <BlogCategoryForm categoryData={row} />,
                                 type: 'success',
-                                size: 'lg',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -270,7 +270,7 @@ const ManageBlogCategory: React.FC = () => {
                                     title: "Add Blog Category",
                                     content: <BlogCategoryForm />,
                                     type: 'custom',
-                                    size: 'lg',
+                                    size: 'xxl',
                                 })
                             }
                         >
