@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
 import { MdOutlineQuiz, MdRateReview } from "react-icons/md";
 import { HiSpeakerphone } from "react-icons/hi";
-import { Ticket } from "lucide-react";
+import { FileText, Globe2, Ticket } from "lucide-react";
 import { MessageSquareQuote } from "lucide-react";
 
 const Dashboard: React.FC = () => {
@@ -99,6 +99,12 @@ const Dashboard: React.FC = () => {
     },
     {
       name:'Manage Subcription order', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin-subscription'
+    },
+    {
+      name:'Manage Legal pages', icon:<FileText className='mr-2'/>, path:'/dashboard/legal-pages'
+    },
+    {
+      name:'Manage community category', icon:<Globe2 className='mr-2'/>, path:'/dashboard/community-category'
     },
       {
       name: 'Manage Reports',

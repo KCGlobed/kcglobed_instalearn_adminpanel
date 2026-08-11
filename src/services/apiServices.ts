@@ -1212,6 +1212,14 @@ export const fetchStudentAttemptedQuizApi = async (userId: string | number, cour
   return await apiRequest(`reports/get-attempted-quiz-list/${userId}/${courseId}`, 'GET');
 };
 
+export const downloadStudentQuizReportPdfApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-quiz-listing-report-pdf/${userId}/${courseId}`, 'GET');
+};
+
+export const downloadStudentQuizReportExcelApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-quiz-listing-report-excel/${userId}/${courseId}`, 'GET');
+};
+
 export const downloadCorporateAdminPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
   return await apiRequest(`reports/get-corporare-admin-user-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
@@ -1262,4 +1270,125 @@ export const downloadCoAdminSubscriptionExcelApi = async ({ search = "", first_n
   return await apiRequest(`reports/get-subscription-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+// ---------------- Student Reminders Start ---------------- //
 
+export const fetchStudentReminderListingApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing/${studentId}/${courseId}`, 'GET');
+};
+
+export const downloadStudentReminderReportPdfApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing-report-pdf/${studentId}/${courseId}`, 'GET');
+};
+
+export const downloadStudentReminderReportExcelApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing-report-excel/${studentId}/${courseId}`, 'GET');
+};
+
+// ---------------- Student Reminders End ---------------- //
+
+// ---------------- Admin Dashboard Reports Start ---------------- //
+
+export const fetchAdminDashboardCounters = async (): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-counters/`, "GET");
+};
+
+export const fetchAdminDashboardStudentsGraph = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-students-graph/${filter}`, "GET");
+};
+
+export const fetchAdminDashboardRevenueGraph = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-revenue-graph/${filter}`, "GET");
+};
+
+export const fetchAdminDashboardVideoGraph = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-students-video-lecture-graph/${filter}`, "GET");
+};
+
+export const fetchAdminDashboardOrderGraph = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-students-order-graph/${filter}`, "GET");
+};
+
+export const fetchAdminDashboardCorporateAdminGraph = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-corporate-admin-graph/${filter}`, "GET");
+};
+
+export const fetchPracticeChart = async (filter: string = "month"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-practice-test-graph/${filter}`, "GET");
+};
+
+export const fetchRecentCorporateAdmins = async (): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-recent-corporate-admin/`, "GET");
+};
+
+export const fetchRecentStudents = async (): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-recent-students/`, "GET");
+};
+
+// Aliases for compatibility
+export const fetchCounter = fetchAdminDashboardCounters;
+export const fetchRefrence = async (): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-source-students/`, "GET");
+};
+export const fetchChart = async (id: any = "week"): Promise<any> => {
+  return await apiRequest(`reports/admin-dashboard-students-graph/${id}`, "GET");
+};
+export const fetchAdminDashboardRecentCorporateAdmin = fetchRecentCorporateAdmins;
+export const fetchAdminDashboardRecentStudents = fetchRecentStudents;
+
+// ---------------- Admin Dashboard Reports End ---------------- //
+
+// ---------------- Legal Pages (CMS) Start ---------------- //
+
+export async function fetchLegalPagesApi(page = 1, search: string = "", title: string = "", page_type: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = ""): Promise<any> {
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  let query = `cms/get-cms-pages-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${page_type ? `&page_type=${encodeURIComponent(page_type)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const addLegalPageApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-update-cms-page/`, 'POST', payload);
+};
+
+export const updateLegalPageApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-update-cms-page/`, 'POST', { ...payload, id });
+};
+
+export const deleteLegalPageApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-cms-page/${id}`, 'DELETE');
+};
+
+export const updateLegalPageStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-cms-page-status/${id}`, 'POST', payload);
+};
+
+// ---------------- Legal Pages (CMS) End ---------------- //
+
+// ---------------- Community Category Start ---------------- //
+
+export async function fetchCommunityCategory(page = 1, search: string = "", title: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = ""): Promise<any> {
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  let query = `cms/get-community-category-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createCommunityCategory = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-community-category/`, 'POST', payload);
+};
+
+export const updateCommunityCategoryApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-community-category/${id}`, 'POST', payload);
+};
+
+export const updateCommunityCategoryStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-community-category-status/${id}`, 'POST', payload);
+};
+
+export const deleteCommunityCategoryApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-community-category/${id}`, 'DELETE');
+};
+
+// ---------------- Community Category End ---------------- //

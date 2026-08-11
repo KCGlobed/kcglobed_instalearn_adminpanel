@@ -544,3 +544,32 @@ export const subscriptionFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const legalPageFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Page Title', name: 'title', placeholder: 'Filter by title...' },
+    { type: 'text', label: 'Page Type', name: 'page_type', placeholder: 'Filter by page type...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const communityCategoryFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Category Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];

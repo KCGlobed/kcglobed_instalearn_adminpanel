@@ -184,7 +184,7 @@ const ManageReportContact: React.FC = () => {
                                 title: 'Contact Us Details',
                                 content: <ContactUsView contact={row} />,
                                 type: 'custom',
-                                size: 'lg',
+                                size: 'xxl',
                             })
                         }
                     />

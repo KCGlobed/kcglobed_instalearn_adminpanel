@@ -23,8 +23,9 @@ import TabsModal from '../../components/Modal/TabsModal';
 import CorporateStudentVideoReport from './CorporateStudentVideoReport';
 import CorporateStudentNotes from './CorporateStudentNotes';
 import CorporateStudentQuizReport from './CorporateStudentQuizReport';
+import CorporateStudentReminder from './CorporateStudentReminder';
 import CorporateStudentLoginActivityView from './CorporateStudentLoginActivityView';
-import { PlayCircle, FileText, HelpCircle, Eye } from 'lucide-react';
+import { PlayCircle, FileText, HelpCircle, Bell, Eye } from 'lucide-react';
 
 const CARD = 'bg-white rounded-[22px] border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300';
 const CARD_HOVER = 'hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-gray-200';
@@ -78,6 +79,52 @@ const getStatusColor = (status: number) => {
     return colors[status] || 'bg-gray-100 text-gray-700';
 };
 
+const StudentAvatar: React.FC<{ student: any }> = ({ student }) => {
+    const [imgError, setImgError] = useState(false);
+
+    const studentImage =
+        student.image ||
+        student.Image ||
+        student.profile_image ||
+        student.profile_image_url ||
+        student.avatar ||
+        student.photo ||
+        student.profile_pic ||
+        student.user_detail?.image ||
+        student.user_detail?.Image ||
+        student.user_detail?.profile_image ||
+        student.user?.image ||
+        student.user?.profile_image;
+
+    const studentInitials =
+        `${student.first_name?.charAt(0) || ''}${student.last_name?.charAt(0) || ''}`.toUpperCase() ||
+        (student.first_name ? student.first_name.charAt(0).toUpperCase() : 'S');
+
+    const isValidImg = Boolean(
+        studentImage &&
+        typeof studentImage === 'string' &&
+        studentImage.trim() !== '' &&
+        studentImage !== 'null' &&
+        studentImage !== 'undefined'
+    );
+
+    return (
+        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden shadow-sm">
+            {isValidImg && !imgError ? (
+                <img
+                    src={studentImage}
+                    alt={`${student.first_name || 'Student'} ${student.last_name || ''}`}
+                    className="w-full h-full object-cover"
+                    onError={() => setImgError(true)}
+                    referrerPolicy="no-referrer"
+                />
+            ) : (
+                <span>{studentInitials}</span>
+            )}
+        </div>
+    );
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 interface CorporateAdminViewProps {
     adminId: number;
@@ -86,6 +133,7 @@ interface CorporateAdminViewProps {
 const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
     const [adminData, setAdminData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [imgError, setImgError] = useState(false);
     const { showModal } = useModal();
 
     useEffect(() => {
@@ -93,7 +141,11 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
             try {
                 setLoading(true);
                 const response = await fetchCorporateAdminDetailApi(adminId);
-                if (response?.data) setAdminData(response.data);
+                const data = response?.data?.data || response?.data || response;
+                if (data) {
+                    setAdminData(data);
+                    setImgError(false);
+                }
             } catch (error) {
                 console.error('Failed to load corporate admin details', error);
             } finally {
@@ -117,6 +169,15 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
 
     const isActive = adminData.is_active;
     const sub = adminData.active_suscription;
+    const adminImage = adminData.image ||
+        adminData.Image ||
+        adminData.profile_image ||
+        adminData.avatar ||
+        adminData.photo ||
+        adminData.profile_pic ||
+        adminData.user_detail?.image ||
+        adminData.user?.image;
+    const adminInitials = `${adminData.first_name?.charAt(0) || ''}${adminData.last_name?.charAt(0) || ''}`.toUpperCase() || (adminData.first_name ? adminData.first_name.charAt(0).toUpperCase() : 'A');
 
     return (
         <div className="bg-gray-50 font-sans max-h-[85vh] overflow-y-auto custom-scrollbar">
@@ -130,10 +191,23 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
 
                     <div className="relative flex flex-col md:flex-row gap-6 items-center md:items-start">
                         {/* Avatar */}
-                        <div className="w-24 h-24 rounded-[20px] shadow-[0_8px_30px_rgba(79,70,229,0.18)] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
-                            <span className="font-black text-4xl text-white">
-                                {adminData.first_name ? adminData.first_name.charAt(0).toUpperCase() : 'A'}
-                            </span>
+                        <div className="relative shrink-0">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[20px] shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0 overflow-hidden">
+                                {adminImage && !imgError ? (
+                                    <img
+                                        src={adminImage}
+                                        alt={`${adminData.first_name || 'Admin'}`}
+                                        className="w-full h-full object-cover"
+                                        onError={() => setImgError(true)}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                ) : (
+                                    <span className="font-black text-3xl sm:text-4xl text-indigo-600 uppercase">
+                                        {adminInitials}
+                                    </span>
+                                )}
+                            </div>
+                            <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${isActive ? 'bg-emerald-500' : 'bg-red-500'}`} />
                         </div>
 
                         {/* Name + meta */}
@@ -223,11 +297,13 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                                             key={student.id}
                                             className="flex flex-col gap-3 p-4 rounded-[16px] bg-white border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.02)] hover:border-indigo-100 hover:shadow-[0_4px_12px_rgba(79,70,229,0.06)] transition-all group cursor-default"
                                         >
-                                            <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-3.5">
                                                 {/* Index */}
-                                                <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-xs font-black text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors shrink-0">
+                                                <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-[11px] font-black text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors shrink-0">
                                                     {String(i + 1).padStart(2, '0')}
                                                 </div>
+                                                {/* Student Profile Avatar */}
+                                                <StudentAvatar student={student} />
                                                 {/* Name + email */}
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="text-sm font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
@@ -278,6 +354,12 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                                                                                 component: <CorporateStudentQuizReport studentId={student.id} courses={student.courses || []} />
                                                                             },
                                                                             {
+                                                                                key: 'reminders',
+                                                                                label: 'Reminders',
+                                                                                icon: <Bell size={15} />,
+                                                                                component: <CorporateStudentReminder studentId={student.id} courses={student.courses || []} />
+                                                                            },
+                                                                            {
                                                                                 key: 'login-activity',
                                                                                 label: 'Login Activity',
                                                                                 icon: <Activity size={15} />,
@@ -288,7 +370,7 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                                                                 ),
                                                                 type: 'custom',
                                                                 size: 'xxl'
-                                                            });
+                                                             });
                                                         }}
                                                         className="w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
                                                         title="View Reports"
@@ -300,7 +382,7 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
 
                                             {/* Course chips */}
                                             {student.courses && student.courses.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 pl-14">
+                                                <div className="flex flex-wrap gap-2 pl-0 sm:pl-[84px]">
                                                     {student.courses.map((course: any) => (
                                                         <span
                                                             key={course.id}
