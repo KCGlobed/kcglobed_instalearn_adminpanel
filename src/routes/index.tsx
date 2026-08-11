@@ -51,8 +51,8 @@ import ManageCorporateAdmin from "../pages/ManageCorporateAdmin";
 import ManageCorporateAdminSubcription from "../pages/CorporativeAdminSubcription";
 import Profile from "../pages/dashboard/Profile";
 import ChangePassword from "../pages/dashboard/ChangePassword";
-
-
+import ManageLegalPage from "../pages/LegalPages";
+import ManageCommunityCategory from "../pages/communityCategory";
 
 export default function AppRoutes() {
   return (
@@ -113,8 +113,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/corporate-admin-subscription"  element={<ManageCorporateAdminSubcription/>}/>
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/forgot-password" element={<ChangePassword />} />
-
-
+          <Route path="/dashboard/legal-pages" element={<ManageLegalPage />} />
+          <Route path="/dashboard/community-category" element={<ManageCommunityCategory />} />
 
         </Route>
       </Route>

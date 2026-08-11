@@ -60,22 +60,25 @@ const CorporateStudentProfile = ({ studentId }: { studentId: number }) => {
     }
 
     const isActive = studentData.is_active;
+    const studentImage = studentData.image || studentData.Image || studentData.profile_image || studentData.avatar || studentData.photo || studentData.user_detail?.image || studentData.user?.image;
+    const studentInitials = `${studentData.first_name?.charAt(0) || ''}${studentData.last_name?.charAt(0) || ''}`.toUpperCase() || (studentData.first_name ? studentData.first_name.charAt(0).toUpperCase() : 'S');
+    const createdDate = studentData.created_at || studentData.date_joined || studentData.created_date || studentData.createdAt || studentData.registered_on || studentData.joining_date;
 
     return (
         <div className="p-1 space-y-6 max-h-[65vh] overflow-y-auto custom-scrollbar pr-2">
-            <div className={`${CARD} p-6 overflow-hidden relative bg-gradient-to-br from-white via-white to-indigo-50/40`}>
+            <div className={`${CARD} p-6 overflow-hidden relative bg-white`}>
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                    <div className="w-20 h-20 rounded-full shadow-[0_8px_30px_rgba(79,70,229,0.18)] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
-                        {studentData.image ? (
+                    <div className="w-20 h-20 rounded-2xl shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0 overflow-hidden">
+                        {studentImage ? (
                             <img
-                                src={studentData.image}
+                                src={studentImage}
                                 alt="Avatar"
-                                className="w-full h-full object-cover rounded-full"
+                                className="w-full h-full object-cover"
                                 referrerPolicy="no-referrer"
                             />
                         ) : (
-                            <span className="font-black text-3xl text-white">
-                                {studentData.first_name ? studentData.first_name.charAt(0).toUpperCase() : 'S'}
+                            <span className="font-black text-2xl text-indigo-600">
+                                {studentInitials}
                             </span>
                         )}
                     </div>
@@ -94,7 +97,7 @@ const CorporateStudentProfile = ({ studentId }: { studentId: number }) => {
                                 <Mail size={12} className="text-indigo-400" /> {studentData.email || '-'}
                             </span>
                             <span className="flex items-center gap-1.5">
-                                <Phone size={12} className="text-indigo-400" /> {studentData.phone1 || '-'}
+                                <Phone size={12} className="text-indigo-400" /> {studentData.phone1 || studentData.phone || '-'}
                             </span>
                         </p>
                     </div>
@@ -104,13 +107,19 @@ const CorporateStudentProfile = ({ studentId }: { studentId: number }) => {
             <div className={`${CARD} p-6`}>
                 <h2 className="text-sm font-black text-gray-900 mb-4">Detailed Information</h2>
                 <div>
-                    <InfoRow icon={Calendar} label="Created On" value={studentData.created_at ? moment(studentData.created_at).format('MMMM DD, YYYY') : '-'} />
+                    <InfoRow icon={Calendar} label="Created On" value={createdDate && moment(createdDate).isValid() ? moment(createdDate).format('MMMM DD, YYYY') : '-'} />
                     <InfoRow icon={Globe} label="Location" isLast value={
-                        <>
-                            {studentData.address || 'No address provided'}<br />
-                            {studentData.city ? `${studentData.city}, ` : ''}{studentData.state}<br />
-                            {studentData.country} {studentData.pincode && `- ${studentData.pincode}`}
-                        </>
+                        (() => {
+                            const hasLoc = studentData.address || studentData.city || studentData.state || studentData.country || studentData.pincode;
+                            if (!hasLoc) return '-';
+                            return (
+                                <>
+                                    {studentData.address && <>{studentData.address}<br /></>}
+                                    {(studentData.city || studentData.state) && <>{[studentData.city, studentData.state].filter(Boolean).join(', ')}<br /></>}
+                                    {(studentData.country || studentData.pincode) && <>{[studentData.country].filter(Boolean).join('')}{studentData.pincode ? ` - ${studentData.pincode}` : ''}</>}
+                                </>
+                            );
+                        })()
                     } />
                 </div>
             </div>

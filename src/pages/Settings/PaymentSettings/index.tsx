@@ -16,7 +16,8 @@ import {
     Info,
     Calendar,
     Server,
-    ShieldCheck
+    ShieldCheck,
+    Share2
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -33,6 +34,11 @@ const schema = yup.object().shape({
     allowed_desktop: yup.number().typeError("Must be a number").min(0).required(),
     allowed_tablet: yup.number().typeError("Must be a number").min(0).required(),
     allowed_phone: yup.number().typeError("Must be a number").min(0).required(),
+    facebook_url: yup.string().optional(),
+    instagram_url: yup.string().optional(),
+    linkedin_url: yup.string().optional(),
+    twitter_url: yup.string().optional(),
+    youtube_url: yup.string().optional(),
 });
 
 interface PaymentSettingsData {
@@ -48,6 +54,11 @@ interface PaymentSettingsData {
     allowed_desktop: number;
     allowed_tablet: number;
     allowed_phone: number;
+    facebook_url?: string;
+    instagram_url?: string;
+    linkedin_url?: string;
+    twitter_url?: string;
+    youtube_url?: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -62,7 +73,7 @@ const PaymentSettings = () => {
     const [metaData, setMetaData] = useState<{ created_at?: string, updated_at?: string }>({});
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<PaymentSettingsData>({
-        resolver: yupResolver(schema),
+        resolver: yupResolver(schema) as any,
         defaultValues: {
             payment_type: 1,
             allow_device_restriction: false,
@@ -70,7 +81,12 @@ const PaymentSettings = () => {
             try_for_free: 0,
             allowed_desktop: 0,
             allowed_tablet: 0,
-            allowed_phone: 0
+            allowed_phone: 0,
+            facebook_url: "",
+            instagram_url: "",
+            linkedin_url: "",
+            twitter_url: "",
+            youtube_url: ""
         }
     });
 
@@ -275,6 +291,45 @@ const PaymentSettings = () => {
                                         </div>
                                         {errors.live_secret_key && <p className="text-xs text-red-500 mt-1.5">{errors.live_secret_key.message}</p>}
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Social Media Links */}
+                    <section className="bg-white rounded-xl border border-slate-200 shadow-[0_2px_4px_rgba(0,0,0,0.02)] overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                            <h2 className="text-[13px] font-semibold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                <Share2 size={14} className="text-blue-500" />
+                                Social Media Links
+                            </h2>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Facebook URL</label>
+                                    <input {...register("facebook_url")} type="text" placeholder="https://facebook.com/..." className="w-full text-sm font-normal p-2.5 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 outline-none bg-slate-50 hover:bg-white transition-all shadow-sm" />
+                                    {errors.facebook_url && <p className="text-xs text-red-500 mt-1.5">{errors.facebook_url.message}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Instagram URL</label>
+                                    <input {...register("instagram_url")} type="text" placeholder="https://instagram.com/..." className="w-full text-sm font-normal p-2.5 rounded-lg border border-slate-200 focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20 outline-none bg-slate-50 hover:bg-white transition-all shadow-sm" />
+                                    {errors.instagram_url && <p className="text-xs text-red-500 mt-1.5">{errors.instagram_url.message}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">LinkedIn URL</label>
+                                    <input {...register("linkedin_url")} type="text" placeholder="https://linkedin.com/..." className="w-full text-sm font-normal p-2.5 rounded-lg border border-slate-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 outline-none bg-slate-50 hover:bg-white transition-all shadow-sm" />
+                                    {errors.linkedin_url && <p className="text-xs text-red-500 mt-1.5">{errors.linkedin_url.message}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Twitter URL</label>
+                                    <input {...register("twitter_url")} type="text" placeholder="https://twitter.com/..." className="w-full text-sm font-normal p-2.5 rounded-lg border border-slate-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20 outline-none bg-slate-50 hover:bg-white transition-all shadow-sm" />
+                                    {errors.twitter_url && <p className="text-xs text-red-500 mt-1.5">{errors.twitter_url.message}</p>}
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">YouTube URL</label>
+                                    <input {...register("youtube_url")} type="text" placeholder="https://youtube.com/..." className="w-full text-sm font-normal p-2.5 rounded-lg border border-slate-200 focus:border-red-500 focus:ring-1 focus:ring-red-500/20 outline-none bg-slate-50 hover:bg-white transition-all shadow-sm" />
+                                    {errors.youtube_url && <p className="text-xs text-red-500 mt-1.5">{errors.youtube_url.message}</p>}
                                 </div>
                             </div>
                         </div>
