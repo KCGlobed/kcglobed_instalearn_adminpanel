@@ -36,9 +36,13 @@ import subscriptionReducer from "./slices/subscriptionSlice";
 import studentAccessLockReducer from "./slices/studentAccessLockSlice";
 import corporateAdminReducer from "./slices/corporateAdminSlice";
 import CoAdminSubscriptionReducer from "./slices/CoAdminSubscriptionSlice";
+import dashboardReducer from "./slices/dashboardSlice";
+import legalPageReducer from "./slices/legalPageSlice";
+import communityCategoryReducer from "./slices/communityCategorySlice";
 
 export const store = configureStore({
   reducer: {
+    dashboard: dashboardReducer,
     auth: authReducer,
     category: categoryReducer,
     subcategory: subcategoryReducer,
@@ -74,6 +78,8 @@ export const store = configureStore({
     studentAccessLock: studentAccessLockReducer,
     corporateAdmin: corporateAdminReducer,
     CoAdminSubscription: CoAdminSubscriptionReducer,
+    legalPages: legalPageReducer,
+    communityCategory: communityCategoryReducer,
   },
 });
 

@@ -127,25 +127,28 @@ const ManageCorporateAdmin: React.FC = () => {
         {
             key: 'first_name',
             title: 'Admin',
-            render: (_: any, row: any) => (
-                <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-blue-50 text-blue-600 border border-blue-100 overflow-hidden shrink-0"
-                    >
-                        {row.image ? (
-                            <img src={row.image} alt={row.first_name} className="w-full h-full object-cover" />
-                        ) : (
-                            <span>{row.first_name ? row.first_name.charAt(0).toUpperCase() : 'A'}</span>
-                        )}
+            render: (_: any, row: any) => {
+                const adminImg = row.image || row.Image || row.profile_image || row.avatar || row.photo || row.user_detail?.image;
+                return (
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-blue-50 text-blue-600 border border-blue-100 overflow-hidden shrink-0"
+                        >
+                            {adminImg ? (
+                                <img src={adminImg} alt={row.first_name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            ) : (
+                                <span>{row.first_name ? row.first_name.charAt(0).toUpperCase() : 'A'}</span>
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">
+                                {row.first_name} {row.last_name}
+                            </span>
+                            <span className="text-gray-400 text-[10px]">ID: {row.id}</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">
-                            {row.first_name} {row.last_name}
-                        </span>
-                        <span className="text-gray-400 text-[10px]">ID: {row.id}</span>
-                    </div>
-                </div>
-            ),
+                );
+            },
             sortable: true,
             width: '250px',
         },

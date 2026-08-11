@@ -7,7 +7,7 @@ import {
     Mail, Phone, MapPin, Calendar, BookOpen,
     ArrowLeft, Smartphone, Check,
     Monitor, Award, CheckSquare, Bell, Clock, XCircle,
-    Download, FileText, PlayCircle, Eye, Info, HelpCircle, CheckCircle
+    Download, FileText, PlayCircle, Eye, Info, HelpCircle, 
 } from 'lucide-react';
 import moment from 'moment';
 import toast from 'react-hot-toast';
@@ -20,8 +20,14 @@ import {
     fetchCorporateStudentNotesApi,
     downloadCorporateStudentNotesReportPdfApi,
     downloadCorporateStudentNotesReportExcelApi,
-    fetchStudentAttemptedQuizApi
+    fetchStudentAttemptedQuizApi,
+    downloadStudentQuizReportPdfApi,
+    downloadStudentQuizReportExcelApi,
+    fetchStudentReminderListingApi,
+    downloadStudentReminderReportPdfApi,
+    downloadStudentReminderReportExcelApi
 } from '../../services/apiServices';
+import { formatReminderDateTime } from './CorporateStudentReminder';
 
 const CARD = 'bg-white rounded-2xl border border-gray-200 shadow-sm';
 
@@ -62,7 +68,7 @@ const StudentProfile: React.FC = () => {
 
     const [imgError, setImgError] = useState(false);
     const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-    const [activeReportTab, setActiveReportTab] = useState<'video' | 'notes' | 'quizzes'>('video');
+    const [activeReportTab, setActiveReportTab] = useState<'video' | 'notes' | 'quizzes' | 'reminders'>('video');
 
     const [reportData, setReportData] = useState<any>(null);
     const [loadingReport, setLoadingReport] = useState<boolean>(false);
@@ -78,6 +84,13 @@ const StudentProfile: React.FC = () => {
 
     const [quizzes, setQuizzes] = useState<any[]>([]);
     const [loadingQuizzes, setLoadingQuizzes] = useState<boolean>(false);
+    const [downloadingQuizPdf, setDownloadingQuizPdf] = useState<boolean>(false);
+    const [downloadingQuizExcel, setDownloadingQuizExcel] = useState<boolean>(false);
+
+    const [reminders, setReminders] = useState<any[]>([]);
+    const [loadingReminders, setLoadingReminders] = useState<boolean>(false);
+    const [downloadingRemindersPdf, setDownloadingRemindersPdf] = useState<boolean>(false);
+    const [downloadingRemindersExcel, setDownloadingRemindersExcel] = useState<boolean>(false);
 
     useEffect(() => {
         if (id) {
@@ -100,6 +113,7 @@ const StudentProfile: React.FC = () => {
             setReportData(null);
             setNotes([]);
             setQuizzes([]);
+            setReminders([]);
         }
     }, [courses]);
 
@@ -182,6 +196,36 @@ const StudentProfile: React.FC = () => {
         };
 
         loadQuizzes();
+    }, [id, selectedCourseId]);
+
+    // Fetch student reminders whenever selected course or student ID changes
+    useEffect(() => {
+        const loadReminders = async () => {
+            if (!id || !selectedCourseId) {
+                setReminders([]);
+                return;
+            }
+            try {
+                setLoadingReminders(true);
+                const response: any = await fetchStudentReminderListingApi(id, selectedCourseId);
+                if (response?.results) {
+                    setReminders(response.results);
+                } else if (response?.data) {
+                    setReminders(Array.isArray(response.data) ? response.data : []);
+                } else if (Array.isArray(response)) {
+                    setReminders(response);
+                } else {
+                    setReminders([]);
+                }
+            } catch (err) {
+                console.error("Failed to load reminders", err);
+                setReminders([]);
+            } finally {
+                setLoadingReminders(false);
+            }
+        };
+
+        loadReminders();
     }, [id, selectedCourseId]);
 
     const formatDuration = (seconds: number) => {
@@ -306,59 +350,81 @@ const StudentProfile: React.FC = () => {
                 </button>
 
                 {/* Student Profile Hero Header Card */}
-                <div className={`${CARD} p-6 sm:p-7`}>
-                    <div className="flex flex-col md:flex-row gap-5 items-center md:items-center">
-                        <div className="relative shrink-0">
-                            <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden flex items-center justify-center text-white font-black text-2xl uppercase bg-[#2400FF] shadow-sm">
-                                {selectedStudent.image && !imgError ? (
-                                    <img
-                                        src={selectedStudent.image}
-                                        alt="Avatar"
-                                        className="w-full h-full object-cover"
-                                        onError={() => setImgError(true)}
-                                        referrerPolicy="no-referrer"
-                                    />
-                                ) : (
-                                    selectedStudent.first_name?.charAt(0) || 'U'
-                                )}
-                            </div>
-                            <span className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${(selectedStudent.is_active ?? selectedStudent.status) !== false ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        </div>
+                {(() => {
+                    const studentImage = selectedStudent.image ||
+                        (selectedStudent as any).Image ||
+                        (selectedStudent as any).profile_image ||
+                        (selectedStudent as any).avatar ||
+                        (selectedStudent as any).photo ||
+                        (selectedStudent as any).profile_pic ||
+                        (selectedStudent as any).user_detail?.image ||
+                        (selectedStudent as any).user_detail?.Image ||
+                        (selectedStudent as any).user?.image;
+                    const studentInitials = `${selectedStudent.first_name?.charAt(0) || ''}${selectedStudent.last_name?.charAt(0) || ''}`.toUpperCase() || (selectedStudent.first_name ? selectedStudent.first_name.charAt(0).toUpperCase() : 'S');
+                    const headerLocation = [selectedStudent.city, selectedStudent.state, selectedStudent.country].filter(Boolean).join(', ');
 
-                        <div className="flex-1 text-center md:text-left space-y-2.5">
-                            <div>
-                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-                                    {selectedStudent.first_name} {selectedStudent.last_name}
-                                </h1>
-                                <div className="text-xs text-gray-500 font-medium mt-1 flex items-center justify-center md:justify-start gap-4 flex-wrap">
-                                    <span className="flex items-center gap-1.5">
-                                        <Mail size={13} className="text-gray-400" />
-                                        {selectedStudent.email}
-                                    </span>
-                                    <span className="flex items-center gap-1.5">
-                                        <MapPin size={13} className="text-gray-400" />
-                                        {selectedStudent.city || 'Unknown'}, {selectedStudent.country || 'Unknown'}
-                                    </span>
+                    return (
+                        <div className={`${CARD} p-6 sm:p-7`}>
+                            <div className="flex flex-col md:flex-row gap-5 items-center md:items-center">
+                                <div className="relative shrink-0">
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center font-bold text-xl sm:text-2xl shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 overflow-hidden shrink-0">
+                                        {studentImage && !imgError ? (
+                                            <img
+                                                src={studentImage}
+                                                alt="Avatar"
+                                                className="w-full h-full object-cover"
+                                                onError={() => setImgError(true)}
+                                                referrerPolicy="no-referrer"
+                                            />
+                                        ) : (
+                                            <span className="font-black text-xl sm:text-2xl text-indigo-600 uppercase">
+                                                {studentInitials}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${(selectedStudent.is_active ?? selectedStudent.status) !== false ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                </div>
+
+                                <div className="flex-1 text-center md:text-left space-y-2.5">
+                                    <div>
+                                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
+                                            {selectedStudent.first_name} {selectedStudent.last_name}
+                                        </h1>
+                                        <div className="text-xs text-gray-500 font-medium mt-1 flex items-center justify-center md:justify-start gap-4 flex-wrap">
+                                            {selectedStudent.email && (
+                                                <span className="flex items-center gap-1.5">
+                                                    <Mail size={13} className="text-gray-400" />
+                                                    {selectedStudent.email}
+                                                </span>
+                                            )}
+                                            {headerLocation && (
+                                                <span className="flex items-center gap-1.5">
+                                                    <MapPin size={13} className="text-gray-400" />
+                                                    {headerLocation}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-0.5">
+                                        <span className="text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-3 py-0.5 rounded-full">
+                                            # ID {selectedStudent.id}
+                                        </span>
+                                        {(selectedStudent.is_active ?? selectedStudent.status) !== false ? (
+                                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-0.5 rounded-full">
+                                                <Check size={12} className="stroke-[2.5]" /> Active
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-0.5 rounded-full">
+                                                <XCircle size={12} /> Inactive
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-0.5">
-                                <span className="text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-3 py-0.5 rounded-full">
-                                    # ID {selectedStudent.id}
-                                </span>
-                                {(selectedStudent.is_active ?? selectedStudent.status) !== false ? (
-                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-0.5 rounded-full">
-                                        <Check size={12} className="stroke-[2.5]" /> Active
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-0.5 rounded-full">
-                                        <XCircle size={12} /> Inactive
-                                    </span>
-                                )}
-                            </div>
                         </div>
-                    </div>
-                </div>
+                    );
+                })()}
 
                 {/* 5 KPI Stat Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -520,6 +586,21 @@ const StudentProfile: React.FC = () => {
                                     {quizzes && quizzes.length > 0 && (
                                         <span className="text-[10px] font-semibold bg-purple-50 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded-full">
                                             {quizzes.length}
+                                        </span>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setActiveReportTab('reminders')}
+                                    className={`flex items-center gap-2 pb-3.5 text-xs font-bold transition-all border-b-2 ${activeReportTab === 'reminders'
+                                        ? 'border-[#4318FF] text-[#4318FF]'
+                                        : 'border-transparent text-gray-500 hover:text-gray-800'
+                                        }`}
+                                >
+                                    <Bell size={15} />
+                                    <span>Reminders</span>
+                                    {reminders && reminders.length > 0 && (
+                                        <span className="text-[10px] font-semibold bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded-full">
+                                            {reminders.length}
                                         </span>
                                     )}
                                 </button>
@@ -733,20 +814,51 @@ const StudentProfile: React.FC = () => {
                             {/* TAB 3: Attempted Quizzes */}
                             {activeReportTab === 'quizzes' && (
                                 <div className="p-5 sm:p-6 flex flex-col flex-1">
-                                    <div className="flex items-center gap-3 pb-4 border-b border-gray-100 mb-5">
-                                        <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                                            <HelpCircle size={16} />
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <h2 className="text-base font-bold text-gray-900">Attempted Quizzes</h2>
-                                                <span className="text-[11px] font-semibold px-2 py-0.5 bg-purple-50 text-purple-600 border border-purple-200 rounded-full">
-                                                    {quizzes?.length || 0} Quizzes
-                                                </span>
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 mb-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                                <HelpCircle size={16} />
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-0.5">
-                                                Quizzes attempted for <strong className="text-gray-800">{selectedCourse?.course_detail?.name || 'Selected Course'}</strong>
-                                            </p>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h2 className="text-base font-bold text-gray-900">Attempted Quizzes</h2>
+                                                    <span className="text-[11px] font-semibold px-2 py-0.5 bg-purple-50 text-purple-600 border border-purple-200 rounded-full">
+                                                        {quizzes?.length || 0} Quizzes
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-0.5">
+                                                    Quizzes attempted for <strong className="text-gray-800">{selectedCourse?.course_detail?.name || 'Selected Course'}</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                                            <button
+                                                onClick={() => handleDownloadFile(
+                                                    () => downloadStudentQuizReportPdfApi(selectedStudent.id, selectedCourseId),
+                                                    'pdf',
+                                                    `student_quiz_report_${selectedStudent.id}_course_${selectedCourseId}`,
+                                                    setDownloadingQuizPdf
+                                                )}
+                                                disabled={!selectedCourseId || downloadingQuizPdf || quizzes.length === 0}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-indigo-600 hover:bg-indigo-50 font-bold text-xs rounded-lg border border-indigo-200 transition-all disabled:opacity-50"
+                                            >
+                                                <FileText size={13} />
+                                                <span>PDF</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownloadFile(
+                                                    () => downloadStudentQuizReportExcelApi(selectedStudent.id, selectedCourseId),
+                                                    'excel',
+                                                    `student_quiz_report_${selectedStudent.id}_course_${selectedCourseId}`,
+                                                    setDownloadingQuizExcel
+                                                )}
+                                                disabled={!selectedCourseId || downloadingQuizExcel || quizzes.length === 0}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-emerald-600 hover:bg-emerald-50 font-bold text-xs rounded-lg border border-emerald-200 transition-all disabled:opacity-50"
+                                            >
+                                                <Download size={13} />
+                                                <span>Excel</span>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -808,6 +920,140 @@ const StudentProfile: React.FC = () => {
                                     )}
                                 </div>
                             )}
+
+                            {/* TAB 4: Student Reminders */}
+                            {activeReportTab === 'reminders' && (
+                                <div className="p-5 sm:p-6 flex flex-col flex-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 mb-5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                                <Bell size={16} />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h2 className="text-base font-bold text-gray-900">Student Reminders</h2>
+                                                    <span className="text-[11px] font-semibold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-full">
+                                                        {reminders?.length || 0} Reminders
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-0.5">
+                                                    Reminders set for <strong className="text-gray-800">{selectedCourse?.course_detail?.name || 'Selected Course'}</strong>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 self-end sm:self-auto">
+                                            <button
+                                                onClick={() => handleDownloadFile(
+                                                    () => downloadStudentReminderReportPdfApi(selectedStudent.id, selectedCourseId),
+                                                    'pdf',
+                                                    `student_reminders_${selectedStudent.id}_course_${selectedCourseId}`,
+                                                    setDownloadingRemindersPdf
+                                                )}
+                                                disabled={!selectedCourseId || downloadingRemindersPdf || reminders.length === 0}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-indigo-600 hover:bg-indigo-50 font-bold text-xs rounded-lg border border-indigo-200 transition-all disabled:opacity-50"
+                                            >
+                                                <FileText size={13} />
+                                                <span>PDF</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownloadFile(
+                                                    () => downloadStudentReminderReportExcelApi(selectedStudent.id, selectedCourseId),
+                                                    'excel',
+                                                    `student_reminders_${selectedStudent.id}_course_${selectedCourseId}`,
+                                                    setDownloadingRemindersExcel
+                                                )}
+                                                disabled={!selectedCourseId || downloadingRemindersExcel || reminders.length === 0}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-emerald-600 hover:bg-emerald-50 font-bold text-xs rounded-lg border border-emerald-200 transition-all disabled:opacity-50"
+                                            >
+                                                <Download size={13} />
+                                                <span>Excel</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {loadingReminders ? (
+                                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+                                            <p className="text-xs text-gray-500">Loading student reminders...</p>
+                                        </div>
+                                    ) : reminders && reminders.length > 0 ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[520px] overflow-y-auto pr-1">
+                                            {reminders.map((reminder: any, index: number) => {
+                                                const formattedDateTime = formatReminderDateTime(reminder);
+                                                const title = reminder.title || reminder.name || reminder.reminder_title || `Reminder #${index + 1}`;
+                                                const message = reminder.message || reminder.description || reminder.content || reminder.notes || reminder.reminder_text;
+                                                const status = reminder.status ?? reminder.is_active;
+
+                                                return (
+                                                    <div key={reminder.id || index} className="p-4 rounded-xl border border-gray-200 bg-white flex flex-col justify-between hover:border-blue-200 transition-colors">
+                                                        <div>
+                                                            <div className="flex items-start justify-between gap-2 mb-2 pb-2 border-b border-gray-100">
+                                                                <div className="min-w-0 flex-1">
+                                                                    <h4 className="font-bold text-xs text-gray-900 truncate">
+                                                                        {title}
+                                                                    </h4>
+                                                                    {reminder.chapter_info?.name && (
+                                                                        <p className="text-[10px] text-blue-600 font-semibold uppercase mt-0.5 truncate">
+                                                                            {reminder.chapter_info.name}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                              
+                                                            </div>
+
+                                                            {message && (
+                                                                <div className="text-xs text-gray-600 line-clamp-3 mb-3">
+                                                                    {typeof message === 'string' && message.includes('<') ? (
+                                                                        <div dangerouslySetInnerHTML={{ __html: message }} />
+                                                                    ) : (
+                                                                        <p>{message}</p>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500">
+                                                            {formattedDateTime ? (
+                                                                <div className="flex items-center gap-1 text-blue-600 font-medium">
+                                                                    <Clock size={12} />
+                                                                    <span>{formattedDateTime}</span>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex items-center gap-1 text-gray-400">
+                                                                    <Clock size={12} />
+                                                                    <span>No schedule set</span>
+                                                                </div>
+                                                            )}
+
+                                                            {status !== undefined && (
+                                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${status === 1 || status === true || status === 'active' || status === 'completed'
+                                                                    ? 'bg-emerald-50 text-emerald-600'
+                                                                    : 'bg-gray-100 text-gray-600'
+                                                                    }`}>
+                                                                    {typeof status === 'boolean'
+                                                                        ? (status ? 'Active' : 'Inactive')
+                                                                        : typeof status === 'number'
+                                                                            ? (status === 1 ? 'Active' : 'Inactive')
+                                                                            : status}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+                                                <Bell size={22} />
+                                            </div>
+                                            <h4 className="text-sm font-bold text-gray-900 mb-1">No Reminders Recorded</h4>
+                                            <p className="text-xs text-gray-400">No study reminders have been set by the student for this course yet.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -823,7 +1069,7 @@ const StudentProfile: React.FC = () => {
                                 <Mail size={16} className="text-gray-400 shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email Address</p>
-                                    <p className="text-xs font-semibold text-gray-800 mt-0.5 break-all">{selectedStudent.email}</p>
+                                    <p className="text-xs font-semibold text-gray-800 mt-0.5 break-all">{selectedStudent.email || '-'}</p>
                                 </div>
                             </div>
 
@@ -832,7 +1078,7 @@ const StudentProfile: React.FC = () => {
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Phone Number</p>
                                     <p className="text-xs font-semibold text-gray-800 mt-0.5">
-                                        {selectedStudent.phone1 || (selectedStudent as any).phone || 'Not provided'}
+                                        {selectedStudent.phone1 || (selectedStudent as any).phone || (selectedStudent as any).phone2 || (selectedStudent as any).mobile || '-'}
                                     </p>
                                 </div>
                             </div>
@@ -842,9 +1088,23 @@ const StudentProfile: React.FC = () => {
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Created On</p>
                                     <p className="text-xs font-semibold text-gray-800 mt-0.5">
-                                        {(selectedStudent as any).created_at || (selectedStudent as any).date_joined
-                                            ? moment((selectedStudent as any).created_at || (selectedStudent as any).date_joined).format('MMMM DD, YYYY')
-                                            : 'Unknown'}
+                                        {(() => {
+                                            const rawCreatedDate = (selectedStudent as any).created_at ||
+                                                (selectedStudent as any).date_joined ||
+                                                (selectedStudent as any).created_date ||
+                                                (selectedStudent as any).createdAt ||
+                                                (selectedStudent as any).registered_on ||
+                                                (selectedStudent as any).registration_date ||
+                                                (selectedStudent as any).joining_date ||
+                                                (selectedStudent as any).user_detail?.date_joined ||
+                                                (selectedStudent as any).user_detail?.created_at ||
+                                                (selectedStudent as any).active_orders?.created_at ||
+                                                (selectedStudent as any).created;
+
+                                            return rawCreatedDate && moment(rawCreatedDate).isValid()
+                                                ? moment(rawCreatedDate).format('MMMM DD, YYYY')
+                                                : '-';
+                                        })()}
                                     </p>
                                 </div>
                             </div>
@@ -853,11 +1113,23 @@ const StudentProfile: React.FC = () => {
                                 <MapPin size={16} className="text-gray-400 shrink-0 mt-0.5" />
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Location</p>
-                                    <p className="text-xs font-semibold text-gray-800 mt-0.5">
-                                        {selectedStudent.address || 'No address'}<br />
-                                        {selectedStudent.city ? `${selectedStudent.city}, ` : ''}{selectedStudent.state || ''}<br />
-                                        {selectedStudent.country || ''} {selectedStudent.pincode ? `- ${selectedStudent.pincode}` : ''}
-                                    </p>
+                                    <div className="text-xs font-semibold text-gray-800 mt-0.5">
+                                        {(() => {
+                                            const hasAddressInfo = Boolean(selectedStudent.address || selectedStudent.city || selectedStudent.state || selectedStudent.country || selectedStudent.pincode);
+                                            if (!hasAddressInfo) return <p>-</p>;
+                                            return (
+                                                <div className="space-y-0.5 leading-relaxed">
+                                                    {selectedStudent.address && <p>{selectedStudent.address}</p>}
+                                                    {(selectedStudent.city || selectedStudent.state) && (
+                                                        <p>{[selectedStudent.city, selectedStudent.state].filter(Boolean).join(', ')}</p>
+                                                    )}
+                                                    {(selectedStudent.country || selectedStudent.pincode) && (
+                                                        <p>{[selectedStudent.country].filter(Boolean).join('')}{selectedStudent.pincode ? ` - ${selectedStudent.pincode}` : ''}</p>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
                         </div>

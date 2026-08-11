@@ -1102,7 +1102,7 @@ export interface Subscription {
   currency: String,
   plan_type: number,
   status: boolean,
-  feature: [],
+  feature: [],  
   no_of_licence: number,
   created_at: string,
   amount_without_gst: number,
@@ -1164,4 +1164,123 @@ export interface CorporateSubcription {
     "id": number,
     "plan_name": string
   }
+}
+
+export interface LegalPage {
+  id: number;
+  title: string;
+  page_type: string | number;
+  slug?: string;
+  description: string;
+  status: boolean;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keys?: string;
+  meta_keywords?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+
+export interface DashboardCounters {
+  total_students: number;
+  total_duration_watched: number; // in minutes
+  total_duration: number; // in minutes
+  total_active_orders: number;
+  total_active_subscription: number;
+  new_students_current_month: number;
+  total_corporate_admins: number;
+}
+
+export interface StudentGraphData {
+  start_date: string;
+  end_date?: string;
+  total_student_registered: number;
+}
+
+export interface RevenueGraphData {
+  start_date: string;
+  end_date?: string;
+  total_amount: number | null;
+}
+
+export interface VideoGraphData {
+  start_date: string;
+  end_date?: string;
+  total_video_watched: number | null;
+}
+
+export interface OrderGraphData {
+  start_date: string;
+  end_date?: string;
+  total_orders: number;
+}
+
+export interface PracticeChartData {
+  start_date: string;
+  end_date?: string;
+  total_practice_test_created: number;
+}
+
+export interface RecentCorporateAdmin {
+  id: number;
+  first_name: string | null;
+  last_name: string | null;
+  email: string;
+  phone1: string | null;
+  category?: string;
+  reference_id?: string | number | null;
+  student_type?: string | null;
+  date_joined?: string;
+  created_at?: string;
+  is_locked?: boolean;
+  unlocked_on?: string | null;
+}
+
+export interface RecentStudent {
+  id: number;
+  first_name: string | null;
+  last_name: string | null;
+  email: string;
+  phone1: string | null;
+  category?: string | null;
+  reference_id?: string | number | null;
+  student_type?: string | null;
+  date_joined?: string;
+  created_at?: string;
+  is_active?: boolean;
+  status?: boolean;
+}
+
+export interface DashboardState {
+  counters: DashboardCounters | null;
+  studentsGraph: StudentGraphData[];
+  revenueGraph: RevenueGraphData[];
+  videoGraph: VideoGraphData[];
+  orderGraph: OrderGraphData[];
+  corporateAdminGraph: any[];
+  practiceGraph: PracticeChartData[];
+  recentCorporateAdmins: RecentCorporateAdmin[];
+  recentStudents: RecentStudent[];
+  loading: boolean;
+  loadingRecentCorporateAdmins: boolean;
+  loadingRecentStudents: boolean;
+  loadingStudentsChart: boolean;
+  loadingRevenueChart: boolean;
+  loadingVideoChart: boolean;
+  loadingOrderChart: boolean;
+  loadingCorporateAdminChart: boolean;
+  loadingPracticeChart: boolean;
+  error: string | null;
+}
+
+
+export interface communityCategory{
+  id:number,
+  title:string,
+  description:string,
+  image:string,
+  status:boolean,
+  created_at:string,
+  updated_at:string,
 }

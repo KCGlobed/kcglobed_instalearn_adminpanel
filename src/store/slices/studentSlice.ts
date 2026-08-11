@@ -48,11 +48,11 @@ export const getStudentDetail = createAsyncThunk<StudentDetail, string | number>
     async (id, { rejectWithValue }) => {
         try {
             const response = await viewStudentDetailApi(id);
-            return response.data;
+            return response?.data?.data || response?.data || response;
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch student detail");
+        }
     }
-}
 )
 
 export const getStudentReports = createAsyncThunk<any, { id: string | number; courseId: string | number }>(
