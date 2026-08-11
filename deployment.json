@@ -1,0 +1,18 @@
+{
+    "version": 1,
+    "project": {
+        "name": "instalearn-admin",
+        "runtime": "react",
+        "repository": "KCGlobed/kcglobed_instalearn_adminpanel",
+        "branch": "main"
+    },
+    "deployment": {
+        "keepReleases": 5
+    },
+    "runtimeConfig": {},
+    "web": {
+        "domain": "instalearnadmin.kcglobed.com",
+        "ssl": true,
+        "sslEmail": "kcglobed@gmail.com"
+    }
+}
