@@ -578,6 +578,7 @@ export interface Instructor {
   status:boolean,
   role: number,
   created_at: string,
+  updated_at?: string,
   actions?: any,
 }
 
@@ -936,6 +937,7 @@ export interface Instructor {
   status: boolean,
   role: number,
   created_at: string,
+  updated_at?: string,
 }
 
 export interface BlogCategory {
@@ -1284,3 +1286,160 @@ export interface communityCategory{
   created_at:string,
   updated_at:string,
 }
+
+export interface Managers {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  is_active: boolean;
+  status: boolean;
+  date_joined: string;
+  created_at: string;
+  updated_at:string,
+  actions?: any;
+}
+
+export interface ManagerDetail {
+  id: number;
+  is_active: boolean;
+  status: boolean;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  phone2: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  dob: string;
+  image: string;
+  banner_image: string;
+  user_devices: any[];
+}
+
+export interface SalesUsers {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  is_active: boolean;
+  status: boolean;
+  date_joined: string;
+  created_at: string;
+  updated_at:string,
+  actions?: any;
+}
+
+export interface SalesUserDetail {
+  id: number;
+  is_active: boolean;
+  status: boolean;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  phone2: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  dob: string;
+  image: string;
+  banner_image: string;
+  user_devices: any[];
+}
+
+export interface MarketingUser{
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  phone2: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  dob: string;
+  image: string;
+  banner_image: string;
+  is_active: boolean;
+  date_joined: string;
+  created_at: string;
+  updated_at:string,
+  actions?: any;
+  user_devices: any[];
+}
+
+export interface CustomerSupportUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1: string;
+  phone2: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  dob: string;
+  image: string;
+  banner_image: string;
+  is_active: boolean;
+  date_joined: string;
+  created_at: string;
+  updated_at:string,
+  actions?: any;
+  user_devices: any[];
+}
+
+export interface ContentManagement{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  phone1:number,
+  phone2:number,
+  address:string,
+  city:string,
+  state:string,
+  country:string,
+  pincode:string,
+  dob:string,
+  image:string,
+  banner_image:string,
+  is_active:boolean,
+  date_joined:string,
+  created_at:string,
+  updated_at:string,
+  actions?:any,
+  user_device:any[]
+}
+
+export interface FinanceUser{
+  id:number,
+  first_name:string,
+  last_name:string,
+  email:string,
+  address:string,
+  city:string,
+  state:string,
+  country:string,
+  pincode:string,
+  dob:string,
+  is_active:boolean,
+  date_joined:string,
+  created_at:string,
+  updated_at:string,
+  actions?:any,
+  user_device:any[]
+}
+

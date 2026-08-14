@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
     {
       name:'Manage community category', icon:<Globe2 className='mr-2'/>, path:'/dashboard/community-category'
     },
-      {
+    {
       name: 'Manage Reports',
       icon: <FaQuestionCircle className="mr-2" />,
       path: '#',
@@ -119,7 +119,20 @@ const Dashboard: React.FC = () => {
         { name: 'Manage Student Access Lock Report', path: '/dashboard/student-access-lock-report' }
       ]
     },
+    {
+      name: 'Manage Users',
+      icon: <FaUser className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage Managers', icon: <FaUser className="mr-2" />, path: '/dashboard/managers'},
+        { name: 'Manage Sales User', path: '/dashboard/sales-users' },
+        { name: 'Manage Marketing User', path: '/dashboard/marketing-user' },
+        { name:'Manage Customer Support User', path:'/dashboard/customer-support-user'},
+        { name:"Manage Content Management User", path:'/dashboard/content-management-user'},
+        { name: 'Manage Finance User', path: '/dashboard/finance-user'},
 
+      ]
+    },
      {
       name: 'Manage Support ',
       icon: <FaHeadset className="mr-2" />,
