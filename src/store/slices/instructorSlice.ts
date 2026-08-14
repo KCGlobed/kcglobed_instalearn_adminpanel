@@ -117,10 +117,13 @@ const instructorSlice = createSlice({
             })
             .addCase(addInstructor.fulfilled, (state, action) => {
                 state.loading = false;
+                const now = new Date().toISOString();
                 const newItem = {
                     ...action.payload,
                     is_active: action.payload.is_active !== undefined ? action.payload.is_active : action.payload.status,
-                    status: action.payload.status !== undefined ? action.payload.status : action.payload.is_active
+                    status: action.payload.status !== undefined ? action.payload.status : action.payload.is_active,
+                    created_at: action.payload.created_at || now,
+                    updated_at: action.payload.updated_at || now
                 };
                 state.data.unshift(newItem);
             })

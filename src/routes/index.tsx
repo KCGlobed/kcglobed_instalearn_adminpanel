@@ -27,6 +27,7 @@ import CourseView from "../components/View/CourseView";
 import PaymentSettings from "../pages/Settings/PaymentSettings";
 import ManageStudents from "../pages/Students";
 import StudentProfile from "../components/View/StudentView";
+import ManageSalesUsers from "../pages/ManageUsers/SalesUsers";
 import ManageTrailCourse from "../pages/trailCourse";
 import CourseReview from "../pages/CourseReview";
 import ManageCourseAnnoucement from "../pages/ManageCourseAnnoucement";
@@ -53,6 +54,11 @@ import Profile from "../pages/dashboard/Profile";
 import ChangePassword from "../pages/dashboard/ChangePassword";
 import ManageLegalPage from "../pages/LegalPages";
 import ManageCommunityCategory from "../pages/communityCategory";
+import ManageManagers from "../pages/ManageUsers/ManageManager";
+import MarketingUser from "../pages/ManageUsers/MarketingUser";
+import ManageCustomerSupportUsers from "../pages/ManageUsers/CustomerSupportUser";
+import ContentManagementUser from "../pages/ManageUsers/contentManagementUser";
+import ManageFinanceUser from "../pages/ManageUsers/FinanceUser";
 
 export default function AppRoutes() {
   return (
@@ -99,27 +105,33 @@ export default function AppRoutes() {
           <Route path="/dashboard/blog-category" element={<ManageBlogCategory />} />
           <Route path="/dashboard/blog" element={<ManageBlogPost />} />
           <Route path="/dashboard/coupons" element={<ManageCoupons />} />
-          <Route path="/dashboard/promotional-campaign" element={<ManagePromotionalCampign/>} />
-          <Route path ="/dashboard/testimonials"  element={<ManageTestimonials/>}/>
+          <Route path="/dashboard/promotional-campaign" element={<ManagePromotionalCampign />} />
+          <Route path="/dashboard/testimonials" element={<ManageTestimonials />} />
           <Route path="/dashboard/blog/form" element={<BlogForm />} />
           <Route path="/dashboard/blog/form/:id" element={<BlogForm />} />
           <Route path="/dashboard/quiz" element={<ManageQuiz />} />
-          <Route path ="/dashboard/help-and-support-topic" element={<ManageSupportTopic/>}/>
-          <Route path ="/dashboard/help-and-support-subtopic" element={<ManageSupportSubTopic/>}/>
-          <Route path ="/dashboard/help-and-support-article" element={<ManageSupportArticle/>}/>
+          <Route path="/dashboard/help-and-support-topic" element={<ManageSupportTopic />} />
+          <Route path="/dashboard/help-and-support-subtopic" element={<ManageSupportSubTopic />} />
+          <Route path="/dashboard/help-and-support-article" element={<ManageSupportArticle />} />
           <Route path="/dashboard/trail-user-report" element={<ManageTrailStudentReport />} />
-          <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton/>}/>
-          <Route path="/dashboard/corporate-admin" element={<ManageCorporateAdmin/>}/>
-          <Route path="/dashboard/corporate-admin-subscription"  element={<ManageCorporateAdminSubcription/>}/>
+          <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton />} />
+          <Route path="/dashboard/corporate-admin" element={<ManageCorporateAdmin />} />
+          <Route path="/dashboard/corporate-admin-subscription" element={<ManageCorporateAdminSubcription />} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/forgot-password" element={<ChangePassword />} />
           <Route path="/dashboard/legal-pages" element={<ManageLegalPage />} />
           <Route path="/dashboard/community-category" element={<ManageCommunityCategory />} />
+          <Route path="/dashboard/managers" element={<ManageManagers />} />
+          <Route path="/dashboard/sales-users" element={<ManageSalesUsers />} />
+          <Route path="/dashboard/marketing-user" element={<MarketingUser/>} />
+          <Route path="/dashboard/customer-support-user" element={<ManageCustomerSupportUsers/>} />
+          <Route path="/dashboard/content-management-user" element={<ContentManagementUser/>} />
+          <Route path="/dashboard/finance-user" element={<ManageFinanceUser/>} />
 
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="*" element={<NotFound />} /> 
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

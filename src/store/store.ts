@@ -17,6 +17,10 @@ import trailCoursesReducer from "./slices/trailCourseSlice";
 import CourseReviewReducer from "./slices/courseReview";
 
 import studentsReducer from "./slices/studentSlice";
+import managerReducer from "./slices/managerSlice";
+import salesUserReducer from "./slices/salesUserSlice";
+import marketingUserReducer from "./slices/marketingUserSlice";
+import customerSupportUserReducer from "./slices/customerSupportUserSlice";
 import courseAnnouncementReducer from "./slices/courseAnnouncementSlice";
 import contactReducer from "./slices/ContactUsSlice";
 import studentOrderReducer from "./slices/studentOrderSlice";
@@ -39,6 +43,8 @@ import CoAdminSubscriptionReducer from "./slices/CoAdminSubscriptionSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import legalPageReducer from "./slices/legalPageSlice";
 import communityCategoryReducer from "./slices/communityCategorySlice";
+import contentManagementReducer from "./slices/contentManagementSlice";
+import financeUserReducer from "./slices/financeUserSlice";
 
 export const store = configureStore({
   reducer: {
@@ -80,6 +86,12 @@ export const store = configureStore({
     CoAdminSubscription: CoAdminSubscriptionReducer,
     legalPages: legalPageReducer,
     communityCategory: communityCategoryReducer,
+    managers: managerReducer,
+    salesUsers: salesUserReducer,
+    marketingUser: marketingUserReducer,
+    customerSupportUser: customerSupportUserReducer,
+    contentManagementUser: contentManagementReducer,
+    financeUser: financeUserReducer,
   },
 });
 
