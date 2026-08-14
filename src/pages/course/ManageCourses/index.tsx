@@ -3,6 +3,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { useAppSelector } from "../../../hooks/useRedux";
 import { getCource, deleteCourse, updateCourseStatus } from "../../../store/slices/courceSlice";
+import { downloadCoursePdfApi, downloadCourseExcelApi } from "../../../services/apiServices";
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../../../components/Modal/DeleteModal";
 import GlassButton from "../../../components/Button/Button";
@@ -387,7 +388,22 @@ const ManageCourses: React.FC = () => {
 
                     <div className="flex items-center gap-4">
                         <ExportFile
-                           
+                            pdfApi={() => downloadCoursePdfApi({
+                                search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
+                                description: debouncedFilters.description,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
+                            excelApi={() => downloadCourseExcelApi({
+                                search: debouncedSearchTerm,
+                                name: debouncedFilters.name,
+                                description: debouncedFilters.description,
+                                status: debouncedFilters.status,
+                                start_date: startDate,
+                                end_date: endDate
+                            })}
                             fileNamePrefix="courses"
                         />
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"

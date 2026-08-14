@@ -277,12 +277,12 @@ export const updateInstructorStatusApi = async (id: string | number, payload: { 
 
 export const downloadInstructorPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`user/export-user-listing-pdf/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`reports/get-instructor-report-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
 export const downloadInstructorExcelApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
-  return await apiRequest(`user/export-user-listing-excel/instructor?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+  return await apiRequest(`reports/get-instructor-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
 
@@ -370,6 +370,17 @@ export const deleteCourseApi = async (id: string | number): Promise<any> => {
 export const updateCourseStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
   return await apiRequest(`course/update-course-status/${id}`, 'POST', payload);
 };
+
+export const downloadCoursePdfApi = async ({ search = "", name = "", chapter = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-course-listing-pdf/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal !== '' ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};
+
+export const downloadCourseExcelApi = async ({ search = "", name = "", chapter = "", description = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`course/export-course-listing-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${name ? `&name=${encodeURIComponent(name)}` : ""}${chapter ? `&chapter=${encodeURIComponent(chapter)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${statusVal !== '' ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};
+
 
 export const fetchChapterOptionsApi = async () => {
   const res: any = await apiRequest(`course/get-chapters-list/`, 'GET');
@@ -1392,3 +1403,211 @@ export const deleteCommunityCategoryApi = async (id: number | string): Promise<a
 };
 
 // ---------------- Community Category End ---------------- //
+
+// ---------------- Manager Service Start ---------------- //
+export async function fetchManagers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/manager?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createManagerApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/manager`, 'POST', payload);
+};
+
+export const updateManagerApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/manager/${id}`, 'POST', payload);
+};
+
+export const updateManagerStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/manager/${id}`, 'POST', payload);
+};
+
+
+
+export const downloadManagerPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/manager?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadManagerExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/manager?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+// ---------------- Manager Service End ---------------- //
+
+// ---------------- Sales User Service Start ---------------- //
+export async function fetchSalesUsers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/sales_user?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createSalesUserApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/sales_user`, 'POST', payload);
+};
+
+export const updateSalesUserApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/sales_user/${id}`, 'POST', payload);
+};
+
+export const updateSalesUserStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/sales_user/${id}`, 'POST', payload);
+};
+
+export const downloadSalesUserPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/sales_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadSalesUserExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/sales_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const viewSalesUserDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`user/get-user/sales_user/${id}`, 'GET');
+};
+
+// ---------------- Sales User Service End ---------------- //
+
+// ---------------- Marketing User Service Start ---------------- //
+export async function fetchMarketingUsers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/marketing_user?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createMarketingUserApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/marketing_user`, 'POST', payload);
+};
+
+export const updateMarketingUserApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/marketing_user/${id}`, 'POST', payload);
+};
+
+export const updateMarketingUserStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/marketing_user/${id}`, 'POST', payload);
+};
+
+export const downloadMarketingUserPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/marketing_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadMarketingUserExcelApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/marketing_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+
+
+// ---------------- Marketing User Service End ---------------- //
+
+// ---------------- Customer Support User Service Start ---------------- //
+export async function fetchCustomerSupportUsers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/customer_support_user?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createCustomerSupportUserApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/customer_support_user`, 'POST', payload);
+};
+
+export const updateCustomerSupportUserApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/customer_support_user/${id}`, 'POST', payload);
+};
+
+export const updateCustomerSupportUserStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/customer_support_user/${id}`, 'POST', payload);
+};
+
+export const downloadCustomerSupportUserPdfApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/customer_support_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadCustomerSupportUserExcelApi = async ({ search = "", first_name = "", last_name = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/customer_support_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+// ---------------- Customer Support User Service End ---------------- //
+
+// ---------------- Content Management User Service Start ---------------- //
+export async function fetchContentManagementUsers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/content_management_user?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createContentManagementUserApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/content_management_user`, 'POST', payload);
+};
+
+export const updateContentManagementUserApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/content_management_user/${id}`, 'POST', payload);
+};
+
+export const updateContentManagementUserStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/content_management_user/${id}`, 'POST', payload);
+};
+
+export const downloadContentManagementUserPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/content_management_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadContentManagementUserExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/content_management_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+// ---------------- Content Management User Service End ---------------- //
+
+// ---------------- Finance User Service Start ---------------- //
+export async function fetchFinanceUsers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
+  const activeFilter = status || is_active;
+  const statusVal = activeFilter === 'active' ? '1' : activeFilter === 'deactive' ? '0' : '';
+  let query = `user/get-user-listing/finance_user?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const createFinanceUserApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/create-user/finance_user`, 'POST', payload);
+};
+
+export const updateFinanceUserApi = async (id: string | number, payload: any): Promise<any> => {
+  return await apiRequest(`user/update-user/finance_user/${id}`, 'POST', payload);
+};
+
+export const updateFinanceUserStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`user/change-user-status/finance_user/${id}`, 'POST', payload);
+};
+
+export const downloadFinanceUserPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-pdf/finance_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+
+export const downloadFinanceUserExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`reports/get-user-report-excel/finance_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
+};
+// ---------------- Finance User Service End ---------------- //
