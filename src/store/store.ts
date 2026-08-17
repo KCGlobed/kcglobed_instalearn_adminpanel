@@ -45,6 +45,7 @@ import legalPageReducer from "./slices/legalPageSlice";
 import communityCategoryReducer from "./slices/communityCategorySlice";
 import contentManagementReducer from "./slices/contentManagementSlice";
 import financeUserReducer from "./slices/financeUserSlice";
+import communityPostReducer from "./slices/communityPostSlice";
 
 export const store = configureStore({
   reducer: {
@@ -92,6 +93,7 @@ export const store = configureStore({
     customerSupportUser: customerSupportUserReducer,
     contentManagementUser: contentManagementReducer,
     financeUser: financeUserReducer,
+    communityPost: communityPostReducer,
   },
 });
 

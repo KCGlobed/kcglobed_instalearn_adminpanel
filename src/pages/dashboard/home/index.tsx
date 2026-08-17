@@ -22,7 +22,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Bar, Line, Doughnut, Pie } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Loader2,
   Users,
@@ -39,8 +39,6 @@ import {
   Video,
   BarChart2,
   TrendingUp as LineChartIcon,
-  PieChart as PieChartIcon,
-  Disc,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -56,21 +54,6 @@ ChartJS.register(
   Legend,
   Filler
 );
-
-const PALETTE_COLORS = [
-  "#4f46e5", // Indigo
-  "#10b981", // Emerald
-  "#f59e0b", // Amber
-  "#8b5cf6", // Purple
-  "#ec4899", // Pink
-  "#06b6d4", // Cyan
-  "#f97316", // Orange
-  "#3b82f6", // Blue
-  "#14b8a6", // Teal
-  "#84cc16", // Lime
-  "#e11d48", // Rose
-  "#64748b", // Slate
-];
 
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -104,9 +87,9 @@ const DashboardPage: React.FC = () => {
 
   // Chart type switcher states for each graph
   const [studentChartType, setStudentChartType] = useState<"bar" | "line">("bar");
-  const [revenueChartType, setRevenueChartType] = useState<"line" | "bar">("line");
-  const [videoChartType, setVideoChartType] = useState<"doughnut" | "bar">("doughnut");
-  const [orderChartType, setOrderChartType] = useState<"pie" | "line">("pie");
+  const [revenueChartType, setRevenueChartType] = useState<"bar" | "line">("bar");
+  const [videoChartType, setVideoChartType] = useState<"bar" | "line">("bar");
+  const [orderChartType, setOrderChartType] = useState<"bar" | "line">("bar");
   const [corporateAdminFilter, setCorporateAdminFilter] = useState<string>("month");
   const [corporateAdminChartType, setCorporateAdminChartType] = useState<"bar" | "line">("bar");
 
@@ -300,69 +283,33 @@ const DashboardPage: React.FC = () => {
     (item: any) => Number(item.total_video_watched) || 0
   );
 
-  const videoDoughnutData = {
-    labels: videoLabels.length > 0 ? videoLabels : ["No Data"],
-    datasets: [
-      {
-        label: "Videos Watched",
-        data: videoWatchedCounts.length > 0 ? videoWatchedCounts : [1],
-        backgroundColor: PALETTE_COLORS.slice(0, Math.max(videoLabels.length, 1)),
-        hoverOffset: 8,
-        borderWidth: 2,
-        borderColor: "#ffffff",
-      },
-    ],
-  };
-
-  const videoDoughnutOptions: any = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "68%",
-    plugins: {
-      legend: {
-        position: "right" as const,
-        labels: {
-          boxWidth: 10,
-          usePointStyle: true,
-          pointStyle: "circle",
-          font: { size: 11 },
-          color: "#4b5563",
-          padding: 8,
-        },
-      },
-      tooltip: {
-        backgroundColor: "#222222",
-        titleFont: { size: 12, weight: "bold" },
-        bodyFont: { size: 12 },
-        padding: 10,
-        cornerRadius: 4,
-        callbacks: {
-          label: (context: any) => ` Videos Watched: ${context.parsed}`,
-        },
-      },
-    },
-  };
-
-  const videoBarData = {
+  const videoChartData = {
     labels: videoLabels,
     datasets: [
       {
         label: "Videos Watched",
         data: videoWatchedCounts,
-        backgroundColor: "rgba(245, 158, 11, 1)", // Amber
-        borderColor: "#333333",
+        backgroundColor: videoChartType === "line" ? "rgba(245, 158, 11, 0.14)" : "rgba(245, 158, 11, 1)", // Amber
+        borderColor: videoChartType === "line" ? "#f59e0b" : "#333333",
         hoverBackgroundColor: "rgba(217, 119, 6, 1)",
         hoverBorderColor: "#000000",
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
         categoryPercentage: 1.0,
-        borderWidth: 1,
+        fill: videoChartType === "line",
+        tension: 0.4,
+        borderWidth: videoChartType === "line" ? 3 : 1,
+        pointBackgroundColor: "#f59e0b",
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };
 
-  const videoBarOptions: any = {
+  const videoChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -403,67 +350,23 @@ const DashboardPage: React.FC = () => {
     (item: any) => Number(item.total_orders) || 0
   );
 
-  const orderPieData = {
-    labels: orderLabels.length > 0 ? orderLabels : ["No Data"],
-    datasets: [
-      {
-        label: "Orders Placed",
-        data: orderCounts.length > 0 ? orderCounts : [1],
-        backgroundColor: [
-          "#8b5cf6",
-          "#ec4899",
-          "#3b82f6",
-          "#10b981",
-          "#f59e0b",
-          "#06b6d4",
-          "#f97316",
-        ],
-        hoverOffset: 8,
-        borderWidth: 2,
-        borderColor: "#ffffff",
-      },
-    ],
-  };
-
-  const orderPieOptions: any = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "right" as const,
-        labels: {
-          boxWidth: 10,
-          usePointStyle: true,
-          pointStyle: "circle",
-          font: { size: 11 },
-          color: "#4b5563",
-          padding: 8,
-        },
-      },
-      tooltip: {
-        backgroundColor: "#222222",
-        titleFont: { size: 12, weight: "bold" },
-        bodyFont: { size: 12 },
-        padding: 10,
-        cornerRadius: 4,
-        callbacks: {
-          label: (context: any) => ` Orders: ${context.parsed}`,
-        },
-      },
-    },
-  };
-
-  const orderLineData = {
+  const orderChartData = {
     labels: orderLabels,
     datasets: [
       {
         label: "Orders",
         data: orderCounts,
-        borderColor: "#8b5cf6", // Purple
-        backgroundColor: "rgba(139, 92, 246, 0.14)",
-        fill: true,
+        backgroundColor: orderChartType === "line" ? "rgba(139, 92, 246, 0.14)" : "rgba(139, 92, 246, 1)", // Purple
+        borderColor: orderChartType === "line" ? "#8b5cf6" : "#333333",
+        hoverBackgroundColor: "rgba(124, 58, 237, 1)",
+        hoverBorderColor: "#000000",
+        borderRadius: 0,
+        borderSkipped: false as const,
+        barPercentage: 1.0,
+        categoryPercentage: 1.0,
+        fill: orderChartType === "line",
         tension: 0.4,
-        borderWidth: 3,
+        borderWidth: orderChartType === "line" ? 3 : 1,
         pointBackgroundColor: "#8b5cf6",
         pointBorderColor: "#ffffff",
         pointBorderWidth: 2,
@@ -473,7 +376,7 @@ const DashboardPage: React.FC = () => {
     ],
   };
 
-  const orderLineOptions: any = {
+  const orderChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -948,17 +851,6 @@ const DashboardPage: React.FC = () => {
               {/* Chart Type Toggle (Doughnut / Bar) */}
               <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
                 <button
-                  onClick={() => setVideoChartType("doughnut")}
-                  title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    videoChartType === "doughnut"
-                      ? "bg-white text-amber-600 shadow-xs"
-                      : "text-gray-500 hover:text-gray-900"
-                  }`}
-                >
-                  <Disc size={13} />
-                </button>
-                <button
                   onClick={() => setVideoChartType("bar")}
                   title="Bar Chart"
                   className={`p-1.5 rounded-md transition ${
@@ -968,6 +860,17 @@ const DashboardPage: React.FC = () => {
                   }`}
                 >
                   <BarChart2 size={13} />
+                </button>
+                <button
+                  onClick={() => setVideoChartType("line")}
+                  title="Line Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    videoChartType === "line"
+                      ? "bg-white text-amber-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <LineChartIcon size={13} />
                 </button>
               </div>
 
@@ -1002,10 +905,10 @@ const DashboardPage: React.FC = () => {
 
             {videoList.length > 0 ? (
               <div className="w-full h-full">
-                {videoChartType === "doughnut" ? (
-                  <Doughnut key={videoFilter + videoChartType} data={videoDoughnutData} options={videoDoughnutOptions} />
+                {videoChartType === "line" ? (
+                  <Line key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
                 ) : (
-                  <Bar key={videoFilter + videoChartType} data={videoBarData} options={videoBarOptions} />
+                  <Bar key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
                 )}
               </div>
             ) : (
@@ -1040,15 +943,15 @@ const DashboardPage: React.FC = () => {
               {/* Chart Type Toggle (Pie / Line) */}
               <div className="flex items-center bg-gray-100 p-0.5 rounded-lg border border-gray-200">
                 <button
-                  onClick={() => setOrderChartType("pie")}
-                  title="Pie Chart"
+                  onClick={() => setOrderChartType("bar")}
+                  title="Bar Chart"
                   className={`p-1.5 rounded-md transition ${
-                    orderChartType === "pie"
+                    orderChartType === "bar"
                       ? "bg-white text-purple-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
                   }`}
                 >
-                  <PieChartIcon size={13} />
+                  <BarChart2 size={13} />
                 </button>
                 <button
                   onClick={() => setOrderChartType("line")}
@@ -1094,10 +997,10 @@ const DashboardPage: React.FC = () => {
 
             {orderList.length > 0 ? (
               <div className="w-full h-full">
-                {orderChartType === "pie" ? (
-                  <Pie key={orderFilter + orderChartType} data={orderPieData} options={orderPieOptions} />
+                {orderChartType === "line" ? (
+                  <Line key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
                 ) : (
-                  <Line key={orderFilter + orderChartType} data={orderLineData} options={orderLineOptions} />
+                  <Bar key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
                 )}
               </div>
             ) : (

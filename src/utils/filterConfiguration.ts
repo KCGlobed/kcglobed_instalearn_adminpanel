@@ -348,7 +348,7 @@ export const studentOrderFilterConfig: FilterField[] = [
     { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
     { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
     { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
-    
+
 ];
 
 export const corporateAdminFilterConfig: FilterField[] = [
@@ -392,7 +392,7 @@ export const studentPerformanceFilterConfig: FilterField[] = [
         type: "text",
         placeholder: 'Filter by email...',
     },
-    
+
 ];
 
 export const studentNotesFilterConfig: FilterField[] = [
@@ -647,6 +647,7 @@ export const communityCategoryFilterConfig: FilterField[] = [
     }
 ];
 
+
 export const financeUserFilterConfig: FilterField[] = [
     { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
     { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
@@ -654,6 +655,20 @@ export const financeUserFilterConfig: FilterField[] = [
         type: 'status',
         label: 'Status',
         name: 'is_active',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+// community post filter 
+export const communityPostFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Post Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
         options: [
             { label: 'All', value: 'all' },
             { label: 'Active', value: 'active' },

@@ -3,21 +3,16 @@ import { Filter, Plus, Calendar, FileText } from 'lucide-react';
 import DynamicServerTable from '../../components/Table/Table';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
-import {
-  getLegalPages,
-  removeLegalPage,
-  updateLegalPageStatus,
-} from '../../store/slices/legalPageSlice';
+import {getLegalPages,updateLegalPageStatus,} from '../../store/slices/legalPageSlice';
 import useDebounce from '../../hooks/useDebounce';
 import moment from 'moment';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
+import { FiEdit, FiEye } from 'react-icons/fi';
 import LegalPageView from '../../components/View/LegalPageView';
 import LegalPageForm from '../../components/Forms/LegalPageForm';
-import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteLegalPageApi } from '../../services/apiServices';
+
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
@@ -47,7 +42,7 @@ const ManageLegalPage: React.FC = () => {
   const [ordering, setOrdering] = useState<string>('');
   const [showFilter, setShowFilter] = useState(false);
   const [showSort, setShowSort] = useState(false);
-  const [showDate, setShowDate] = useState(false);
+  const [showDate, setShowDate] = useState(false);  
   const { showModal } = useModal();
 
   // Filter states
@@ -247,28 +242,7 @@ const ManageLegalPage: React.FC = () => {
               });
             }}
           />
-          <GlassButton
-            icon={<FiTrash className="text-base" />}
-            color="red"
-            title="Delete Page"
-            onClick={() => {
-              showModal({
-                title: 'Delete Legal Page',
-                content: (
-                  <DeleteConfirmationModal
-                    id={row.id}
-                    name={row.title}
-                    onDelete={async (id) => {
-                      await deleteLegalPageApi(id);
-                      dispatch(removeLegalPage(id));
-                    }}
-                  />
-                ),
-                type: 'custom',
-                size: 'md',
-              });
-            }}
-          />
+
         </div>
       ),
       width: '130px',

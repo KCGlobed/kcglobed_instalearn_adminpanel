@@ -1443,3 +1443,21 @@ export interface FinanceUser{
   user_device:any[]
 }
 
+export interface communityPost{
+  id:number,
+  slug:string,
+  title:string,
+  description:string,
+  status:boolean,
+  category:{
+    id:number,
+    title:string,
+    slug:string,
+    description:string,
+    image:string,
+    status:boolean,
+    created_at:string,
+    updated_at:string,
+  },
+  created_at:string,
+}

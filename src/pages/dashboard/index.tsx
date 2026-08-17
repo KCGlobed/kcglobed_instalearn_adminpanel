@@ -103,8 +103,16 @@ const Dashboard: React.FC = () => {
     {
       name:'Manage Legal pages', icon:<FileText className='mr-2'/>, path:'/dashboard/legal-pages'
     },
-    {
-      name:'Manage community category', icon:<Globe2 className='mr-2'/>, path:'/dashboard/community-category'
+
+      {
+      name: 'Manage Community ',
+      icon: <Globe2 className="mr-2" />,
+      path: '#',
+      submenu: [
+        { name: 'Manage Community Category', path: '/dashboard/community-category' },
+        { name:'Manage Community Post', path:'/dashboard/community-post'}
+
+      ]
     },
     {
       name: 'Manage Reports',

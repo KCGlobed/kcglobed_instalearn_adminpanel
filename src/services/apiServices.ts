@@ -1404,6 +1404,11 @@ export const deleteCommunityCategoryApi = async (id: number | string): Promise<a
 
 // ---------------- Community Category End ---------------- //
 
+// ---------------- Community Post Start ---------------- //
+
+
+// ---------------- Community Post End ---------------- //
+
 // ---------------- Manager Service Start ---------------- //
 export async function fetchManagers(page = 1, search: string = "", first_name: string = "", last_name: string = "", ordering: string = "", is_active: string = "", startDate: string = "", endDate: string = "", email: string = "", status: string = ""): Promise<any> {
   const activeFilter = status || is_active;
@@ -1611,3 +1616,39 @@ export const downloadFinanceUserExcelApi = async ({ search = "", first_name = ""
   return await apiRequest(`reports/get-user-report-excel/finance_user?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${statusVal !== '' ? `&is_active=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, "GET");
 };
 // ---------------- Finance User Service End ---------------- //
+
+// ---------------- Community Post Start ---------------- //
+
+export async function fetchCommunityPosts(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = ""): Promise<any> {
+  const statusVal = status === "active" ? "1" : status === "deactive" ? "0" : "";
+  let query = `cms/get-community-post-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${title ? `&title=${encodeURIComponent(title)}` : ""}${description ? `&description=${encodeURIComponent(description)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  return await apiRequest(query, "GET");
+}
+
+export const fetchCommunityCategoryList = async (): Promise<any> => {
+  return await apiRequest(`cms/get-community-category-list/`, 'GET');
+};
+
+export const createCommunityPostApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`cms/create-community-post/`, 'POST', payload);
+};
+
+export const updateCommunityPostApi = async (id: number | string, payload: any): Promise<any> => {
+  return await apiRequest(`cms/edit-community-post/${id}`, 'POST', payload);
+};
+
+export const getCommunityPostDetailApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/get-community-post-detail/${id}`, 'GET');
+};
+
+export const updateCommunityPostStatusApi = async (id: string | number, payload: { status: boolean }): Promise<any> => {
+  return await apiRequest(`cms/update-community-post-status/${id}`, 'POST', payload);
+};
+
+export const deleteCommunityPostApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/delete-community-post/${id}`, 'DELETE');
+};
+
+// ---------------- Community Post End ---------------- //
