@@ -22,7 +22,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
 import {
   Loader2,
   Users,
@@ -39,6 +39,7 @@ import {
   Video,
   BarChart2,
   TrendingUp as LineChartIcon,
+  PieChart as DoughnutChartIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -83,15 +84,15 @@ const DashboardPage: React.FC = () => {
   const [studentFilter, setStudentFilter] = useState<string>("month");
   const [revenueFilter, setRevenueFilter] = useState<string>("month");
   const [videoFilter, setVideoFilter] = useState<string>("month");
-  const [orderFilter, setOrderFilter] = useState<string>("week");
+  const [orderFilter, setOrderFilter] = useState<string>("month");
 
   // Chart type switcher states for each graph
-  const [studentChartType, setStudentChartType] = useState<"bar" | "line">("bar");
-  const [revenueChartType, setRevenueChartType] = useState<"bar" | "line">("bar");
-  const [videoChartType, setVideoChartType] = useState<"bar" | "line">("bar");
-  const [orderChartType, setOrderChartType] = useState<"bar" | "line">("bar");
+  const [studentChartType, setStudentChartType] = useState<"bar" | "line" | "doughnut">("bar");
+  const [revenueChartType, setRevenueChartType] = useState<"bar" | "line" | "doughnut">("bar");
+  const [videoChartType, setVideoChartType] = useState<"bar" | "line" | "doughnut">("bar");
+  const [orderChartType, setOrderChartType] = useState<"bar" | "line" | "doughnut">("bar");
   const [corporateAdminFilter, setCorporateAdminFilter] = useState<string>("month");
-  const [corporateAdminChartType, setCorporateAdminChartType] = useState<"bar" | "line">("bar");
+  const [corporateAdminChartType, setCorporateAdminChartType] = useState<"bar" | "line" | "doughnut">("bar");
 
   useEffect(() => {
     dispatch(getDashboardData());
@@ -149,10 +150,11 @@ const DashboardPage: React.FC = () => {
       {
         label: "Registrations",
         data: studentCounts,
-        backgroundColor: studentChartType === "line" ? "rgba(79, 70, 229, 0.14)" : "rgba(79, 70, 229, 1)", // Indigo
-        borderColor: studentChartType === "line" ? "#4f46e5" : "#333333",
-        hoverBackgroundColor: "rgba(67, 56, 202, 1)",
-        hoverBorderColor: "#000000",
+        backgroundColor: studentChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : studentChartType === "line" ? "rgba(79, 70, 229, 0.14)" : "rgba(79, 70, 229, 1)", // Indigo
+        borderColor: studentChartType === "doughnut" ? "#ffffff" : studentChartType === "line" ? "#4f46e5" : "#333333",
+        hoverBackgroundColor: studentChartType === "doughnut" ? undefined : "rgba(67, 56, 202, 1)",
+        hoverBorderColor: studentChartType === "doughnut" ? undefined : "#000000",
+        hoverOffset: studentChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
@@ -172,21 +174,26 @@ const DashboardPage: React.FC = () => {
   const studentChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutQuart" as const,
+    },
     plugins: {
-      legend: { display: false },
+      legend: { display: studentChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
         bodyFont: { size: 12 },
         padding: 10,
         cornerRadius: 4,
-        displayColors: false,
+        displayColors: studentChartType === "doughnut",
         callbacks: {
-          label: (context: any) => ` Students Registered: ${context.parsed.y}`,
+          label: (context: any) => studentChartType === "doughnut" ? ` ${context.label}: ${context.parsed}` : ` Students Registered: ${context.parsed.y}`,
         },
       },
     },
-    scales: {
+    ...(studentChartType === "doughnut" ? { cutout: "60%" } : {}),
+    scales: studentChartType === "doughnut" ? undefined : {
       x: {
         grid: { display: false },
         ticks: { color: "#333333", font: { size: 12, weight: "bold" } },
@@ -216,10 +223,11 @@ const DashboardPage: React.FC = () => {
       {
         label: "Revenue",
         data: revenueAmounts,
-        backgroundColor: revenueChartType === "line" ? "rgba(16, 185, 129, 0.14)" : "rgba(16, 185, 129, 1)", // Emerald
-        borderColor: revenueChartType === "line" ? "#10b981" : "#333333",
-        hoverBackgroundColor: "rgba(5, 150, 105, 1)",
-        hoverBorderColor: "#000000",
+        backgroundColor: revenueChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : revenueChartType === "line" ? "rgba(16, 185, 129, 0.14)" : "rgba(16, 185, 129, 1)", // Emerald
+        borderColor: revenueChartType === "doughnut" ? "#ffffff" : revenueChartType === "line" ? "#10b981" : "#333333",
+        hoverBackgroundColor: revenueChartType === "doughnut" ? undefined : "rgba(5, 150, 105, 1)",
+        hoverBorderColor: revenueChartType === "doughnut" ? undefined : "#000000",
+        hoverOffset: revenueChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
@@ -239,22 +247,27 @@ const DashboardPage: React.FC = () => {
   const revenueChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutQuart" as const,
+    },
     plugins: {
-      legend: { display: false },
+      legend: { display: revenueChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
         bodyFont: { size: 12 },
         padding: 10,
         cornerRadius: 4,
-        displayColors: false,
+        displayColors: revenueChartType === "doughnut",
         callbacks: {
           label: (context: any) =>
-            ` Total Revenue: ₹${Number(context.parsed.y).toLocaleString()}`,
+            revenueChartType === "doughnut" ? ` ${context.label}: ₹${Number(context.parsed).toLocaleString()}` : ` Total Revenue: ₹${Number(context.parsed.y).toLocaleString()}`,
         },
       },
     },
-    scales: {
+    ...(revenueChartType === "doughnut" ? { cutout: "60%" } : {}),
+    scales: revenueChartType === "doughnut" ? undefined : {
       x: {
         grid: { display: false },
         ticks: { color: "#333333", font: { size: 12, weight: "bold" } },
@@ -289,10 +302,11 @@ const DashboardPage: React.FC = () => {
       {
         label: "Videos Watched",
         data: videoWatchedCounts,
-        backgroundColor: videoChartType === "line" ? "rgba(245, 158, 11, 0.14)" : "rgba(245, 158, 11, 1)", // Amber
-        borderColor: videoChartType === "line" ? "#f59e0b" : "#333333",
-        hoverBackgroundColor: "rgba(217, 119, 6, 1)",
-        hoverBorderColor: "#000000",
+        backgroundColor: videoChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : videoChartType === "line" ? "rgba(245, 158, 11, 0.14)" : "rgba(245, 158, 11, 1)", // Amber
+        borderColor: videoChartType === "doughnut" ? "#ffffff" : videoChartType === "line" ? "#f59e0b" : "#333333",
+        hoverBackgroundColor: videoChartType === "doughnut" ? undefined : "rgba(217, 119, 6, 1)",
+        hoverBorderColor: videoChartType === "doughnut" ? undefined : "#000000",
+        hoverOffset: videoChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
@@ -312,21 +326,26 @@ const DashboardPage: React.FC = () => {
   const videoChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutQuart" as const,
+    },
     plugins: {
-      legend: { display: false },
+      legend: { display: videoChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
         bodyFont: { size: 12 },
         padding: 10,
         cornerRadius: 4,
-        displayColors: false,
+        displayColors: videoChartType === "doughnut",
         callbacks: {
-          label: (context: any) => ` Videos Watched: ${context.parsed.y}`,
+          label: (context: any) => videoChartType === "doughnut" ? ` ${context.label}: ${context.parsed}` : ` Videos Watched: ${context.parsed.y}`,
         },
       },
     },
-    scales: {
+    ...(videoChartType === "doughnut" ? { cutout: "60%" } : {}),
+    scales: videoChartType === "doughnut" ? undefined : {
       x: {
         grid: { display: false },
         ticks: { color: "#333333", font: { size: 12, weight: "bold" } },
@@ -356,10 +375,11 @@ const DashboardPage: React.FC = () => {
       {
         label: "Orders",
         data: orderCounts,
-        backgroundColor: orderChartType === "line" ? "rgba(139, 92, 246, 0.14)" : "rgba(139, 92, 246, 1)", // Purple
-        borderColor: orderChartType === "line" ? "#8b5cf6" : "#333333",
-        hoverBackgroundColor: "rgba(124, 58, 237, 1)",
-        hoverBorderColor: "#000000",
+        backgroundColor: orderChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : orderChartType === "line" ? "rgba(139, 92, 246, 0.14)" : "rgba(139, 92, 246, 1)", // Purple
+        borderColor: orderChartType === "doughnut" ? "#ffffff" : orderChartType === "line" ? "#8b5cf6" : "#333333",
+        hoverBackgroundColor: orderChartType === "doughnut" ? undefined : "rgba(124, 58, 237, 1)",
+        hoverBorderColor: orderChartType === "doughnut" ? undefined : "#000000",
+        hoverOffset: orderChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
@@ -379,21 +399,26 @@ const DashboardPage: React.FC = () => {
   const orderChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutQuart" as const,
+    },
     plugins: {
-      legend: { display: false },
+      legend: { display: orderChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
         bodyFont: { size: 12 },
         padding: 10,
         cornerRadius: 4,
-        displayColors: false,
+        displayColors: orderChartType === "doughnut",
         callbacks: {
-          label: (context: any) => ` Orders Placed: ${context.parsed.y}`,
+          label: (context: any) => orderChartType === "doughnut" ? ` ${context.label}: ${context.parsed}` : ` Orders Placed: ${context.parsed.y}`,
         },
       },
     },
-    scales: {
+    ...(orderChartType === "doughnut" ? { cutout: "60%" } : {}),
+    scales: orderChartType === "doughnut" ? undefined : {
       x: {
         grid: { display: false },
         ticks: { color: "#333333", font: { size: 12, weight: "bold" } },
@@ -426,10 +451,11 @@ const DashboardPage: React.FC = () => {
       {
         label: "Corporate Admins",
         data: corpAdminCounts,
-        backgroundColor: corporateAdminChartType === "line" ? "rgba(6, 182, 212, 0.14)" : "rgba(6, 182, 212, 1)", // Cyan
-        borderColor: corporateAdminChartType === "line" ? "#06b6d4" : "#333333",
-        hoverBackgroundColor: "rgba(8, 145, 178, 1)",
-        hoverBorderColor: "#000000",
+        backgroundColor: corporateAdminChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : corporateAdminChartType === "line" ? "rgba(6, 182, 212, 0.14)" : "rgba(6, 182, 212, 1)", // Cyan
+        borderColor: corporateAdminChartType === "doughnut" ? "#ffffff" : corporateAdminChartType === "line" ? "#06b6d4" : "#333333",
+        hoverBackgroundColor: corporateAdminChartType === "doughnut" ? undefined : "rgba(8, 145, 178, 1)",
+        hoverBorderColor: corporateAdminChartType === "doughnut" ? undefined : "#000000",
+        hoverOffset: corporateAdminChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
         barPercentage: 1.0,
@@ -449,21 +475,26 @@ const DashboardPage: React.FC = () => {
   const corpAdminChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 800,
+      easing: "easeInOutQuart" as const,
+    },
     plugins: {
-      legend: { display: false },
+      legend: { display: corporateAdminChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
         bodyFont: { size: 12 },
         padding: 10,
         cornerRadius: 4,
-        displayColors: false,
+        displayColors: corporateAdminChartType === "doughnut",
         callbacks: {
-          label: (context: any) => ` Corporate Admins: ${context.parsed.y}`,
+          label: (context: any) => corporateAdminChartType === "doughnut" ? ` ${context.label}: ${context.parsed}` : ` Corporate Admins: ${context.parsed.y}`,
         },
       },
     },
-    scales: {
+    ...(corporateAdminChartType === "doughnut" ? { cutout: "60%" } : {}),
+    scales: corporateAdminChartType === "doughnut" ? undefined : {
       x: {
         grid: { display: false },
         ticks: { color: "#333333", font: { size: 12, weight: "bold" } },
@@ -688,6 +719,17 @@ const DashboardPage: React.FC = () => {
                 >
                   <LineChartIcon size={13} />
                 </button>
+                <button
+                  onClick={() => setStudentChartType("doughnut")}
+                  title="Doughnut Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    studentChartType === "doughnut"
+                      ? "bg-white text-indigo-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <DoughnutChartIcon size={13} />
+                </button>
               </div>
 
               {/* Time Filter */}
@@ -723,8 +765,10 @@ const DashboardPage: React.FC = () => {
               <div className="w-full h-full">
                 {studentChartType === "bar" ? (
                   <Bar key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
-                ) : (
+                ) : studentChartType === "line" ? (
                   <Line key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
+                ) : (
+                  <Doughnut key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
                 )}
               </div>
             ) : (
@@ -770,6 +814,17 @@ const DashboardPage: React.FC = () => {
                   <LineChartIcon size={13} />
                 </button>
                 <button
+                  onClick={() => setRevenueChartType("doughnut")}
+                  title="Doughnut Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    revenueChartType === "doughnut"
+                      ? "bg-white text-indigo-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <DoughnutChartIcon size={13} />
+                </button>
+                <button
                   onClick={() => setRevenueChartType("bar")}
                   title="Bar Chart"
                   className={`p-1.5 rounded-md transition ${
@@ -813,10 +868,12 @@ const DashboardPage: React.FC = () => {
 
             {revenueList.length > 0 ? (
               <div className="w-full h-full">
-                {revenueChartType === "line" ? (
+                {revenueChartType === "bar" ? (
+                  <Bar key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
+                ) : revenueChartType === "line" ? (
                   <Line key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
                 ) : (
-                  <Bar key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
+                  <Doughnut key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
                 )}
               </div>
             ) : (
@@ -872,6 +929,17 @@ const DashboardPage: React.FC = () => {
                 >
                   <LineChartIcon size={13} />
                 </button>
+                <button
+                  onClick={() => setVideoChartType("doughnut")}
+                  title="Doughnut Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    videoChartType === "doughnut"
+                      ? "bg-white text-indigo-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <DoughnutChartIcon size={13} />
+                </button>
               </div>
 
               {/* Time Filter */}
@@ -905,10 +973,12 @@ const DashboardPage: React.FC = () => {
 
             {videoList.length > 0 ? (
               <div className="w-full h-full">
-                {videoChartType === "line" ? (
+                {videoChartType === "bar" ? (
+                  <Bar key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
+                ) : videoChartType === "line" ? (
                   <Line key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
                 ) : (
-                  <Bar key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
+                  <Doughnut key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
                 )}
               </div>
             ) : (
@@ -964,6 +1034,17 @@ const DashboardPage: React.FC = () => {
                 >
                   <LineChartIcon size={13} />
                 </button>
+                <button
+                  onClick={() => setOrderChartType("doughnut")}
+                  title="Doughnut Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    orderChartType === "doughnut"
+                      ? "bg-white text-indigo-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <DoughnutChartIcon size={13} />
+                </button>
               </div>
 
               {/* Time Filter */}
@@ -997,10 +1078,12 @@ const DashboardPage: React.FC = () => {
 
             {orderList.length > 0 ? (
               <div className="w-full h-full">
-                {orderChartType === "line" ? (
+                {orderChartType === "bar" ? (
+                  <Bar key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
+                ) : orderChartType === "line" ? (
                   <Line key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
                 ) : (
-                  <Bar key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
+                  <Doughnut key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
                 )}
               </div>
             ) : (
@@ -1056,6 +1139,17 @@ const DashboardPage: React.FC = () => {
                 >
                   <LineChartIcon size={13} />
                 </button>
+                <button
+                  onClick={() => setCorporateAdminChartType("doughnut")}
+                  title="Doughnut Chart"
+                  className={`p-1.5 rounded-md transition ${
+                    corporateAdminChartType === "doughnut"
+                      ? "bg-white text-indigo-600 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  <DoughnutChartIcon size={13} />
+                </button>
               </div>
 
               {/* Time Filter */}
@@ -1091,8 +1185,10 @@ const DashboardPage: React.FC = () => {
               <div className="w-full h-full">
                 {corporateAdminChartType === "bar" ? (
                   <Bar key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
-                ) : (
+                ) : corporateAdminChartType === "line" ? (
                   <Line key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
+                ) : (
+                  <Doughnut key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
                 )}
               </div>
             ) : (

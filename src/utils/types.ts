@@ -1461,3 +1461,56 @@ export interface communityPost{
   },
   created_at:string,
 }
+
+export interface jobApplication{
+  id:number,
+  full_name:string,
+  email:string,
+  mobile:string,
+  state:string,
+  city:string,
+  highest_qualification:string,
+  current_employment_status:string,
+  total_years_of_experience:string,
+  role_applying_for:string,
+  other_role_specification:string,
+  summary:string,
+  resume:string,
+  linkedin_portfolio:string,
+  notice_period:string,
+  created_at:string,
+  updated_at:string,
+}
+
+export interface partner{
+  id:number,
+  partner_type:string ,
+  first_name: string,
+  last_name: string,
+  email: string,
+  mobile: number,
+  state: string,
+  city: string,
+  country:string,
+  pincode:number,
+  address: string,
+  comment: string,
+  documents: string,
+  updated_at: string
+}
+
+export interface blogComment{
+   id:number,
+   blog_info:{
+    id:number,
+    title:string,
+  }
+  first_name:string,
+  last_name:string,
+  email:string,
+  comment:string,
+  status:number,
+  created_at:string,
+  updated_at:string,
+  blog:number,
+}

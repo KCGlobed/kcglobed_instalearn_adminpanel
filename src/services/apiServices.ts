@@ -1652,3 +1652,72 @@ export const deleteCommunityPostApi = async (id: number | string): Promise<any> 
 };
 
 // ---------------- Community Post End ---------------- //
+
+export const getJobApplicationApi = async (page: number = 1, search: string = "", ordering: string = "", start_date: string = "", end_date: string = "", full_name: string = "", email: string = "", mobile: string = "") => {
+  const resolvedFullName = full_name || search || email || mobile;
+  let query = `reports/get-job-application-list/?page=${page}${ordering ? `&ordering=${encodeURIComponent(ordering)}` : ""}${resolvedFullName ? `&search=${encodeURIComponent(resolvedFullName)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+};
+
+export const downloadJobApplicationPdfApi = async ({ search = "", full_name = "", email = "", mobile = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const resolvedFullName = full_name || search;
+  return await apiRequest(`reports/get-job-application-pdf-report/?${resolvedFullName ? `&full_name=${encodeURIComponent(resolvedFullName)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadJobApplicationExcelApi = async ({ search = "", full_name = "", email = "", mobile = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const resolvedFullName = full_name || search;
+  return await apiRequest(`reports/get-job-application-csv-report/?${resolvedFullName ? `&full_name=${encodeURIComponent(resolvedFullName)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const deleteJobApplicationApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`reports/delete-job-application/${id}`, 'DELETE');
+};
+
+export const viewJobApplicationApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`reports/view-job-application-detail/${id}`, 'GET');
+};
+
+// ---------------- Partner Request Start ---------------- //
+
+export const getPartnerApi = async (page: number = 1, search: string = "", ordering: string = "", start_date: string = "", end_date: string = "", first_name: string = "", last_name: string = "", email: string = "", mobile: string = "", partner_type: string = "") => {
+  const resolvedSearch = search;
+  let query = `reports/get-partner-request-list/?page=${page}${ordering ? `&ordering=${encodeURIComponent(ordering)}` : ""}${resolvedSearch ? `&search=${encodeURIComponent(resolvedSearch)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}${partner_type ? `&partner_type=${encodeURIComponent(partner_type)}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+};
+
+export const downloadPartnerPdfApi = async ({ search = "", first_name = "", last_name = "", email = "", mobile = "", partner_type = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-partner-request-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}${partner_type ? `&partner_type=${encodeURIComponent(partner_type)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const downloadPartnerExcelApi = async ({ search = "", first_name = "", last_name = "", email = "", mobile = "", partner_type = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  return await apiRequest(`reports/get-partner-request-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${mobile ? `&mobile=${encodeURIComponent(mobile)}` : ""}${partner_type ? `&partner_type=${encodeURIComponent(partner_type)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+}
+
+export const viewPartnerRequestApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`reports/view-partner-request-detail/${id}`, 'GET');
+};
+
+// ---------------- Partner Request End ---------------- //
+
+export const getBlogCommentsApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", email: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = "") => {
+  const statusVal = status === 'all' || status === '' ? '' : status;
+  let query = `cms/get-blogs-comments-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal ? `&status=${statusVal}` : ""}`;
+  if (start_date) query += `&start_date=${start_date}`;
+  if (end_date) query += `&end_date=${end_date}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+};
+
+export const updateBlogCommentStatusApi = async (id: string | number, payload: { status: number }): Promise<any> => {
+  return await apiRequest(`cms/update-blog-comment-status/${id}`, 'POST', payload);
+};
+
+export const deleteBlogCommentApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`cms/delete-blog-comment/${id}`, "DELETE");
+};

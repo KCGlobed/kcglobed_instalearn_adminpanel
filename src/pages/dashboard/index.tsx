@@ -7,7 +7,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
 import { MdOutlineQuiz, MdRateReview } from "react-icons/md";
 import { HiSpeakerphone } from "react-icons/hi";
-import { FileText, Globe2, Ticket } from "lucide-react";
+import { BriefcaseBusiness, FileText, Globe2, Handshake, Ticket } from "lucide-react";
 import { MessageSquareQuote } from "lucide-react";
 
 const Dashboard: React.FC = () => {
@@ -60,6 +60,7 @@ const Dashboard: React.FC = () => {
       submenu: [
         { name: 'Manage Blog Category', path: '/dashboard/blog-category' },
         { name: 'Manage Blog Post', path: '/dashboard/blog' },
+        { name: 'Manage Blog Comment', path: '/dashboard/blog-comment '}
       ]
     },
     {
@@ -99,6 +100,12 @@ const Dashboard: React.FC = () => {
     },
     {
       name:'Manage Subcription order', icon:<FaBuilding className='mr-2'/>, path:'/dashboard/corporate-admin-subscription'
+    },
+    {
+      name:'Manage Job Application', icon:<BriefcaseBusiness className='mr-2'/>, path:'/dashboard/job-application'
+    },
+    {
+      name:'Manage Partners Request', icon:<Handshake className='mr-2'/>, path:'/dashboard/partners-request'
     },
     {
       name:'Manage Legal pages', icon:<FileText className='mr-2'/>, path:'/dashboard/legal-pages'
