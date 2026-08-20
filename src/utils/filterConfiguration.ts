@@ -324,6 +324,23 @@ export const courseReviewFilterConfig: FilterField[] = [
     }
 ];
 
+export const blogCommentFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    {
+        type: 'select',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'New', value: '0' },
+            { label: 'Approved', value: '1' },
+            { label: 'Disapproved', value: '2' }
+        ]
+    }
+];
+
 export const courseAnnouncementFilterConfig: FilterField[] = [
     { type: 'text', label: 'Announcement Title', name: 'title', placeholder: 'Filter by title...' },
     { type: 'text', label: 'Course Name', name: 'course', placeholder: 'Filter by course name...' },
@@ -348,7 +365,7 @@ export const studentOrderFilterConfig: FilterField[] = [
     { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
     { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
     { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
-    
+
 ];
 
 export const corporateAdminFilterConfig: FilterField[] = [
@@ -392,7 +409,7 @@ export const studentPerformanceFilterConfig: FilterField[] = [
         type: "text",
         placeholder: 'Filter by email...',
     },
-    
+
 ];
 
 export const studentNotesFilterConfig: FilterField[] = [
@@ -647,6 +664,7 @@ export const communityCategoryFilterConfig: FilterField[] = [
     }
 ];
 
+
 export const financeUserFilterConfig: FilterField[] = [
     { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
     { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
@@ -658,6 +676,47 @@ export const financeUserFilterConfig: FilterField[] = [
             { label: 'All', value: 'all' },
             { label: 'Active', value: 'active' },
             { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+// community post filter 
+export const communityPostFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Post Title', name: 'title', placeholder: 'Filter by title...' },
+    {
+        type: 'status',
+        label: 'Status',
+        name: 'status',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Active', value: 'active' },
+            { label: 'Deactive', value: 'deactive' }
+        ]
+    }
+];
+
+export const jobApplicationFilterConfig: FilterField[] = [
+    { type: 'text', label: 'Full Name', name: 'full_name', placeholder: 'Filter by full name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    { type: 'text', label: 'Mobile', name: 'mobile', placeholder: 'Filter by mobile...' },
+];
+
+export const partnerFilterConfig: FilterField[] = [
+    { type: 'text', label: 'First Name', name: 'first_name', placeholder: 'Filter by first name...' },
+    { type: 'text', label: 'Last Name', name: 'last_name', placeholder: 'Filter by last name...' },
+    { type: 'text', label: 'Email', name: 'email', placeholder: 'Filter by email...' },
+    { type: 'text', label: 'Mobile', name: 'mobile', placeholder: 'Filter by mobile...' },
+    {
+        type: 'select',
+        label: 'Partner Type',
+        name: 'partner_type',
+        options: [
+            { label: 'All', value: 'all' },
+            { label: 'Authorized Training Partner', value: 'authorized_training_partner' },
+            { label: 'Business Associate', value: 'business_associate' },
+            { label: 'Instructor', value: 'instructor' },
+            { label: 'Corporate Partner', value: 'corporate_partner' },
+            { label: 'Institutional Partner', value: 'institutional_partner' },
+            { label: 'Student Ambassador', value: 'Student_ambassador' }
         ]
     }
 ];

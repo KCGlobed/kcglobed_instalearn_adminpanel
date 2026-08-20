@@ -28,6 +28,7 @@ import studentPerformanceReducer from './slices/studentPerformanceSlice';
 import studentNotesReducer from './slices/studentNotesSlice';
 import blogCategoryReducer from "./slices/blogCategorySlice";
 import blogReducer from "./slices/blogSlice";
+import blogCommentReducer from "./slices/blogCommentSlice";
 import couponReducer from "./slices/couponSlice";
 import promotionalCampaignReducer from "./slices/promotionalCampaignSlice";
 import testimonialReducer from "./slices/testimonialSlice";
@@ -45,6 +46,9 @@ import legalPageReducer from "./slices/legalPageSlice";
 import communityCategoryReducer from "./slices/communityCategorySlice";
 import contentManagementReducer from "./slices/contentManagementSlice";
 import financeUserReducer from "./slices/financeUserSlice";
+import communityPostReducer from "./slices/communityPostSlice";
+import jobApplicationReducer from "./slices/JobApplicationSlice";
+import partnerReducer from "./slices/partnerSlice";
 
 export const store = configureStore({
   reducer: {
@@ -72,6 +76,7 @@ export const store = configureStore({
     studentNotes: studentNotesReducer,
     blogCategory: blogCategoryReducer,
     blog: blogReducer,
+    blogComment: blogCommentReducer,
     coupons: couponReducer,
     promotionalCampaigns: promotionalCampaignReducer,
     testimonial:testimonialReducer,
@@ -92,6 +97,9 @@ export const store = configureStore({
     customerSupportUser: customerSupportUserReducer,
     contentManagementUser: contentManagementReducer,
     financeUser: financeUserReducer,
+    communityPost: communityPostReducer,
+    jobApplication: jobApplicationReducer,
+    partner: partnerReducer,
   },
 });
 
