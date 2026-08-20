@@ -3,23 +3,23 @@ import { Filter, Plus, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../../components/Table/Table';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useRedux';
-import { getBlogs, removeBlog, updateBlogStatus } from '../../../store/slices/blogSlice';
+import { getCommunityCategory, removeCommunityCategory, updateCommunityCategoryStatus } from '../../../store/slices/communityCategorySlice';
 import useDebounce from '../../../hooks/useDebounce';
 import moment from 'moment';
+import CommunityCategoryForm from '../../../components/Forms/CommunityCategoryForm';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
-import BlogView from '../../../components/View/BlogView';
+import { FiEdit, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteBlogPostApi } from '../../../services/apiServices';
+import { deleteCommunityCategoryApi } from '../../../services/apiServices';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
 import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
-import { blogFilterConfig } from '../../../utils/filterConfiguration';
-import { useNavigate } from 'react-router-dom';
+import { communityCategoryFilterConfig } from '../../../utils/filterConfiguration';
 
+// Interface matching the Table component's column requirement
 interface ColumnDef {
     key: string;
     title: string;
@@ -29,7 +29,7 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageBlogPost: React.FC = () => {
+const ManageCommunityCategory: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
@@ -37,12 +37,10 @@ const ManageBlogPost: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
-    const navigate = useNavigate();
 
     // Filter states
     const [filters, setFilters] = useState({
         title: '',
-        description: '',
         status: 'all' as 'all' | 'active' | 'deactive',
     });
     const [startDate, setStartDate] = useState<string>('');
@@ -52,7 +50,7 @@ const ManageBlogPost: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.blog);
+    const { data, loading, pagination } = useAppSelector((state: any) => state.communityCategory);
     const pageSize = 5;
 
     // Refs for clicking outside to close
@@ -70,11 +68,10 @@ const ManageBlogPost: React.FC = () => {
 
     // Fetch data whenever page, search, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getBlogs({
+        dispatch(getCommunityCategory({
             page: currentPage,
             search: debouncedSearchTerm,
             title: debouncedFilters.title,
-            description: debouncedFilters.description,
             ordering,
             status: debouncedFilters.status,
             startDate,
@@ -94,12 +91,11 @@ const ManageBlogPost: React.FC = () => {
     const clearFilters = () => {
         setFilters({
             title: '',
-            description: '',
             status: 'all',
         });
     };
 
-    const handleSort = (key: string, direction: 'asc' | 'desc') => {
+    const handleSort = (key: string | number, direction: 'asc' | 'desc') => {
         const orderPrefix = direction === 'desc' ? '-' : '';
         setOrdering(`${orderPrefix}${key}`);
     };
@@ -114,22 +110,27 @@ const ManageBlogPost: React.FC = () => {
     const columns: ColumnDef[] = [
         {
             key: 'title',
-            title: 'Blog Post',
+            title: 'Category',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     {row.image ? (
                         <img src={row.image} alt={row.title} className="w-10 h-10 rounded-lg object-cover bg-gray-50 border border-gray-100 shadow-sm" />
                     ) : (
                         <div
-                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 border border-indigo-100 text-indigo-600"
+                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm"
+                            style={{
+                                backgroundColor: '#eef2ff',
+                                color: '#4f46e5',
+                                border: `1px solid #e0e7ff`
+                            }}
                         >
                             {row.title ? row.title.charAt(0).toUpperCase() : '?'}
                         </div>
                     )}
                     <div className="flex flex-col">
                         <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.title}</span>
-                        {row.category_title && (
-                            <span className="text-[10px] text-indigo-600 font-medium">{row.category_title}</span>
+                        {row.slug && (
+                            <span className="text-[11px] text-gray-500 font-medium whitespace-nowrap">/{row.slug}</span>
                         )}
                     </div>
                 </div>
@@ -140,13 +141,15 @@ const ManageBlogPost: React.FC = () => {
         {
             key: 'description',
             title: 'Description',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'No description provided.'}
-
-                </div>
-            ),
-            width: '320px',
+            render: (value: string) => {
+                const plainText = (value || '').replace(/<[^>]*>?/gm, '').trim() || 'No description provided.';
+                return (
+                    <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={plainText}>
+                        {plainText}
+                    </div>
+                );
+            },
+            width: '280px',
         },
         {
             key: 'created_at',
@@ -166,10 +169,10 @@ const ManageBlogPost: React.FC = () => {
             render: (value: boolean, row: any) => (
                 <button
                     onClick={() => {
-                        dispatch(updateBlogStatus({ id: row.id, status: !value }))
+                        dispatch(updateCommunityCategoryStatus({ id: row.id, status: !value }))
                             .unwrap()
-                            .then(() => toast.success(`Blog ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err) => toast.error(err || "Failed to update status"));
+                            .then(() => toast.success(`Category ${!value ? 'activated' : 'deactivated'} successfully`))
+                            .catch((err: any) => toast.error(err || "Failed to update status"));
                     }}
                     className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
                 >
@@ -186,23 +189,17 @@ const ManageBlogPost: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
-                        icon={<FiEye />}
-                        color="blue"
-                        title="View"
-                        onClick={() => {
-                            showModal({
-                                title: 'View Blog Post',
-                                content: <BlogView id={row.id} />,
-                                type: 'custom',
-                                size: 'xxl',
-                            });
-                        }}
-                    />
-                    <GlassButton
                         icon={<FiEdit />}
                         color="green"
                         title="Edit"
-                        onClick={() => navigate(`/dashboard/blog/form/${row.id}`)}
+                        onClick={() =>
+                            showModal({
+                                title: 'Edit Category',
+                                content: <CommunityCategoryForm categoryData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            })
+                        }
                     />
                     <GlassButton
                         icon={<FiTrash className="text-base" />}
@@ -210,13 +207,13 @@ const ManageBlogPost: React.FC = () => {
                         title="Delete"
                         onClick={() => {
                             showModal({
-                                title: 'Delete Blog Post',
+                                title: 'Delete Category',
                                 content: <DeleteConfirmationModal
                                     id={row}
                                     name={row.title}
                                     onDelete={async () => {
-                                        await deleteBlogPostApi(row.id);
-                                        dispatch(removeBlog(row.id));
+                                        await deleteCommunityCategoryApi(row.id);
+                                        dispatch(removeCommunityCategory(row.id));
                                     }}
                                 />,
                                 type: 'custom',
@@ -230,6 +227,8 @@ const ManageBlogPost: React.FC = () => {
             align: 'right',
         },
     ];
+
+
 
     return (
         <div className="flex flex-col gap-6  animate-in fade-in duration-500">
@@ -271,18 +270,23 @@ const ManageBlogPost: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search blogs..."
+                        placeholder="Search categories..."
                         className="mx-4"
                     />
 
                     <div className="flex items-center gap-4">
                         <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
                             onClick={() =>
-                                navigate('/dashboard/blog/form')
+                                showModal({
+                                    title: "Add Category",
+                                    content: <CommunityCategoryForm />,
+                                    type: 'custom',
+                                    size: 'xxl',
+                                })
                             }
                         >
                             <Plus size={18} strokeWidth={3} />
-                            Add Blog
+                            Add Category
                         </button>
                     </div>
                 </div>
@@ -290,7 +294,7 @@ const ManageBlogPost: React.FC = () => {
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={blogFilterConfig}
+                    config={communityCategoryFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -302,7 +306,7 @@ const ManageBlogPost: React.FC = () => {
                     showDate={showDate}
                     startDate={startDate}
                     endDate={endDate}
-                    onDateChange={(start, end) => {
+                    onDateChange={(start: string, end: string) => {
                         setStartDate(start);
                         setEndDate(end);
                     }}
@@ -319,7 +323,7 @@ const ManageBlogPost: React.FC = () => {
                     pageSize={pagination?.page_size || pageSize}
                     totalCount={pagination?.total_results || 0}
                     loading={loading}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    onPageChange={(page: number) => setCurrentPage(page)}
                     onSort={handleSort}
                     className="rounded-none border-none shadow-none"
                 />
@@ -328,4 +332,4 @@ const ManageBlogPost: React.FC = () => {
     );
 };
 
-export default ManageBlogPost;
+export default ManageCommunityCategory;

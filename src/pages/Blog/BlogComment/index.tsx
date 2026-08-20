@@ -1,24 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Filter, Plus, Calendar } from 'lucide-react';
+import { Filter, Calendar } from 'lucide-react';
 import DynamicServerTable from '../../../components/Table/Table';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useAppSelector } from '../../../hooks/useRedux';
-import { getBlogs, removeBlog, updateBlogStatus } from '../../../store/slices/blogSlice';
+import { getBlogComments, updateBlogCommentStatus, deleteBlogComment } from '../../../store/slices/blogCommentSlice';
 import useDebounce from '../../../hooks/useDebounce';
 import moment from 'moment';
 import { useModal } from '../../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
-import BlogView from '../../../components/View/BlogView';
+import { FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
-import { deleteBlogPostApi } from '../../../services/apiServices';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import SortDropdown from '../../../components/common/SortDropdown';
-import SearchInput from '../../../components/common/SearchInput';
 import DynamicFilter from '../../../components/common/DynamicFilter';
-import { blogFilterConfig } from '../../../utils/filterConfiguration';
-import { useNavigate } from 'react-router-dom';
+import SearchInput from '../../../components/common/SearchInput';
+import { blogCommentFilterConfig } from '../../../utils/filterConfiguration';
 
 interface ColumnDef {
     key: string;
@@ -29,22 +26,23 @@ interface ColumnDef {
     sortable?: boolean;
 }
 
-const ManageBlogPost: React.FC = () => {
+const ManageBlogComments: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
     const [ordering, setOrdering] = useState<string>('');
     const [showFilter, setShowFilter] = useState(false);
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
-    const { showModal } = useModal();
-    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const { showModal, hideModal } = useModal();
 
     // Filter states
     const [filters, setFilters] = useState({
-        title: '',
-        description: '',
-        status: 'all' as 'all' | 'active' | 'deactive',
+        first_name: '',
+        last_name: '',
+        email: '',
+        status: 'all',
     });
+
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
 
@@ -52,7 +50,7 @@ const ManageBlogPost: React.FC = () => {
     const debouncedFilters = useDebounce(filters, 500);
 
     const dispatch = useAppDispatch();
-    const { data, loading, pagination } = useAppSelector((state) => state.blog);
+    const { data, loading, pagination } = useAppSelector((state) => state.blogComment);
     const pageSize = 5;
 
     // Refs for clicking outside to close
@@ -68,21 +66,22 @@ const ManageBlogPost: React.FC = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Fetch data whenever page, search, filters, dates or ordering changes
+    // Fetch data whenever page, filters, dates or ordering changes
     useEffect(() => {
-        dispatch(getBlogs({
+        dispatch(getBlogComments({
             page: currentPage,
             search: debouncedSearchTerm,
-            title: debouncedFilters.title,
-            description: debouncedFilters.description,
+            first_name: debouncedFilters.first_name,
+            last_name: debouncedFilters.last_name,
+            email: debouncedFilters.email,
             ordering,
             status: debouncedFilters.status,
             startDate,
-            endDate
+            endDate,
         }));
-    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, startDate, endDate, ordering]);
+    }, [dispatch, currentPage, debouncedSearchTerm, debouncedFilters, ordering, startDate, endDate]);
 
-    // Reset to first page when search or filters change
+    // Reset to first page when filters, startDate or endDate change
     useEffect(() => {
         setCurrentPage(1);
     }, [debouncedSearchTerm, debouncedFilters, startDate, endDate]);
@@ -93,8 +92,9 @@ const ManageBlogPost: React.FC = () => {
 
     const clearFilters = () => {
         setFilters({
-            title: '',
-            description: '',
+            first_name: '',
+            last_name: '',
+            email: '',
             status: 'all',
         });
     };
@@ -105,80 +105,107 @@ const ManageBlogPost: React.FC = () => {
     };
 
     const handleDirectionSort = (direction: 'asc' | 'desc') => {
-        const currentKey = ordering.replace(/^-/, '') || 'title';
+        const currentKey = ordering.replace(/^-/, '') || 'created_at';
         handleSort(currentKey, direction);
         setShowSort(false);
     };
 
-    // Column definitions
     const columns: ColumnDef[] = [
-        {
-            key: 'title',
-            title: 'Blog Post',
+          {
+            key: 'first_name',
+            title: 'User',
             render: (_: any, row: any) => (
+                
+
                 <div className="flex items-center gap-3">
-                    {row.image ? (
-                        <img src={row.image} alt={row.title} className="w-10 h-10 rounded-lg object-cover bg-gray-50 border border-gray-100 shadow-sm" />
-                    ) : (
-                        <div
-                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 border border-indigo-100 text-indigo-600"
-                        >
-                            {row.title ? row.title.charAt(0).toUpperCase() : '?'}
-                        </div>
-                    )}
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.title}</span>
-                        {row.category_title && (
-                            <span className="text-[10px] text-indigo-600 font-medium">{row.category_title}</span>
-                        )}
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100">
+                        {row.first_name ? row.first_name.charAt(0).toUpperCase() : 'U'}
                     </div>
+                    <div className="flex flex-col max-w-[200px]">
+                        <span className="font-semibold text-gray-900 text-sm truncate"title={`${row.first_name || ''} ${row.last_name || ''}`}>
+                            {row.first_name || ''} {row.last_name || ''}
+                        </span>
+                    </div>  
                 </div>
             ),
-            sortable: true,
+            sortable:true,
+            width: '180px',
+        },
+        {
+            key: 'blog_info',
+            title: 'Blog',
+            render: (_: any, row: any) => (
+                <div className="flex flex-col max-w-[200px]">
+                    <span className="font-semibold text-gray-900 text-sm truncate" title={`${row.blog_info?.title || ''}`}>
+                        {row.blog_info?.title || ''} 
+                    </span>
+                </div>
+            ),
+            sortable: false,
+            width: '280px',
+        },
+        {
+            key: 'comment',
+            title: 'Comment',
+            render: (value: string) => (
+                <div className="flex flex-col gap-2 max-w-[300px]">
+                    <span className="text-gray-600 text-xs line-clamp-2" title={value}>
+                        {value || '-'}
+                    </span>
+                </div>
+            ),
             width: '250px',
         },
         {
-            key: 'description',
-            title: 'Description',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'No description provided.'}
-
+            key: 'status',
+            title: 'Approval Status',
+            render: (_: any, row: any) => (
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={async () => {
+                            const nextStatus = row.status === 1 ? 2 : 1;
+                            try {
+                                await dispatch(updateBlogCommentStatus({ id: row.id, status: nextStatus })).unwrap();
+                                toast.success(`Comment ${nextStatus === 1 ? 'Approved' : 'Rejected'} successfully`);
+                            } catch (err: any) {
+                                toast.error(err || "Failed to update comment status");
+                            }
+                        }}
+                        type="button"
+                        role="switch"
+                        aria-checked={row.status === 1}
+                        className={`relative cursor-pointer inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 focus:outline-none ${row.status === 1 ? 'bg-emerald-500' : 'bg-gray-300'
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform duration-300 ${row.status === 1 ? 'translate-x-5' : 'translate-x-1'
+                                }`}
+                        />
+                    </button>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${row.status === 1
+                        ? 'text-emerald-700 bg-emerald-50'
+                        : row.status === 2
+                            ? 'text-red-700 bg-red-50'
+                            : 'text-amber-700 bg-amber-50'
+                        }`}>
+                        {row.status === 1 ? 'Approved' : row.status === 2 ? 'Rejected' : 'New'}
+                    </span>
                 </div>
             ),
-            width: '320px',
+            sortable:true,
+            width: '180px',
         },
         {
             key: 'created_at',
             title: 'Created On',
             render: (value: string) => (
                 <div className="flex flex-col">
-                    <span className="text-gray-800 text-sm font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
+                    <span className="text-gray-800 text-xs font-semibold">{value ? moment(value).format('MMM DD, YYYY') : '-'}</span>
                     <span className="text-gray-400 text-[10px] uppercase font-bold">{value ? moment(value).format('hh:mm A') : ''}</span>
                 </div>
             ),
             sortable: true,
-            width: '140px',
-        },
-        {
-            key: 'status',
-            title: 'Status',
-            render: (value: boolean, row: any) => (
-                <button
-                    onClick={() => {
-                        dispatch(updateBlogStatus({ id: row.id, status: !value }))
-                            .unwrap()
-                            .then(() => toast.success(`Blog ${!value ? 'activated' : 'deactivated'} successfully`))
-                            .catch((err) => toast.error(err || "Failed to update status"));
-                    }}
-                    className={`px-3 cursor-pointer py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 hover:shadow-sm ${value ? 'bg-green-100 text-green-700 border border-green-200 hover:bg-green-200' : 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200'}`}
-                >
-                    {value ? 'Active' : 'Inactive'}
-                </button>
-            ),
-            width: '100px',
-            align: 'center',
-            sortable: true,
+            width: '130px',
         },
         {
             key: 'id',
@@ -186,37 +213,22 @@ const ManageBlogPost: React.FC = () => {
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
                     <GlassButton
-                        icon={<FiEye />}
-                        color="blue"
-                        title="View"
-                        onClick={() => {
-                            showModal({
-                                title: 'View Blog Post',
-                                content: <BlogView id={row.id} />,
-                                type: 'custom',
-                                size: 'xxl',
-                            });
-                        }}
-                    />
-                    <GlassButton
-                        icon={<FiEdit />}
-                        color="green"
-                        title="Edit"
-                        onClick={() => navigate(`/dashboard/blog/form/${row.id}`)}
-                    />
-                    <GlassButton
                         icon={<FiTrash className="text-base" />}
                         color="red"
-                        title="Delete"
+                        title="Delete Comment"
                         onClick={() => {
                             showModal({
-                                title: 'Delete Blog Post',
+                                title: 'Delete Blog Comment',
                                 content: <DeleteConfirmationModal
-                                    id={row}
-                                    name={row.title}
-                                    onDelete={async () => {
-                                        await deleteBlogPostApi(row.id);
-                                        dispatch(removeBlog(row.id));
+                                    id={row.id}
+                                    name={`Comment by ${row.first_name ? row.first_name + ' ' + row.last_name : 'Unknown User'}`}
+                                    onDelete={async (id) => {
+                                        try {
+                                            await dispatch(deleteBlogComment(id)).unwrap();
+                                            toast.success("Comment deleted successfully");
+                                        } catch (error: any) {
+                                            toast.error(typeof error === 'string' ? error : error?.message || "Failed to delete comment");
+                                        }
                                     }}
                                 />,
                                 type: 'custom',
@@ -232,14 +244,17 @@ const ManageBlogPost: React.FC = () => {
     ];
 
     return (
-        <div className="flex flex-col gap-6  animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6 w-full animate-in fade-in duration-500">
             {/* Premium Top Action Bar */}
             <div className="flex flex-col bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-gray-100 relative">
                 <div className="flex flex-wrap items-center justify-between px-5 py-4 gap-4">
                     <div className="flex items-center gap-4">
                         {/* Filter Toggle Button */}
                         <button
-                            onClick={() => { setShowFilter(!showFilter); setShowDate(false); }}
+                            onClick={() => {
+                                setShowFilter(!showFilter);
+                                setShowDate(false);
+                            }}
                             className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showFilter ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
@@ -258,7 +273,10 @@ const ManageBlogPost: React.FC = () => {
 
                         {/* Date Filter Button */}
                         <button
-                            onClick={() => { setShowDate(!showDate); setShowFilter(false); }}
+                            onClick={() => {
+                                setShowDate(!showDate);
+                                setShowFilter(false);
+                            }}
                             className={`group flex items-center gap-2 px-3.5 py-2 border rounded-xl text-sm font-semibold transition-all active:scale-95 ${showDate || startDate ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
@@ -271,26 +289,15 @@ const ManageBlogPost: React.FC = () => {
                     <SearchInput
                         value={searchTerm}
                         onChange={setSearchTerm}
-                        placeholder="Search blogs..."
+                        placeholder="Search comments..."
                         className="mx-4"
                     />
-
-                    <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200 shadow-lg"
-                            onClick={() =>
-                                navigate('/dashboard/blog/form')
-                            }
-                        >
-                            <Plus size={18} strokeWidth={3} />
-                            Add Blog
-                        </button>
-                    </div>
                 </div>
 
                 {/* Inline General Filter Section */}
                 <DynamicFilter
                     show={showFilter}
-                    config={blogFilterConfig}
+                    config={blogCommentFilterConfig}
                     values={filters}
                     onChange={handleFilterChange}
                     onClear={clearFilters}
@@ -311,7 +318,7 @@ const ManageBlogPost: React.FC = () => {
             </div>
 
             {/* Main Table Content */}
-            <div className="bg-white  rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] overflow-hidden border border-gray-100">
                 <DynamicServerTable
                     data={data}
                     columns={columns as any}
@@ -328,4 +335,4 @@ const ManageBlogPost: React.FC = () => {
     );
 };
 
-export default ManageBlogPost;
+export default ManageBlogComments;
