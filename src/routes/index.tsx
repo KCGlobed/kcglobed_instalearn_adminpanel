@@ -63,6 +63,7 @@ import ManageCommunityCategory from "../pages/Community/communityCategory";
 import ManageJobApplication from "../pages/JobApplication";
 import ManagePartnersRequest from "../pages/managePartnerRequest";
 import ManageBlogComments from "../pages/Blog/BlogComment";
+import ManageUniversitySubscription from "../pages/ManageUniversitySubscription";
 
 export default function AppRoutes() {
   return (
@@ -135,6 +136,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/job-application" element={<ManageJobApplication/>} />
           <Route path ="/dashboard/partners-request" element={<ManagePartnersRequest/>} />
           <Route path ="/dashboard/blog-comment" element={<ManageBlogComments/>}/>
+          <Route path="/dashboard/university-subscription" element={<ManageUniversitySubscription/>}/>
+          
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/login" />} />

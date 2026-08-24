@@ -49,6 +49,7 @@ import financeUserReducer from "./slices/financeUserSlice";
 import communityPostReducer from "./slices/communityPostSlice";
 import jobApplicationReducer from "./slices/JobApplicationSlice";
 import partnerReducer from "./slices/partnerSlice";
+import universityReducer from "./slices/universitySlice";
 
 export const store = configureStore({
   reducer: {
@@ -100,6 +101,7 @@ export const store = configureStore({
     communityPost: communityPostReducer,
     jobApplication: jobApplicationReducer,
     partner: partnerReducer,
+    university: universityReducer,
   },
 });
 

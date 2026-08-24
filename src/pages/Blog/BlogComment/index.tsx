@@ -125,6 +125,11 @@ const ManageBlogComments: React.FC = () => {
                         <span className="font-semibold text-gray-900 text-sm truncate"title={`${row.first_name || ''} ${row.last_name || ''}`}>
                             {row.first_name || ''} {row.last_name || ''}
                         </span>
+                        {row.email && (
+                            <span className="text-gray-400 text-[10px] truncate" title={row.email}>
+                                {row.email}
+                            </span>
+                        )}
                     </div>  
                 </div>
             ),

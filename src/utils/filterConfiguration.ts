@@ -720,3 +720,34 @@ export const partnerFilterConfig: FilterField[] = [
         ]
     }
 ];
+
+export const universityFilterConfig: FilterField[] = [
+    {
+        name: "first_name",
+        label: "First Name",
+        type: "text",
+        placeholder: "Search by first name..."
+    },
+    {
+        name: "last_name",
+        label: "Last Name",
+        type: "text",
+        placeholder: "Search by last name..."
+    },
+    {
+        name: "work_email",
+        label: "Email",
+        type: "text",
+        placeholder: "Search by email..."
+    },
+    {
+        name: "status",
+        label: "Status",
+        type: "status",
+        options: [
+            { value: "all", label: "All" },
+            { value: "active", label: "Active" },
+            { value: "deactive", label: "Deactive" }
+        ]
+    }
+];
