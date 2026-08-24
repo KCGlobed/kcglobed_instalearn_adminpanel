@@ -1721,3 +1721,46 @@ export const updateBlogCommentStatusApi = async (id: string | number, payload: {
 export const deleteBlogCommentApi = async (id: string | number): Promise<any> => {
   return await apiRequest(`cms/delete-blog-comment/${id}`, "DELETE");
 };
+
+// ---------------- University Request Start ---------------- //
+
+export const fetchUniversityApi = async (page = 1, search: string = "", first_name: string = "", last_name: string = "", work_email: string = "", phone_number: string = "", ordering: string = "", status: string = "", startDate: string = "", endDate: string = "") => {
+ const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  let query = `university/get-university-requests-listing/?page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${work_email ? `&work_email=${encodeURIComponent(work_email)}` : ""}${phone_number ? `&phone_number=${encodeURIComponent(phone_number)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&status=${statusVal}` : ""}`;
+  if (startDate) query += `&start_date=${startDate}`;
+  if (endDate) query += `&end_date=${endDate}`;
+  const res: any = await apiRequest(query, "GET");
+  return res;
+};
+
+export const viewUniversityApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`university/view-university-requests-detail/${id}`, 'GET');
+};
+
+export const updateUniversityStatusApi = async (id: string | number, payload: { status: number | boolean }): Promise<any> => {
+  return await apiRequest(`university/update-university-requests-status/${id}`, 'POST', payload);
+};
+
+export const approveRejectUniversityApi = async (id: string | number, payload: { approved_status: number }): Promise<any> => {
+  return await apiRequest(`university/approve-reject-university-requests-status/${id}`, 'POST', payload);
+};
+
+export const assignUniversitySubscriptionApi = async (id: string | number, payload: { plan_id: number; no_of_licence: number }): Promise<any> => {
+  return await apiRequest(`university/assign-subscription-to-university/${id}`, 'POST', payload);
+};
+
+export const downloadUniversityPdfApi = async ({ search = "", first_name = "", last_name = "", work_email = "", phone_number = "", ordering = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`university/get-university-requests-pdf-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${work_email ? `&work_email=${encodeURIComponent(work_email)}` : ""}${phone_number ? `&phone_number=${encodeURIComponent(phone_number)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};
+
+export const downloadUniversityExcelApi = async ({ search = "", first_name = "", last_name = "", work_email = "", phone_number = "", ordering = "", status = "", start_date = "", end_date = "" }: any): Promise<any> => {
+  const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';
+  return await apiRequest(`university/get-university-requests-csv-report/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${work_email ? `&work_email=${encodeURIComponent(work_email)}` : ""}${phone_number ? `&phone_number=${encodeURIComponent(phone_number)}` : ""}${ordering ? `&ordering=${ordering}` : ""}${statusVal !== '' ? `&status=${statusVal}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
+};
+
+export const importUniversityStudentsApi = async (payload: FormData): Promise<any> => {
+  return await apiRequest(`university/import-students/`, 'POST', payload);
+};
+
+// ---------------- University Request End ---------------- //

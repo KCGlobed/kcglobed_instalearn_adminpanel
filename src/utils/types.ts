@@ -1514,3 +1514,24 @@ export interface blogComment{
   updated_at:string,
   blog:number,
 }
+
+export interface University {
+  id: number;
+  first_name: string;
+  last_name: string;
+  work_email: string;
+  phone_number: string;
+  institution_type: string;
+  institution_name: string;
+  job_role: string;
+  department: string;
+  country: string;
+  status: boolean;
+  approved_status: number;
+  updated_at: string;
+  created_at: string;
+  approved_by: string | null;
+  admin_user?: any;
+  student_lists?: any[];
+  active_subscription?: any[];
+}
