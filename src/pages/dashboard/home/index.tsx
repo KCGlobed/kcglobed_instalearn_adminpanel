@@ -21,8 +21,11 @@ import {
   Tooltip,
   Legend,
   Filler,
+  BarController,
+  LineController,
+  DoughnutController
 } from "chart.js";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 import {
   Loader2,
   Users,
@@ -53,7 +56,89 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  BarController,
+  LineController,
+  DoughnutController
+);
+
+const DashboardSkeleton = () => (
+  <div className="text-gray-900 font-sans space-y-6 pb-8 animate-pulse min-h-screen">
+    {/* Welcome Banner Skeleton */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="space-y-3 w-full max-w-md">
+        <div className="h-8 bg-gray-200 rounded-lg w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded-md w-1/2"></div>
+      </div>
+    </div>
+
+    {/* Counters Skeleton */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-start gap-4">
+          <div className="p-3 bg-gray-100 rounded-xl w-12 h-12 shrink-0"></div>
+          <div className="space-y-2 w-full">
+            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/3 mt-1"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Charts Skeleton */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {[...Array(2)].map((_, i) => (
+        <div key={i} className="w-full bg-white rounded-2xl border border-gray-100 p-5 flex flex-col h-[390px]">
+           <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+           <div className="flex-1 bg-gray-50 rounded-xl"></div>
+        </div>
+      ))}
+    </div>
+
+    {/* Additional Charts Skeleton */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {[...Array(2)].map((_, i) => (
+        <div key={i} className="w-full bg-white rounded-2xl border border-gray-100 p-5 flex flex-col h-[390px]">
+           <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+           <div className="flex-1 bg-gray-50 rounded-xl"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+interface EmptyChartStateProps {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  title: string;
+  period: string;
+  themeColor?: string;
+}
+
+const EmptyChartState: React.FC<EmptyChartStateProps> = ({
+  icon: Icon,
+  title,
+  period,
+  themeColor = "text-gray-400",
+}) => (
+  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-300">
+    <div className="relative mb-3 flex items-center justify-center">
+      <div className="w-28 h-28 rounded-full border-[6px] border-dashed border-gray-200/90 flex items-center justify-center transition-transform hover:scale-105 duration-300">
+        <div className="w-16 h-16 rounded-full bg-gray-50/80 border border-gray-100 flex items-center justify-center shadow-inner">
+          <Icon size={22} className={themeColor} />
+        </div>
+      </div>
+      <span className="absolute -bottom-1 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gray-50 text-gray-500 rounded-full border border-gray-200 shadow-2xs">
+        0 {period}
+      </span>
+    </div>
+
+    <h5 className="text-xs font-bold text-gray-700">
+      No {title} Recorded
+    </h5>
+    <p className="text-[11px] text-gray-400 mt-0.5 max-w-[240px]">
+      No data available for this <span className="font-semibold text-gray-600 uppercase">{period}</span>. Try selecting a different timeframe.
+    </p>
+  </div>
 );
 
 const DashboardPage: React.FC = () => {
@@ -143,22 +228,25 @@ const DashboardPage: React.FC = () => {
   const studentCounts = studentList.map(
     (item: any) => Number(item.total_student_registered) || 0
   );
+  const hasStudentData = studentCounts.some((val: number) => val > 0);
 
   const studentChartData = {
     labels: studentLabels,
     datasets: [
       {
+        type: studentChartType,
         label: "Registrations",
         data: studentCounts,
         backgroundColor: studentChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : studentChartType === "line" ? "rgba(79, 70, 229, 0.14)" : "rgba(79, 70, 229, 1)", // Indigo
-        borderColor: studentChartType === "doughnut" ? "#ffffff" : studentChartType === "line" ? "#4f46e5" : "#333333",
+        borderColor: studentChartType === "doughnut" ? "#ffffff" : studentChartType === "line" ? "#4f46e5" : "#ffffffff",
         hoverBackgroundColor: studentChartType === "doughnut" ? undefined : "rgba(67, 56, 202, 1)",
         hoverBorderColor: studentChartType === "doughnut" ? undefined : "#000000",
         hoverOffset: studentChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
-        barPercentage: 1.0,
-        categoryPercentage: 1.0,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
         fill: studentChartType === "line",
         tension: 0.4,
         borderWidth: studentChartType === "line" ? 3 : 1,
@@ -174,12 +262,64 @@ const DashboardPage: React.FC = () => {
   const studentChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 800,
-      easing: "easeInOutQuart" as const,
+    animation: studentChartType === "doughnut" ? {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+    } : {
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+      y: {
+        from: (ctx: any) => ctx.chart.scales?.y?.getPixelForValue(0),
+        duration: 1200,
+        easing: "easeOutQuart" as const,
+      },
+      delay: (ctx: any) => ctx.dataIndex * 80,
     },
     plugins: {
-      legend: { display: studentChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
+      legend: {
+        display: studentChartType === "doughnut",
+        position: "bottom" as const,
+        labels: {
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: { size: 11, weight: "600" },
+          generateLabels: (chart: any) => {
+            if (studentChartType === "doughnut") {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label: string, i: number) => {
+                  const meta = chart.getDatasetMeta(0);
+                  const style = meta.controller.getStyle(i);
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: label,
+                    fillStyle: style.backgroundColor,
+                    strokeStyle: style.borderColor,
+                    lineWidth: style.borderWidth,
+                    hidden: isNaN(value) || meta.data[i].hidden,
+                    index: i,
+                    _value: value
+                  };
+                }).filter((item: any) => item._value > 0); // Only show slices that have data!
+              }
+            }
+            return ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          }
+        },
+        onClick: (e: any, legendItem: any, legend: any) => {
+          if (studentChartType === "doughnut") {
+            const index = legendItem.index;
+            const chart = legend.chart;
+            chart.toggleDataVisibility(index);
+            chart.update();
+          } else {
+            ChartJS.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+          }
+        }
+      },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
@@ -216,22 +356,25 @@ const DashboardPage: React.FC = () => {
   const revenueAmounts = revenueList.map(
     (item: any) => Number(item.total_amount) || 0
   );
+  const hasRevenueData = revenueAmounts.some((val: number) => val > 0);
 
   const revenueChartData = {
     labels: revenueLabels,
     datasets: [
       {
+        type: revenueChartType,
         label: "Revenue",
         data: revenueAmounts,
         backgroundColor: revenueChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : revenueChartType === "line" ? "rgba(16, 185, 129, 0.14)" : "rgba(16, 185, 129, 1)", // Emerald
-        borderColor: revenueChartType === "doughnut" ? "#ffffff" : revenueChartType === "line" ? "#10b981" : "#333333",
+        borderColor: revenueChartType === "doughnut" ? "#ffffff" : revenueChartType === "line" ? "#10b981" : "#ffffffff",
         hoverBackgroundColor: revenueChartType === "doughnut" ? undefined : "rgba(5, 150, 105, 1)",
         hoverBorderColor: revenueChartType === "doughnut" ? undefined : "#000000",
         hoverOffset: revenueChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
-        barPercentage: 1.0,
-        categoryPercentage: 1.0,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
         fill: revenueChartType === "line",
         tension: 0.4,
         borderWidth: revenueChartType === "line" ? 3 : 1,
@@ -247,12 +390,64 @@ const DashboardPage: React.FC = () => {
   const revenueChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 800,
-      easing: "easeInOutQuart" as const,
+    animation: revenueChartType === "doughnut" ? {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+    } : {
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+      y: {
+        from: (ctx: any) => ctx.chart.scales?.y?.getPixelForValue(0),
+        duration: 1200,
+        easing: "easeOutQuart" as const,
+      },
+      delay: (ctx: any) => ctx.dataIndex * 80,
     },
     plugins: {
-      legend: { display: revenueChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
+      legend: {
+        display: revenueChartType === "doughnut",
+        position: "bottom" as const,
+        labels: {
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: { size: 11, weight: "600" },
+          generateLabels: (chart: any) => {
+            if (revenueChartType === "doughnut") {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label: string, i: number) => {
+                  const meta = chart.getDatasetMeta(0);
+                  const style = meta.controller.getStyle(i);
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: label,
+                    fillStyle: style.backgroundColor,
+                    strokeStyle: style.borderColor,
+                    lineWidth: style.borderWidth,
+                    hidden: isNaN(value) || meta.data[i].hidden,
+                    index: i,
+                    _value: value
+                  };
+                }).filter((item: any) => item._value > 0); // Only show slices that have data!
+              }
+            }
+            return ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          }
+        },
+        onClick: (e: any, legendItem: any, legend: any) => {
+          if (revenueChartType === "doughnut") {
+            const index = legendItem.index;
+            const chart = legend.chart;
+            chart.toggleDataVisibility(index);
+            chart.update();
+          } else {
+            ChartJS.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+          }
+        }
+      },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
@@ -295,22 +490,25 @@ const DashboardPage: React.FC = () => {
   const videoWatchedCounts = videoList.map(
     (item: any) => Number(item.total_video_watched) || 0
   );
+  const hasVideoData = videoWatchedCounts.some((val: number) => val > 0);
 
   const videoChartData = {
     labels: videoLabels,
     datasets: [
       {
+        type: videoChartType,
         label: "Videos Watched",
         data: videoWatchedCounts,
         backgroundColor: videoChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : videoChartType === "line" ? "rgba(245, 158, 11, 0.14)" : "rgba(245, 158, 11, 1)", // Amber
-        borderColor: videoChartType === "doughnut" ? "#ffffff" : videoChartType === "line" ? "#f59e0b" : "#333333",
+        borderColor: videoChartType === "doughnut" ? "#ffffff" : videoChartType === "line" ? "#f59e0b" : "#ffffffff",
         hoverBackgroundColor: videoChartType === "doughnut" ? undefined : "rgba(217, 119, 6, 1)",
         hoverBorderColor: videoChartType === "doughnut" ? undefined : "#000000",
         hoverOffset: videoChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
-        barPercentage: 1.0,
-        categoryPercentage: 1.0,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
         fill: videoChartType === "line",
         tension: 0.4,
         borderWidth: videoChartType === "line" ? 3 : 1,
@@ -326,12 +524,64 @@ const DashboardPage: React.FC = () => {
   const videoChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 800,
-      easing: "easeInOutQuart" as const,
+    animation: videoChartType === "doughnut" ? {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+    } : {
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+      y: {
+        from: (ctx: any) => ctx.chart.scales?.y?.getPixelForValue(0),
+        duration: 1200,
+        easing: "easeOutQuart" as const,
+      },
+      delay: (ctx: any) => ctx.dataIndex * 80,
     },
     plugins: {
-      legend: { display: videoChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
+      legend: {
+        display: videoChartType === "doughnut",
+        position: "bottom" as const,
+        labels: {
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: { size: 11, weight: "600" },
+          generateLabels: (chart: any) => {
+            if (videoChartType === "doughnut") {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label: string, i: number) => {
+                  const meta = chart.getDatasetMeta(0);
+                  const style = meta.controller.getStyle(i);
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: label,
+                    fillStyle: style.backgroundColor,
+                    strokeStyle: style.borderColor,
+                    lineWidth: style.borderWidth,
+                    hidden: isNaN(value) || meta.data[i].hidden,
+                    index: i,
+                    _value: value
+                  };
+                }).filter((item: any) => item._value > 0); // Only show slices that have data!
+              }
+            }
+            return ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          }
+        },
+        onClick: (e: any, legendItem: any, legend: any) => {
+          if (videoChartType === "doughnut") {
+            const index = legendItem.index;
+            const chart = legend.chart;
+            chart.toggleDataVisibility(index);
+            chart.update();
+          } else {
+            ChartJS.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+          }
+        }
+      },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
@@ -368,22 +618,25 @@ const DashboardPage: React.FC = () => {
   const orderCounts = orderList.map(
     (item: any) => Number(item.total_orders) || 0
   );
+  const hasOrderData = orderCounts.some((val: number) => val > 0);
 
   const orderChartData = {
     labels: orderLabels,
     datasets: [
       {
+        type: orderChartType,
         label: "Orders",
         data: orderCounts,
         backgroundColor: orderChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : orderChartType === "line" ? "rgba(139, 92, 246, 0.14)" : "rgba(139, 92, 246, 1)", // Purple
-        borderColor: orderChartType === "doughnut" ? "#ffffff" : orderChartType === "line" ? "#8b5cf6" : "#333333",
+        borderColor: orderChartType === "doughnut" ? "#ffffff" : orderChartType === "line" ? "#8b5cf6" : "#ffffffff",
         hoverBackgroundColor: orderChartType === "doughnut" ? undefined : "rgba(124, 58, 237, 1)",
         hoverBorderColor: orderChartType === "doughnut" ? undefined : "#000000",
         hoverOffset: orderChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
-        barPercentage: 1.0,
-        categoryPercentage: 1.0,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
         fill: orderChartType === "line",
         tension: 0.4,
         borderWidth: orderChartType === "line" ? 3 : 1,
@@ -399,12 +652,64 @@ const DashboardPage: React.FC = () => {
   const orderChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 800,
-      easing: "easeInOutQuart" as const,
+    animation: orderChartType === "doughnut" ? {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+    } : {
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+      y: {
+        from: (ctx: any) => ctx.chart.scales?.y?.getPixelForValue(0),
+        duration: 1200,
+        easing: "easeOutQuart" as const,
+      },
+      delay: (ctx: any) => ctx.dataIndex * 80,
     },
     plugins: {
-      legend: { display: orderChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
+      legend: {
+        display: orderChartType === "doughnut",
+        position: "bottom" as const,
+        labels: {
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: { size: 11, weight: "600" },
+          generateLabels: (chart: any) => {
+            if (orderChartType === "doughnut") {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label: string, i: number) => {
+                  const meta = chart.getDatasetMeta(0);
+                  const style = meta.controller.getStyle(i);
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: label,
+                    fillStyle: style.backgroundColor,
+                    strokeStyle: style.borderColor,
+                    lineWidth: style.borderWidth,
+                    hidden: isNaN(value) || meta.data[i].hidden,
+                    index: i,
+                    _value: value
+                  };
+                }).filter((item: any) => item._value > 0); // Only show slices that have data!
+              }
+            }
+            return ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          }
+        },
+        onClick: (e: any, legendItem: any, legend: any) => {
+          if (orderChartType === "doughnut") {
+            const index = legendItem.index;
+            const chart = legend.chart;
+            chart.toggleDataVisibility(index);
+            chart.update();
+          } else {
+            ChartJS.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+          }
+        }
+      },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
@@ -434,7 +739,7 @@ const DashboardPage: React.FC = () => {
   // ==========================================
   // CHART 5: Corporate Admins (Bar / Line)
   // ==========================================
-  const corpAdminList = Array.isArray(corporateAdminGraph) ? [...corporateAdminGraph].reverse() : [];
+  const corpAdminList = Array.isArray(corporateAdminGraph) ? corporateAdminGraph : [];
   const corpAdminLabels = corpAdminList.map((item: any) => {
     if (!item.start_date) return "";
     if (corporateAdminFilter === "year") return moment(item.start_date).format("YYYY");
@@ -444,22 +749,25 @@ const DashboardPage: React.FC = () => {
   const corpAdminCounts = corpAdminList.map(
     (item: any) => Number(item.total_corporate_registered) || 0
   );
+  const hasCorpAdminData = corpAdminCounts.some((val: number) => val > 0);
 
   const corpAdminChartData = {
     labels: corpAdminLabels,
     datasets: [
       {
+        type: corporateAdminChartType,
         label: "Corporate Admins",
         data: corpAdminCounts,
         backgroundColor: corporateAdminChartType === "doughnut" ? ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6", "#f97316", "#06b6d4", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"] : corporateAdminChartType === "line" ? "rgba(6, 182, 212, 0.14)" : "rgba(6, 182, 212, 1)", // Cyan
-        borderColor: corporateAdminChartType === "doughnut" ? "#ffffff" : corporateAdminChartType === "line" ? "#06b6d4" : "#333333",
+        borderColor: corporateAdminChartType === "doughnut" ? "#ffffff" : corporateAdminChartType === "line" ? "#06b6d4" : "#ffffffff",
         hoverBackgroundColor: corporateAdminChartType === "doughnut" ? undefined : "rgba(8, 145, 178, 1)",
         hoverBorderColor: corporateAdminChartType === "doughnut" ? undefined : "#000000",
         hoverOffset: corporateAdminChartType === "doughnut" ? 8 : 0,
         borderRadius: 0,
         borderSkipped: false as const,
-        barPercentage: 1.0,
-        categoryPercentage: 1.0,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
         fill: corporateAdminChartType === "line",
         tension: 0.4,
         borderWidth: corporateAdminChartType === "line" ? 3 : 1,
@@ -475,12 +783,64 @@ const DashboardPage: React.FC = () => {
   const corpAdminChartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: {
-      duration: 800,
-      easing: "easeInOutQuart" as const,
+    animation: corporateAdminChartType === "doughnut" ? {
+      animateRotate: true,
+      animateScale: true,
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+    } : {
+      duration: 1200,
+      easing: "easeOutQuart" as const,
+      y: {
+        from: (ctx: any) => ctx.chart.scales?.y?.getPixelForValue(0),
+        duration: 1200,
+        easing: "easeOutQuart" as const,
+      },
+      delay: (ctx: any) => ctx.dataIndex * 80,
     },
     plugins: {
-      legend: { display: corporateAdminChartType === "doughnut", position: "bottom" as const, labels: { padding: 12, usePointStyle: true, pointStyle: "circle", font: { size: 11, weight: "600" } } },
+      legend: {
+        display: corporateAdminChartType === "doughnut",
+        position: "bottom" as const,
+        labels: {
+          padding: 12,
+          usePointStyle: true,
+          pointStyle: "circle",
+          font: { size: 11, weight: "600" },
+          generateLabels: (chart: any) => {
+            if (corporateAdminChartType === "doughnut") {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label: string, i: number) => {
+                  const meta = chart.getDatasetMeta(0);
+                  const style = meta.controller.getStyle(i);
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: label,
+                    fillStyle: style.backgroundColor,
+                    strokeStyle: style.borderColor,
+                    lineWidth: style.borderWidth,
+                    hidden: isNaN(value) || meta.data[i].hidden,
+                    index: i,
+                    _value: value
+                  };
+                }).filter((item: any) => item._value > 0); // Only show slices that have data!
+              }
+            }
+            return ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          }
+        },
+        onClick: (e: any, legendItem: any, legend: any) => {
+          if (corporateAdminChartType === "doughnut") {
+            const index = legendItem.index;
+            const chart = legend.chart;
+            chart.toggleDataVisibility(index);
+            chart.update();
+          } else {
+            ChartJS.defaults.plugins.legend.onClick.call(legend, e, legendItem, legend);
+          }
+        }
+      },
       tooltip: {
         backgroundColor: "#222222",
         titleFont: { size: 12, weight: "bold" },
@@ -507,18 +867,7 @@ const DashboardPage: React.FC = () => {
     },
   };
 
-  if (loading && !counters) {
-    return (
-      <div className="flex justify-center items-center h-80">
-        <div className="flex flex-col items-center gap-3 text-indigo-600">
-          <Loader2 className="w-10 h-10 animate-spin" />
-          <span className="text-sm font-medium text-gray-600">
-            Loading dashboard analytics...
-          </span>
-        </div>
-      </div>
-    );
-  }
+  if (!counters) return <DashboardSkeleton />;
 
   return (
     <div className="text-gray-900 font-sans space-y-6 pb-8">
@@ -674,7 +1023,7 @@ const DashboardPage: React.FC = () => {
 
       {/* 3. The 4 Distinct Charts (Bar, Line, Doughnut, Pie) */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* ============================================================ */}
         {/* CHART 1: BAR CHART (Student Registrations) */}
         {/* ============================================================ */}
@@ -700,33 +1049,30 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => setStudentChartType("bar")}
                   title="Bar Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    studentChartType === "bar"
+                  className={`p-1.5 rounded-md transition ${studentChartType === "bar"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <BarChart2 size={13} />
                 </button>
                 <button
                   onClick={() => setStudentChartType("line")}
                   title="Line Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    studentChartType === "line"
+                  className={`p-1.5 rounded-md transition ${studentChartType === "line"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <LineChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setStudentChartType("doughnut")}
                   title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    studentChartType === "doughnut"
+                  className={`p-1.5 rounded-md transition ${studentChartType === "doughnut"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <DoughnutChartIcon size={13} />
                 </button>
@@ -738,11 +1084,10 @@ const DashboardPage: React.FC = () => {
                   <button
                     key={f}
                     onClick={() => handleStudentFilter(f)}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${
-                      studentFilter === f
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${studentFilter === f
                         ? "bg-indigo-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -761,28 +1106,24 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {studentList.length > 0 ? (
+            {(studentChartType === "doughnut" ? hasStudentData : studentList.length > 0) ? (
               <div className="w-full h-full">
-                {studentChartType === "bar" ? (
-                  <Bar key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
-                ) : studentChartType === "line" ? (
-                  <Line key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
-                ) : (
-                  <Doughnut key={studentFilter + studentChartType} data={studentChartData} options={studentChartOptions} />
-                )}
+                <Chart type="bar" data={studentChartData} options={studentChartOptions} />
               </div>
             ) : (
               !loadingStudentsChart && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
-                  <Users size={24} className="opacity-40" />
-                  <p>No registration data recorded</p>
-                </div>
+                <EmptyChartState
+                  icon={Users}
+                  title="Registrations"
+                  period={studentFilter}
+                  themeColor="text-indigo-500"
+                />
               )
             )}
           </div>
         </div>
 
-       
+
         <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5 flex flex-col h-[390px] transition-all hover:shadow-[0_6px_24px_rgba(16,185,129,0.06)]">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
@@ -805,33 +1146,30 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => setRevenueChartType("line")}
                   title="Line Area Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    revenueChartType === "line"
+                  className={`p-1.5 rounded-md transition ${revenueChartType === "line"
                       ? "bg-white text-emerald-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <LineChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setRevenueChartType("doughnut")}
                   title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    revenueChartType === "doughnut"
+                  className={`p-1.5 rounded-md transition ${revenueChartType === "doughnut"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <DoughnutChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setRevenueChartType("bar")}
                   title="Bar Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    revenueChartType === "bar"
+                  className={`p-1.5 rounded-md transition ${revenueChartType === "bar"
                       ? "bg-white text-emerald-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <BarChart2 size={13} />
                 </button>
@@ -843,11 +1181,10 @@ const DashboardPage: React.FC = () => {
                   <button
                     key={f}
                     onClick={() => handleRevenueFilter(f)}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${
-                      revenueFilter === f
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${revenueFilter === f
                         ? "bg-emerald-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -866,28 +1203,24 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {revenueList.length > 0 ? (
+            {(revenueChartType === "doughnut" ? hasRevenueData : revenueList.length > 0) ? (
               <div className="w-full h-full">
-                {revenueChartType === "bar" ? (
-                  <Bar key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
-                ) : revenueChartType === "line" ? (
-                  <Line key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
-                ) : (
-                  <Doughnut key={revenueFilter + revenueChartType} data={revenueChartData} options={revenueChartOptions} />
-                )}
+                <Chart type="bar" data={revenueChartData} options={revenueChartOptions} />
               </div>
             ) : (
               !loadingRevenueChart && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
-                  <CreditCard size={24} className="opacity-40" />
-                  <p>No revenue data recorded</p>
-                </div>
+                <EmptyChartState
+                  icon={CreditCard}
+                  title="Revenue"
+                  period={revenueFilter}
+                  themeColor="text-emerald-500"
+                />
               )
             )}
           </div>
         </div>
 
-       
+
         <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5 flex flex-col h-[390px] transition-all hover:shadow-[0_6px_24px_rgba(245,158,11,0.06)]">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
@@ -910,33 +1243,30 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => setVideoChartType("bar")}
                   title="Bar Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    videoChartType === "bar"
+                  className={`p-1.5 rounded-md transition ${videoChartType === "bar"
                       ? "bg-white text-amber-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <BarChart2 size={13} />
                 </button>
                 <button
                   onClick={() => setVideoChartType("line")}
                   title="Line Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    videoChartType === "line"
+                  className={`p-1.5 rounded-md transition ${videoChartType === "line"
                       ? "bg-white text-amber-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <LineChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setVideoChartType("doughnut")}
                   title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    videoChartType === "doughnut"
+                  className={`p-1.5 rounded-md transition ${videoChartType === "doughnut"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <DoughnutChartIcon size={13} />
                 </button>
@@ -948,11 +1278,10 @@ const DashboardPage: React.FC = () => {
                   <button
                     key={f}
                     onClick={() => handleVideoFilter(f)}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${
-                      videoFilter === f
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${videoFilter === f
                         ? "bg-amber-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -971,28 +1300,24 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {videoList.length > 0 ? (
+            {(videoChartType === "doughnut" ? hasVideoData : videoList.length > 0) ? (
               <div className="w-full h-full">
-                {videoChartType === "bar" ? (
-                  <Bar key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
-                ) : videoChartType === "line" ? (
-                  <Line key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
-                ) : (
-                  <Doughnut key={videoFilter + videoChartType} data={videoChartData} options={videoChartOptions} />
-                )}
+                <Chart type="bar" data={videoChartData} options={videoChartOptions} />
               </div>
             ) : (
               !loadingVideoChart && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
-                  <PlayCircle size={24} className="opacity-40" />
-                  <p>No video activity recorded</p>
-                </div>
+                <EmptyChartState
+                  icon={PlayCircle}
+                  title="Watch Activity"
+                  period={videoFilter}
+                  themeColor="text-amber-500"
+                />
               )
             )}
           </div>
         </div>
 
-  
+
         <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5 flex flex-col h-[390px] transition-all hover:shadow-[0_6px_24px_rgba(139,92,246,0.06)]">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
@@ -1015,33 +1340,30 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => setOrderChartType("bar")}
                   title="Bar Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    orderChartType === "bar"
+                  className={`p-1.5 rounded-md transition ${orderChartType === "bar"
                       ? "bg-white text-purple-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <BarChart2 size={13} />
                 </button>
                 <button
                   onClick={() => setOrderChartType("line")}
                   title="Line Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    orderChartType === "line"
+                  className={`p-1.5 rounded-md transition ${orderChartType === "line"
                       ? "bg-white text-purple-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <LineChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setOrderChartType("doughnut")}
                   title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    orderChartType === "doughnut"
+                  className={`p-1.5 rounded-md transition ${orderChartType === "doughnut"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <DoughnutChartIcon size={13} />
                 </button>
@@ -1053,11 +1375,10 @@ const DashboardPage: React.FC = () => {
                   <button
                     key={f}
                     onClick={() => handleOrderFilter(f)}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${
-                      orderFilter === f
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${orderFilter === f
                         ? "bg-purple-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -1076,28 +1397,24 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {orderList.length > 0 ? (
+            {(orderChartType === "doughnut" ? hasOrderData : orderList.length > 0) ? (
               <div className="w-full h-full">
-                {orderChartType === "bar" ? (
-                  <Bar key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
-                ) : orderChartType === "line" ? (
-                  <Line key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
-                ) : (
-                  <Doughnut key={orderFilter + orderChartType} data={orderChartData} options={orderChartOptions} />
-                )}
+                <Chart type="bar" data={orderChartData} options={orderChartOptions} />
               </div>
             ) : (
               !loadingOrderChart && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
-                  <ShoppingBag size={24} className="opacity-40" />
-                  <p>No order data recorded</p>
-                </div>
+                <EmptyChartState
+                  icon={ShoppingBag}
+                  title="Orders"
+                  period={orderFilter}
+                  themeColor="text-purple-500"
+                />
               )
             )}
           </div>
         </div>
 
-       
+
         <div className="w-full lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] p-5 flex flex-col h-[390px] transition-all hover:shadow-[0_6px_24px_rgba(6,182,212,0.06)]">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
@@ -1120,33 +1437,30 @@ const DashboardPage: React.FC = () => {
                 <button
                   onClick={() => setCorporateAdminChartType("bar")}
                   title="Bar Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    corporateAdminChartType === "bar"
+                  className={`p-1.5 rounded-md transition ${corporateAdminChartType === "bar"
                       ? "bg-white text-cyan-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <BarChart2 size={13} />
                 </button>
                 <button
                   onClick={() => setCorporateAdminChartType("line")}
                   title="Line Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    corporateAdminChartType === "line"
+                  className={`p-1.5 rounded-md transition ${corporateAdminChartType === "line"
                       ? "bg-white text-cyan-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <LineChartIcon size={13} />
                 </button>
                 <button
                   onClick={() => setCorporateAdminChartType("doughnut")}
                   title="Doughnut Chart"
-                  className={`p-1.5 rounded-md transition ${
-                    corporateAdminChartType === "doughnut"
+                  className={`p-1.5 rounded-md transition ${corporateAdminChartType === "doughnut"
                       ? "bg-white text-indigo-600 shadow-xs"
                       : "text-gray-500 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <DoughnutChartIcon size={13} />
                 </button>
@@ -1158,11 +1472,10 @@ const DashboardPage: React.FC = () => {
                   <button
                     key={f}
                     onClick={() => handleCorporateAdminFilter(f)}
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${
-                      corporateAdminFilter === f
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all uppercase ${corporateAdminFilter === f
                         ? "bg-cyan-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-white/60"
-                    }`}
+                      }`}
                   >
                     {f}
                   </button>
@@ -1181,22 +1494,18 @@ const DashboardPage: React.FC = () => {
               </div>
             )}
 
-            {corpAdminList.length > 0 ? (
+            {(corporateAdminChartType === "doughnut" ? hasCorpAdminData : corpAdminList.length > 0) ? (
               <div className="w-full h-full">
-                {corporateAdminChartType === "bar" ? (
-                  <Bar key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
-                ) : corporateAdminChartType === "line" ? (
-                  <Line key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
-                ) : (
-                  <Doughnut key={corporateAdminFilter + corporateAdminChartType} data={corpAdminChartData} options={corpAdminChartOptions} />
-                )}
+                <Chart type="bar" data={corpAdminChartData} options={corpAdminChartOptions} />
               </div>
             ) : (
               !loadingCorporateAdminChart && (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 text-xs gap-1">
-                  <Building2 size={24} className="opacity-40" />
-                  <p>No corporate admins recorded</p>
-                </div>
+                <EmptyChartState
+                  icon={Building2}
+                  title="Corporate Admins"
+                  period={corporateAdminFilter}
+                  themeColor="text-cyan-500"
+                />
               )
             )}
           </div>
@@ -1204,7 +1513,7 @@ const DashboardPage: React.FC = () => {
 
       </section>
 
- 
+
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 1: Recent Enrollments (Students) */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] flex flex-col justify-between">

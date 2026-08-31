@@ -1535,3 +1535,45 @@ export interface University {
   student_lists?: any[];
   active_subscription?: any[];
 }
+
+export interface UserProfile {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone1?: string | null;
+  phone2?: string | null;
+  phone_1?: string | null;
+  phone_2?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  image?: string | null;
+  banner_image?: string | null;
+  pincode?: string | null;
+  [key: string]: any;
+}
+
+export interface UpdateUserProfilePayload {
+  first_name?: string;
+  last_name?: string;
+  phone_1?: string;
+  phone_2?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
+  [key: string]: any;
+}
+
+export interface ProfileState {
+  data: UserProfile | null;
+  loading: boolean;
+  error: string | null;
+  updateLoading: boolean;
+  imageLoading: boolean;
+  bannerLoading: boolean;
+}
+

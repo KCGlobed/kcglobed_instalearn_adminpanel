@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
       name:'Manage Job Application', icon:<BriefcaseBusiness className='mr-2'/>, path:'/dashboard/job-application'
     },
     {
-      name:'Manage University Subscription', icon:<University className='mr-2'/>, path:'/dashboard/university-subscription'
+      name:'Manage University Request', icon:<University className='mr-2'/>, path:'/dashboard/university-request'
     },
     {
       name:'Manage Partners Request', icon:<Handshake className='mr-2'/>, path:'/dashboard/partners-request'

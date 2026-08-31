@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { downloadCorporateStudentActivityLogPdfApi, downloadCorporateStudentActivityLogExcelApi, fetchCorporateStudentActivityLogApi } from "../../services/apiServices";
+import { downloadUniversityStudentLoginActivityPdfApi, downloadUniversityStudentLoginActivityExcelApi, fetchUniversityStudentLoginActivityApi } from "../../services/apiServices";
 import { Download, Activity, Globe, Calendar, FileText, TrendingUp } from "lucide-react";
 import toast from "react-hot-toast";
 import moment from "moment";
 
-interface CorporateStudentLoginActivityViewProps {
+interface UniversityStudentLoginActivityViewProps {
     studentId: number;
 }
 
-const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginActivityViewProps) => {
+const UniversityStudentLoginActivityView = ({ studentId }: UniversityStudentLoginActivityViewProps) => {
     const [loading, setLoading] = useState(false);
     const [loginActivity, setLoginActivity] = useState<any[]>([]);
 
@@ -21,7 +21,7 @@ const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginA
     const fetchLoginActivity = async () => {
         try {
             setLoading(true);
-            const res = await fetchCorporateStudentActivityLogApi(studentId);
+            const res = await fetchUniversityStudentLoginActivityApi(studentId);
             if (res?.data) {
                 setLoginActivity(Array.isArray(res.data) ? res.data : (res.data.results || []));
             } else if (Array.isArray(res)) {
@@ -41,7 +41,7 @@ const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginA
         }
 
         try {
-            const apiCall = type === 'pdf' ? downloadCorporateStudentActivityLogPdfApi : downloadCorporateStudentActivityLogExcelApi;
+            const apiCall = type === 'pdf' ? downloadUniversityStudentLoginActivityPdfApi : downloadUniversityStudentLoginActivityExcelApi;
             const response: any = await apiCall(studentId);
 
             const extension = type === 'excel' ? 'csv' : 'pdf';
@@ -97,10 +97,10 @@ const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginA
     };
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6 p-1 h-[75vh] min-h-[600px] overflow-hidden w-full">
+        <div className="w-full flex flex-col lg:flex-row gap-6 p-1 min-h-[600px] h-[75vh] overflow-hidden">
             {/* Left Column: Actions */}
-            <div className="w-full lg:w-1/3 flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-4">
-                <div className="bg-gray rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col h-full">
+            <div className="w-full lg:w-1/3 flex flex-col gap-6 overflow-y-auto pr-2 pb-4">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <div className="flex items-center gap-4 mb-4 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
                         <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600 shadow-sm border border-indigo-100">
                             <Activity size={24} />
@@ -114,23 +114,23 @@ const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginA
                             </p>
                         </div>
                     </div>
+                </div>
 
-                    <div className="bg-indigo-600 rounded-xl p-5 text-white shadow-md shadow-indigo-100 mt-auto shrink-0">
-                        <h3 className="font-bold mb-3 flex items-center gap-2">Download Reports</h3>
-                        <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => handleDownload('pdf')}
-                                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white text-indigo-600 rounded-lg font-bold text-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
-                            >
-                                <Download size={16} /> Download PDF
-                            </button>
-                            <button
-                                onClick={() => handleDownload('excel')}
-                                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-indigo-500/50 text-white rounded-lg font-bold text-sm border border-indigo-400/30 transition-all hover:bg-indigo-500/80"
-                            >
-                                <Download size={16} /> Download Excel
-                            </button>
-                        </div>
+                <div className="bg-indigo-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-100 mt-auto">
+                    <h3 className="font-bold mb-3 flex items-center gap-2">Download Reports</h3>
+                    <div className="flex flex-col gap-3">
+                        <button
+                            onClick={() => handleDownload('pdf')}
+                            className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-white text-indigo-600 rounded-xl font-bold text-sm transition-all hover:shadow-xl hover:-translate-y-0.5"
+                        >
+                            <Download size={16} /> Download PDF
+                        </button>
+                        <button
+                            onClick={() => handleDownload('excel')}
+                            className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-indigo-500/50 text-white rounded-xl font-bold text-sm border border-indigo-400/30 transition-all hover:bg-indigo-500/80"
+                        >
+                            <Download size={16} /> Download Excel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -198,4 +198,5 @@ const CorporateStudentLoginActivityView = ({ studentId }: CorporateStudentLoginA
     );
 };
 
-export default CorporateStudentLoginActivityView;
+export default UniversityStudentLoginActivityView;
+
