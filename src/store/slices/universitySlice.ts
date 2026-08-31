@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Pagination, University } from "../../utils/types";
-import { fetchUniversityApi, updateUniversityStatusApi, approveRejectUniversityApi } from "../../services/apiServices";
+import { fetchUniversityApi, updateUniversityStatusApi, approveRejectUniversityApi, createUniversityApi, addUniversityStudentApi } from "../../services/apiServices";
 
 interface UniversityState extends Pagination<University> { }
 
@@ -62,6 +62,30 @@ export const approveRejectUniversity = createAsyncThunk(
     }
 );
 
+export const addUniversity = createAsyncThunk<University, any, { rejectValue: string }>(
+    "university/addUniversity",
+    async (universityData, { rejectWithValue }) => {
+        try {
+            const data = await createUniversityApi(universityData);
+            return data?.data ? data.data : data;
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to create university");
+        }
+    }
+);
+
+export const addUniversityStudent = createAsyncThunk<any, FormData, { rejectValue: string }>(
+    "university/addUniversityStudent",
+    async (studentData, { rejectWithValue }) => {
+        try {
+            const data = await addUniversityStudentApi(studentData);
+            return data?.data ? data.data : data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || error.message || "Failed to add university student");
+        }
+    }
+);
+
 const universitySlice = createSlice({
     name: 'university',
     initialState,
@@ -94,17 +118,61 @@ const universitySlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
+            .addCase(updateUniversityStatus.pending, (state, action) => {
+                const { id, status } = action.meta.arg;
+                const index = state.data.findIndex((item) => item.id === id);
+                if (index !== -1) {
+                    (state.data[index] as any)._prevStatus = state.data[index].status;
+                    state.data[index].status = !!status;
+                }
+            })
             .addCase(updateUniversityStatus.fulfilled, (state, action) => {
                 const index = state.data.findIndex((item) => item.id === action.payload.id);
                 if (index !== -1) {
-                    state.data[index].status = !!action.payload.status;
+                    delete (state.data[index] as any)._prevStatus;
+                }
+            })
+            .addCase(updateUniversityStatus.rejected, (state, action) => {
+                const { id } = action.meta.arg;
+                const index = state.data.findIndex((item) => item.id === id);
+                if (index !== -1 && (state.data[index] as any)._prevStatus !== undefined) {
+                    state.data[index].status = (state.data[index] as any)._prevStatus;
+                    delete (state.data[index] as any)._prevStatus;
+                }
+            })
+            .addCase(approveRejectUniversity.pending, (state, action) => {
+                const { id, approved_status } = action.meta.arg;
+                const index = state.data.findIndex((item) => item.id === id);
+                if (index !== -1) {
+                    (state.data[index] as any)._prevApprovedStatus = state.data[index].approved_status;
+                    state.data[index].approved_status = approved_status;
                 }
             })
             .addCase(approveRejectUniversity.fulfilled, (state, action) => {
                 const index = state.data.findIndex((item) => item.id === action.payload.id);
                 if (index !== -1) {
-                    state.data[index].approved_status = action.payload.approved_status;
+                    delete (state.data[index] as any)._prevApprovedStatus;
                 }
+            })
+            .addCase(approveRejectUniversity.rejected, (state, action) => {
+                const { id } = action.meta.arg;
+                const index = state.data.findIndex((item) => item.id === id);
+                if (index !== -1 && (state.data[index] as any)._prevApprovedStatus !== undefined) {
+                    state.data[index].approved_status = (state.data[index] as any)._prevApprovedStatus;
+                    delete (state.data[index] as any)._prevApprovedStatus;
+                }
+            })
+            .addCase(addUniversity.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(addUniversity.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data.unshift(action.payload);
+            })
+            .addCase(addUniversity.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
     }
 })

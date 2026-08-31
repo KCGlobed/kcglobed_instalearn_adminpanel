@@ -50,11 +50,13 @@ import communityPostReducer from "./slices/communityPostSlice";
 import jobApplicationReducer from "./slices/JobApplicationSlice";
 import partnerReducer from "./slices/partnerSlice";
 import universityReducer from "./slices/universitySlice";
+import profileReducer from "./slices/profileSlice";
 
 export const store = configureStore({
   reducer: {
     dashboard: dashboardReducer,
     auth: authReducer,
+    profile: profileReducer,
     category: categoryReducer,
     subcategory: subcategoryReducer,
     video: videoReducer,

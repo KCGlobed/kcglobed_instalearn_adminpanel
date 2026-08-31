@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import {
     Calendar,
@@ -15,16 +16,17 @@ import {
     Clock,
     CheckCircle2,
     XCircle,
+    ChevronLeft
 } from 'lucide-react';
 import { fetchCorporateAdminDetailApi } from '../../services/apiServices';
 import { useModal } from '../../context/ModalContext';
-import CorporateAdminForm from '../Forms/CorporateAdminForm';
+import CorporateAdminForm from '../../components/Forms/CorporateAdminForm';
 import TabsModal from '../../components/Modal/TabsModal';
-import CorporateStudentVideoReport from './CorporateStudentVideoReport';
-import CorporateStudentNotes from './CorporateStudentNotes';
-import CorporateStudentQuizReport from './CorporateStudentQuizReport';
-import CorporateStudentReminder from './CorporateStudentReminder';
-import CorporateStudentLoginActivityView from './CorporateStudentLoginActivityView';
+import CorporateStudentVideoReport from '../../components/View/CorporateStudentVideoReport';
+import CorporateStudentNotes from '../../components/View/CorporateStudentNotes';
+import CorporateStudentQuizReport from '../../components/View/CorporateStudentQuizReport';
+import CorporateStudentReminder from '../../components/View/CorporateStudentReminder';
+import CorporateStudentLoginActivityView from '../../components/View/CorporateStudentLoginActivityView';
 import { PlayCircle, FileText, HelpCircle, Bell, Eye } from 'lucide-react';
 
 const CARD = 'bg-white rounded-[22px] border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300';
@@ -53,8 +55,6 @@ const SkeletonLoader = () => (
         </div>
     </div>
 );
-
-
 
 const getSubscriptionType = (type: any) => {
     const types: { [key: string]: string } = { '1': 'Monthly', '2': 'Half Yearly', '3': 'Yearly' };
@@ -125,12 +125,9 @@ const StudentAvatar: React.FC<{ student: any }> = ({ student }) => {
     );
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
-interface CorporateAdminViewProps {
-    adminId: number;
-}
-
-const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
+const CorporateAdminProfile = () => {
+    const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const [adminData, setAdminData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
@@ -140,7 +137,7 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
         const loadData = async () => {
             try {
                 setLoading(true);
-                const response = await fetchCorporateAdminDetailApi(adminId);
+                const response = await fetchCorporateAdminDetailApi(Number(id));
                 const data = response?.data?.data || response?.data || response;
                 if (data) {
                     setAdminData(data);
@@ -152,8 +149,8 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                 setLoading(false);
             }
         };
-        if (adminId) loadData();
-    }, [adminId]);
+        if (id) loadData();
+    }, [id]);
 
     if (loading) return <SkeletonLoader />;
 
@@ -163,6 +160,12 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                 <User className="w-12 h-12 text-gray-300 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900">No Admin Data Found</h3>
                 <p className="text-sm text-gray-500 mt-1">We couldn't retrieve the details for this corporate admin.</p>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mt-6 flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors text-sm font-semibold"
+                >
+                    <ChevronLeft size={16} /> Go Back
+                </button>
             </div>
         );
     }
@@ -180,8 +183,16 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
     const adminInitials = `${adminData.first_name?.charAt(0) || ''}${adminData.last_name?.charAt(0) || ''}`.toUpperCase() || (adminData.first_name ? adminData.first_name.charAt(0).toUpperCase() : 'A');
 
     return (
-        <div className="bg-gray-50 font-sans max-h-[85vh] overflow-y-auto custom-scrollbar">
+        <div className="bg-gray-50 font-sans min-h-screen">
             <div className="max-w-[1400px] mx-auto p-4 sm:p-5 lg:p-6 space-y-6">
+
+                {/* Back button */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-1.5 text-sm font-bold text-gray-500 hover:text-indigo-600 transition-colors"
+                >
+                    <ChevronLeft size={16} /> Back to Corporate Admins
+                </button>
 
                 {/* ── SECTION 1: Hero / Profile Card ── */}
                 <div className="relative rounded-[24px] p-6 md:p-8 border border-gray-100 shadow-[0_4px_24px_rgba(15,23,42,0.05)] overflow-hidden bg-gradient-to-br from-white via-white to-indigo-50/40">
@@ -330,7 +341,7 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
                                                     <button
                                                         onClick={() => {
                                                             showModal({
-                                                                title: `${student.first_name} ${student.last_name} - Reports`,
+                                                                title: `Reports: ${student.first_name} ${student.last_name}`,
                                                                 content: (
                                                                     <TabsModal
                                                                         defaultActiveKey="video"
@@ -479,4 +490,4 @@ const CorporateAdminView: React.FC<CorporateAdminViewProps> = ({ adminId }) => {
     );
 };
 
-export default CorporateAdminView;
+export default CorporateAdminProfile;
