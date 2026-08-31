@@ -1733,6 +1733,10 @@ export const fetchUniversityApi = async (page = 1, search: string = "", first_na
   return res;
 };
 
+export const createUniversityApi = async (payload: any): Promise<any> => {
+  return await apiRequest('university/create-university/', 'POST', payload);
+};
+
 export const viewUniversityApi = async (id: number | string): Promise<any> => {
   return await apiRequest(`university/view-university-requests-detail/${id}`, 'GET');
 };
@@ -1763,4 +1767,89 @@ export const importUniversityStudentsApi = async (payload: FormData): Promise<an
   return await apiRequest(`university/import-students/`, 'POST', payload);
 };
 
+export const addUniversityStudentApi = async (payload: FormData): Promise<any> => {
+  return await apiRequest(`university/create-university-student/`, 'POST', payload);
+};
+
+// Video Report
+export const fetchUniversityStudentVideoReportApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/view-student-video-report/${userId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentVideoReportPdfApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/download-student-video-report-pdf/${id}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentVideoReportExcelApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/download-student-video-report-csv/${id}/${courseId}`, 'GET');
+};
+
+// Notes Report
+export const fetchUniversityStudentNotesApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-student-notes-listing/${userId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentNotesReportPdfApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/get-notes-listing-report-pdf/${id}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentNotesReportExcelApi = async (id: string | number, courseId: string | number) => {
+  return await apiRequest(`reports/get-notes-listing-report-excel/${id}/${courseId}`, 'GET');
+};
+
+// Attempted Quiz Report
+export const fetchUniversityStudentAttemptedQuizApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-attempted-quiz-list/${userId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentQuizReportPdfApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-quiz-listing-report-pdf/${userId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentQuizReportExcelApi = async (userId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-quiz-listing-report-excel/${userId}/${courseId}`, 'GET');
+};
+
+// Reminder Report
+export const fetchUniversityStudentReminderListingApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing/${studentId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentReminderReportPdfApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing-report-pdf/${studentId}/${courseId}`, 'GET');
+};
+export const downloadUniversityStudentReminderReportExcelApi = async (studentId: string | number, courseId: string | number): Promise<any> => {
+  return await apiRequest(`user_study/get-student-reminder-listing-report-excel/${studentId}/${courseId}`, 'GET');
+};
+
+// Login Activity Report
+export const fetchUniversityStudentLoginActivityApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-students-activity-log/${id}`, 'GET');
+};
+export const downloadUniversityStudentLoginActivityPdfApi = async (id: string | number) => {
+  return await apiRequest(`reports/export-students-activity-log-pdf/${id}`, 'GET');
+};
+export const downloadUniversityStudentLoginActivityExcelApi = async (id: string | number) => {
+  return await apiRequest(`reports/export-students-activity-log-excel/${id}`, 'GET');
+};
+
+
 // ---------------- University Request End ---------------- //
+
+// ---------------- User Profile Start ---------------- //
+
+export const getUserProfileApi = async (): Promise<any> => {
+  return await apiRequest(`user/get-profile/`, 'GET');
+};
+
+export const updateUserProfileApi = async (payload: any): Promise<any> => {
+  return await apiRequest(`user/update-profile/`, 'POST', payload);
+};
+
+export const updateUserProfileImageApi = async (payload: FormData): Promise<any> => {
+  return await apiRequest(`user/update-profile-image/`, 'POST', payload);
+};
+
+export const updateUserBannerImageApi = async (payload: FormData): Promise<any> => {
+  return await apiRequest(`user/update-banner-image/`, 'POST', payload);
+};
+
+export const removeUserProfileImageApi = async (): Promise<any> => {
+  return await apiRequest(`user/remove-profile-image/`, 'POST');
+};
+
+// ---------------- User Profile End ---------------- //
+

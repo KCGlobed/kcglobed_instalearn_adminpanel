@@ -33,7 +33,7 @@ const ManageBlogComments: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const { showModal, hideModal } = useModal();
+    const { showModal } = useModal();
 
     // Filter states
     const [filters, setFilters] = useState({

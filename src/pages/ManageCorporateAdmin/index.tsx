@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useRedux';
 import { getCorporateAdmins, updateCorporateAdminStatus } from '../../store/slices/corporateAdminSlice';
@@ -18,7 +19,7 @@ import InlineDateFilter from '../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../components/Table/Table';
 import { useModal } from '../../context/ModalContext';
 import useDebounce from '../../hooks/useDebounce';
-import CorporateAdminView from '../../components/View/CorporateAdminView';
+
 import ExportFile from '../../components/Forms/ExportFile';
 import { downloadCorporateAdminPdfApi, downloadCorporateAdminExcelApi } from '../../services/apiServices';
 import { corporateAdminFilterConfig } from '../../utils/filterConfiguration';
@@ -40,6 +41,7 @@ const ManageCorporateAdmin: React.FC = () => {
     const [showSort, setShowSort] = useState(false);
     const [showDate, setShowDate] = useState(false);
     const { showModal } = useModal();
+    const navigate = useNavigate();
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -219,14 +221,7 @@ const ManageCorporateAdmin: React.FC = () => {
                         icon={<FiEye />}
                         color="blue"
                         title="View Details"
-                        onClick={() =>
-                            showModal({
-                                title: 'Corporate Admin Details',
-                                content: <CorporateAdminView adminId={row.id} />,
-                                type: 'custom',
-                                size: 'xxl',
-                            })
-                        }
+                        onClick={() => navigate(`/dashboard/corporate-admin/view/${row.id}`)}
                     />
                     <GlassButton
                         icon={<FiEdit />}

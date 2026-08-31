@@ -24,6 +24,11 @@ const DashboardHeader: React.FC = () => {
     const secondLast = segments[segments.length - 2];
     if (secondLast === 'view') {
       const entity = segments[segments.length - 3] || 'Course';
+      
+      if (entity === 'university-subscription') {
+        return 'University Request Details';
+      }
+
       // Format 'students' to 'Student Details', 'course' to 'Course Details'
       let formattedEntity = entity.replace(/-/g, ' ');
       if (formattedEntity.endsWith('s')) formattedEntity = formattedEntity.slice(0, -1);
@@ -33,6 +38,10 @@ const DashboardHeader: React.FC = () => {
 
     // 2. Default dashboard title
     if (!last || last === 'dashboard') return 'Dashboard';
+
+    if (last === 'university-subscription') {
+      return 'University Request';
+    }
 
     // 3. Convert path segments like 'manage-courses' to 'Manage Courses'
     return last

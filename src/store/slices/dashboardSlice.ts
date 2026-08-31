@@ -59,7 +59,7 @@ export const getDashboardData = createAsyncThunk(
           fetchAdminDashboardStudentsGraph("month"),
           fetchAdminDashboardRevenueGraph("month"),
           fetchAdminDashboardVideoGraph("month"),
-          fetchAdminDashboardOrderGraph("week"),
+          fetchAdminDashboardOrderGraph("month"),
           fetchAdminDashboardCorporateAdminGraph("month"),
           fetchRecentCorporateAdmins(),
           fetchRecentStudents(),
@@ -110,7 +110,7 @@ export const getRecentStudents = createAsyncThunk(
 // Graph API 1: Student Registrations Chart (week, month, year)
 export const getStudentRegistrationChart = createAsyncThunk<any, { id?: string }>(
   "dashboard/getStudentRegistrationChart",
-  async ({ id = "week" } = {}, { rejectWithValue }) => {
+  async ({ id = "month" } = {}, { rejectWithValue }) => {
     try {
       const res = await fetchAdminDashboardStudentsGraph(id);
       return extractArray(res);
@@ -149,7 +149,7 @@ export const getVideoLectureChart = createAsyncThunk<any, { id?: string }>(
 // Graph API 4: Student Orders Chart (week, month, year)
 export const getStudentOrderChart = createAsyncThunk<any, { id?: string }>(
   "dashboard/getStudentOrderChart",
-  async ({ id = "week" } = {}, { rejectWithValue }) => {
+  async ({ id = "month" } = {}, { rejectWithValue }) => {
     try {
       const res = await fetchAdminDashboardOrderGraph(id);
       return extractArray(res);

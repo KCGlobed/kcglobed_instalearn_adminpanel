@@ -49,6 +49,7 @@ import ManageTrailStudentReport from "../pages/ManageReports/ManageTrailStudentR
 import ManageSubscripiton from "../pages/manageSubscription";
 import ManageStudentAccessLockReport from "../pages/ManageReports/ManageStudentAccessLockReport";
 import ManageCorporateAdmin from "../pages/ManageCorporateAdmin";
+import CorporateAdminProfile from "../pages/ManageCorporateAdmin/CorporateAdminProfile";
 import ManageCorporateAdminSubcription from "../pages/CorporativeAdminSubcription";
 import Profile from "../pages/dashboard/Profile";
 import ChangePassword from "../pages/dashboard/ChangePassword";
@@ -64,6 +65,7 @@ import ManageJobApplication from "../pages/JobApplication";
 import ManagePartnersRequest from "../pages/managePartnerRequest";
 import ManageBlogComments from "../pages/Blog/BlogComment";
 import ManageUniversitySubscription from "../pages/ManageUniversitySubscription";
+import UniversityProfile from "../pages/ManageUniversitySubscription/UniversityProfile";
 
 export default function AppRoutes() {
   return (
@@ -121,6 +123,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/trail-user-report" element={<ManageTrailStudentReport />} />
           <Route path="/dashboard/subscription-plan" element={<ManageSubscripiton />} />
           <Route path="/dashboard/corporate-admin" element={<ManageCorporateAdmin />} />
+          <Route path="/dashboard/corporate-admin/view/:id" element={<CorporateAdminProfile />} />
           <Route path="/dashboard/corporate-admin-subscription" element={<ManageCorporateAdminSubcription />} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/forgot-password" element={<ChangePassword />} />
@@ -136,7 +139,8 @@ export default function AppRoutes() {
           <Route path="/dashboard/job-application" element={<ManageJobApplication/>} />
           <Route path ="/dashboard/partners-request" element={<ManagePartnersRequest/>} />
           <Route path ="/dashboard/blog-comment" element={<ManageBlogComments/>}/>
-          <Route path="/dashboard/university-subscription" element={<ManageUniversitySubscription/>}/>
+          <Route path="/dashboard/university-request" element={<ManageUniversitySubscription/>}/>
+          <Route path="/dashboard/university-request/view/:id" element={<UniversityProfile/>}/>
           
         </Route>
       </Route>
@@ -144,4 +148,4 @@ export default function AppRoutes() {
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-}
+} 
