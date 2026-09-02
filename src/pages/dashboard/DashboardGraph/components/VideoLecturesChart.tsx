@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import moment from "moment";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +23,7 @@ import {
   PieChart as DoughnutChartIcon,
   Loader2,
 } from "lucide-react";
+import { formatGraphLabel, sortGraphDataChronologically } from "../utils/chartHelpers";
 
 ChartJS.register(
   CategoryScale,
@@ -77,12 +77,17 @@ export const VideoLecturesChart: React.FC<VideoLecturesChartProps> = ({
   onFilterChange,
   onChartTypeChange,
 }) => {
-  const videoList = Array.isArray(videoGraph) ? videoGraph : [];
-  const videoLabels = videoList.map((item: any) =>
-    item.start_date ? moment(item.start_date).format("MMM DD") : ""
+  const videoList = useMemo(
+    () => sortGraphDataChronologically(Array.isArray(videoGraph) ? videoGraph : []),
+    [videoGraph]
   );
-  const videoWatchedCounts = videoList.map(
-    (item: any) => Number(item.total_video_watched) || 0
+  const videoLabels = useMemo(
+    () => videoList.map((item: any) => formatGraphLabel(item, filter)),
+    [videoList, filter]
+  );
+  const videoWatchedCounts = useMemo(
+    () => videoList.map((item: any) => Number(item.total_video_watched) || 0),
+    [videoList]
   );
   const hasVideoData = videoWatchedCounts.some((val: number) => val > 0);
 
@@ -123,8 +128,7 @@ export const VideoLecturesChart: React.FC<VideoLecturesChartProps> = ({
         pointHoverRadius: 6,
       },
     ],
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [videoGraph, chartType]);
+  }), [videoLabels, videoWatchedCounts, chartType]);
 
   const chartOptions: any = useMemo(() => ({
     responsive: true,

@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
 import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
-import { deleteMcqApi, downloadMcqExcelApi, downloadMcqPdfApi } from '../../services/apiServices';
+import { deleteMcqApi, downloadMcqExcelApi } from '../../services/apiServices';
 import ExportFile from '../../components/Forms/ExportFile';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import SortDropdown from '../../components/common/SortDropdown';
@@ -203,7 +203,7 @@ const ManageMcq: React.FC = () => {
                                 title: 'View MCQ',
                                 content: <McqView mcqData={row} />,
                                 type: 'success',
-                                size: 'xl',
+                                size: 'xxl',
                             });
                         }}
                     />

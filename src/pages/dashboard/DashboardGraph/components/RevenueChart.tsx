@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import moment from "moment";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +23,7 @@ import {
   PieChart as DoughnutChartIcon,
   Loader2,
 } from "lucide-react";
+import { formatGraphLabel, sortGraphDataChronologically } from "../utils/chartHelpers";
 
 ChartJS.register(
   CategoryScale,
@@ -77,12 +77,17 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   onFilterChange,
   onChartTypeChange,
 }) => {
-  const revenueList = Array.isArray(revenueGraph) ? revenueGraph : [];
-  const revenueLabels = revenueList.map((item: any) =>
-    item.start_date ? moment(item.start_date).format("MMM DD") : ""
+  const revenueList = useMemo(
+    () => sortGraphDataChronologically(Array.isArray(revenueGraph) ? revenueGraph : []),
+    [revenueGraph]
   );
-  const revenueAmounts = revenueList.map(
-    (item: any) => Number(item.total_amount) || 0
+  const revenueLabels = useMemo(
+    () => revenueList.map((item: any) => formatGraphLabel(item, filter)),
+    [revenueList, filter]
+  );
+  const revenueAmounts = useMemo(
+    () => revenueList.map((item: any) => Number(item.total_amount) || 0),
+    [revenueList]
   );
   const hasRevenueData = revenueAmounts.some((val: number) => val > 0);
 
@@ -123,8 +128,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         pointHoverRadius: 6,
       },
     ],
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [revenueGraph, chartType]);
+  }), [revenueLabels, revenueAmounts, chartType]);
 
   const chartOptions: any = useMemo(() => ({
     responsive: true,

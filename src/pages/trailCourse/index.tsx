@@ -7,7 +7,7 @@ import { getTrailCourse, } from '../../store/slices/trailCourseSlice';
 import GlassButton from '../../components/Button/Button';
 import { FiEye, } from 'react-icons/fi';
 import AddTrailCourseForm from '../../components/Forms/AddTrailCourseForm';
-import { Filter, Plus, Calendar } from 'lucide-react';
+import { Filter, Plus, Calendar, Layers } from 'lucide-react';
 import SortDropdown from '../../components/common/SortDropdown';
 import SearchInput from '../../components/common/SearchInput';
 import DynamicFilter from '../../components/common/DynamicFilter';
@@ -108,20 +108,36 @@ const ManageTrailCourse: React.FC = () => {
             title: 'Course Name',
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100"
-                    >
-                        {row.course_detail?.name ? row.course_detail.name.charAt(0).toUpperCase() : '#'}
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 text-indigo-600 border border-indigo-100 shrink-0">
+                        {row.course_detail?.name ? row.course_detail.name.charAt(0).toUpperCase() : 'C'}
                     </div>
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.course_detail?.name || row.name || 'N/A'}</span>
+                    <div className="flex flex-col max-w-[320px]">
+                        <span className="font-semibold text-gray-900 text-sm truncate" title={row.course_detail?.name || row.name}>
+                            {row.course_detail?.name || row.name || 'N/A'}
+                        </span>
+                        {row.course_detail?.id && (
+                            <span className="text-[11px] text-gray-400 font-medium">ID: #{row.course_detail.id}</span>
+                        )}
                     </div>
                 </div>
             ),
             sortable: true,
-            width: '350px',
+            width: '320px',
         },
-
+        {
+            key: 'chapters',
+            title: 'Chapters Included',
+            render: (_: any, row: any) => {
+                const count = row.chapter_info?.length || 0;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100/80">
+                        <Layers size={13} className="text-indigo-500" />
+                        {count} {count === 1 ? 'Chapter' : 'Chapters'}
+                    </span>
+                );
+            },
+            width: '180px',
+        },
         {
             key: 'id',
             title: 'Actions',
@@ -130,12 +146,12 @@ const ManageTrailCourse: React.FC = () => {
                     <GlassButton
                         icon={<FiEye />}
                         color="blue"
-                        title="View"
+                        title="View Trail Course"
                         onClick={() =>
                             showModal({
                                 title: 'View Trail Course',
                                 content: <TrailCourseView trailCourseData={row} />,
-                                type: 'success',
+                                type: 'custom',
                                 size: 'xxl',
                             })
                         }
@@ -145,7 +161,6 @@ const ManageTrailCourse: React.FC = () => {
             width: '120px',
             align: 'right',
         },
-
     ];
 
     return (

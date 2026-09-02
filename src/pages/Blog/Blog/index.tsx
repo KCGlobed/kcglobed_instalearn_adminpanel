@@ -118,35 +118,47 @@ const ManageBlogPost: React.FC = () => {
             render: (_: any, row: any) => (
                 <div className="flex items-center gap-3">
                     {row.image ? (
-                        <img src={row.image} alt={row.title} className="w-10 h-10 rounded-lg object-cover bg-gray-50 border border-gray-100 shadow-sm" />
+                        <img src={row.image} alt={row.title} className="w-10 h-10 rounded-lg object-cover bg-gray-50 border border-gray-100 shadow-sm shrink-0" />
                     ) : (
                         <div
-                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 border border-indigo-100 text-indigo-600"
+                            className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm bg-indigo-50 border border-indigo-100 text-indigo-600 shrink-0"
                         >
-                            {row.title ? row.title.charAt(0).toUpperCase() : '?'}
+                            {row.title ? row.title.charAt(0).toUpperCase() : 'B'}
                         </div>
                     )}
-                    <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 text-sm whitespace-nowrap">{row.title}</span>
-                        {row.category_title && (
-                            <span className="text-[10px] text-indigo-600 font-medium">{row.category_title}</span>
+                    <div className="flex flex-col max-w-[240px]">
+                        <span className="font-semibold text-gray-900 text-sm truncate" title={row.title}>
+                            {row.title || '-'}
+                        </span>
+                        {row.created_by && (
+                            <span className="text-[11px] text-gray-400 font-medium truncate">By {row.created_by}</span>
                         )}
                     </div>
                 </div>
             ),
             sortable: true,
-            width: '250px',
+            width: '260px',
         },
         {
-            key: 'description',
-            title: 'Description',
-            render: (value: string) => (
-                <div className="text-gray-600 text-xs w-full max-w-xs line-clamp-2" title={value}>
-                    {value || 'No description provided.'}
-
-                </div>
-            ),
-            width: '320px',
+            key: 'category_title',
+            title: 'Category',
+            render: (_: any, row: any) => {
+                const categoryName =
+                    row.category_info?.title ||
+                    row.category_info?.name ||
+                    row.category?.title ||
+                    row.category?.name ||
+                    row.category_title ||
+                    row.category_name ||
+                    '-';
+                return (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100/80">
+                        {categoryName}
+                    </span>
+                );
+            },
+            
+            width: '200px',
         },
         {
             key: 'created_at',

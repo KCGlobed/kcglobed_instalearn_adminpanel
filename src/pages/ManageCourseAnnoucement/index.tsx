@@ -192,12 +192,12 @@ const ManageCourseAnnoucement: React.FC = () => {
                         title="View Details"
                         onClick={() =>
                             showModal({
-                                title: 'Course Announcement Details',
+                                title: 'View Course Announcement',
                                 content: (
                                     <CourseAnnouncementView id={row.id} hideModal={hideModal} />
                                 ),
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     />

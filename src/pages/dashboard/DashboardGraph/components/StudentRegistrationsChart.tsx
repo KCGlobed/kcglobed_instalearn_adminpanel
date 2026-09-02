@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import moment from "moment";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +23,7 @@ import {
   PieChart as DoughnutChartIcon,
   Loader2,
 } from "lucide-react";
+import { formatGraphLabel, sortGraphDataChronologically } from "../utils/chartHelpers";
 
 ChartJS.register(
   CategoryScale,
@@ -77,12 +77,17 @@ export const StudentRegistrationsChart: React.FC<StudentRegistrationsChartProps>
   onFilterChange,
   onChartTypeChange,
 }) => {
-  const studentList = Array.isArray(studentsGraph) ? studentsGraph : [];
-  const studentLabels = studentList.map((item: any) =>
-    item.start_date ? moment(item.start_date).format("MMM DD") : ""
+  const studentList = useMemo(
+    () => sortGraphDataChronologically(Array.isArray(studentsGraph) ? studentsGraph : []),
+    [studentsGraph]
   );
-  const studentCounts = studentList.map(
-    (item: any) => Number(item.total_student_registered) || 0
+  const studentLabels = useMemo(
+    () => studentList.map((item: any) => formatGraphLabel(item, filter)),
+    [studentList, filter]
+  );
+  const studentCounts = useMemo(
+    () => studentList.map((item: any) => Number(item.total_student_registered) || 0),
+    [studentList]
   );
   const hasStudentData = studentCounts.some((val: number) => val > 0);
 
@@ -123,8 +128,7 @@ export const StudentRegistrationsChart: React.FC<StudentRegistrationsChartProps>
         pointHoverRadius: 6,
       },
     ],
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [studentsGraph, chartType]);
+  }), [studentLabels, studentCounts, chartType]);
 
   const chartOptions: any = useMemo(() => ({
     responsive: true,

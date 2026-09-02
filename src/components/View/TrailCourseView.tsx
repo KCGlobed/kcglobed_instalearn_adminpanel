@@ -1,148 +1,162 @@
+import React from 'react';
 import {
     BookOpen,
     CalendarDays,
     FileText,
-} from "lucide-react";
-import moment from "moment";
+    Layers,
+    CheckCircle,
+    XCircle,
+    Hash,
+} from 'lucide-react';
+import moment from 'moment';
 
-const TrailCourseView = ({
-    trailCourseData,
-}: any) => {
-    const chapters =
-        trailCourseData?.chapter_info || [];
+interface TrailCourseViewProps {
+    trailCourseData: any;
+}
+
+const TrailCourseView: React.FC<TrailCourseViewProps> = ({ trailCourseData }) => {
+    const chapters = trailCourseData?.chapter_info || [];
+    const courseName = trailCourseData?.course_detail?.name || trailCourseData?.name || 'N/A';
+    const courseId = trailCourseData?.course_detail?.id || trailCourseData?.id;
+    const status = trailCourseData?.status !== undefined ? trailCourseData.status : true;
 
     return (
-        <div className="flex flex-col gap-5 p-1 max-h-[78vh] overflow-y-auto">
-            {/* Header */}
-            <div className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-500 p-5 shadow-lg">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-
-                <div className="relative flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                        <BookOpen
-                            size={22}
-                            className="text-white"
-                        />
-                    </div>
-
-                    <div className="flex-1">
-                        <p className="text-[10px] uppercase tracking-[3px] text-indigo-100 font-semibold mb-2">
-                            Trail Course
-                        </p>
-
-                        <h2 className="text-lg font-bold text-white leading-snug">
-                            {
-                                trailCourseData
-                                    ?.course_detail
-                                    ?.name
-                            }
-                        </h2>
-
-                        <div className="flex items-center gap-2 mt-3">
-                            <div className="px-2.5 py-1 rounded-full bg-white/15 border border-white/10 text-[11px] font-semibold text-white flex items-center gap-1.5">
-                                <FileText size={12} />
-                                {chapters.length} Chapters
-                            </div>
-                        </div>
-                    </div>
+        <div className="flex flex-col gap-6">
+            {/* Top Notice Card */}
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+                <span className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                    <BookOpen size={18} />
+                </span>
+                <div>
+                    <p className="text-sm font-semibold text-indigo-800">Trail Course Details</p>
+                    <p className="text-xs text-indigo-500 mt-0.5">Viewing detailed curriculum and chapter information for this trail course.</p>
                 </div>
             </div>
 
-            {/* Chapter List */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                {/* Top Bar */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/70">
-                    <div>
-                        <h3 className="text-sm font-bold text-gray-800">
-                            Chapter List
-                        </h3>
-
-                        <p className="text-xs text-gray-400 mt-0.5">
-                            All chapters available in this
-                            course
-                        </p>
-                    </div>
-
-                    <div className="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[11px] font-bold text-indigo-600">
-                        {chapters.length} Total
+            {/* Form Fields Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 px-1">
+                {/* Course Name */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <BookOpen size={14} /> Course Name
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-800 font-semibold text-sm">
+                        {courseName}
                     </div>
                 </div>
 
-                {/* Chapters */}
-                {chapters.length > 0 ? (
-                    <div className="flex flex-col divide-y divide-gray-100">
-                        {chapters.map(
-                            (
-                                chapter: any,
-                                index: number
-                            ) => (
-                                <div
-                                    key={chapter.id}
-                                    className="group px-5 py-4 hover:bg-indigo-50/40 transition-all"
-                                >
-                                    <div className="flex items-start gap-4">
-                                        {/* Number */}
-                                        <div className="min-w-[36px] h-[36px] rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center text-xs font-bold">
-                                            {index + 1}
-                                        </div>
+                {/* Total Chapters */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Layers size={14} /> Total Chapters
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-800 font-semibold text-sm flex items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-xs font-bold">
+                            {chapters.length}
+                        </span>
+                        <span>{chapters.length === 1 ? 'Chapter Included' : 'Chapters Included'}</span>
+                    </div>
+                </div>
 
-                                        {/* Content */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="flex-1">
-                                                    <h4 className="text-sm font-semibold text-gray-800 leading-snug">
-                                                        {chapter?.chapter_detail?.chapter_detail?.name ||
-                                                         chapter?.chapter_detail?.name ||
-                                                         `Chapter ${index + 1}`}
-                                                    </h4>
-
-                                                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                                                        {chapter?.chapter_detail?.chapter_detail?.description ||
-                                                         chapter?.chapter_detail?.description ||
-                                                         "No description available"}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {/* Footer */}
-                                            <div className="flex items-center gap-2 mt-3 text-[11px] text-gray-400">
-                                                <CalendarDays
-                                                    size={
-                                                        12
-                                                    }
-                                                />
-
-                                                <span>
-                                                    Created on{" "}
-                                                    {moment(
-                                                        chapter?.chapter_detail?.chapter_detail?.created_at ||
-                                                        chapter?.chapter_detail?.created_at
-                                                    ).format("DD MMM YYYY")}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
+                {/* Status */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        Status
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-2">
+                        {status ? (
+                            <span className="flex items-center gap-1.5 text-green-700 font-semibold text-sm bg-green-100 px-3 py-1 rounded-full border border-green-200">
+                                <CheckCircle size={14} /> Active
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1.5 text-red-700 font-semibold text-sm bg-red-100 px-3 py-1 rounded-full border border-red-200">
+                                <XCircle size={14} /> Inactive
+                            </span>
                         )}
                     </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-14 text-center">
-                        <BookOpen
-                            size={42}
-                            className="text-gray-300 mb-3"
-                        />
+                </div>
 
-                        <h3 className="text-sm font-bold text-gray-500">
-                            No Chapters Found
-                        </h3>
-
-                        <p className="text-xs text-gray-400 mt-1">
-                            This course does not contain any
-                            chapters yet.
-                        </p>
+                {/* Course ID */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Hash size={14} /> Course Identifier
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-700 font-medium text-sm">
+                        {courseId ? `#${courseId}` : 'N/A'}
                     </div>
-                )}
+                </div>
+
+                {/* Included Chapters List (Full Width) */}
+                <div className="col-span-1 md:col-span-2">
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <FileText size={14} /> Included Chapters ({chapters.length})
+                    </label>
+
+                    <div className="bg-white rounded-xl border border-gray-200/80 shadow-2xs overflow-hidden">
+                        {chapters.length > 0 ? (
+                            <div className="flex flex-col divide-y divide-gray-100">
+                                {chapters.map((chapter: any, index: number) => {
+                                    const chapterName =
+                                        chapter?.chapter_detail?.name ||
+                                        chapter?.chapter_detail?.chapter_detail?.name ||
+                                        `Chapter ${index + 1}`;
+                                    const chapterDesc =
+                                        chapter?.chapter_detail?.description ||
+                                        chapter?.chapter_detail?.chapter_detail?.description;
+                                    const createdAt =
+                                        chapter?.chapter_detail?.created_at ||
+                                        chapter?.chapter_detail?.chapter_detail?.created_at ||
+                                        chapter?.created_at;
+
+                                    return (
+                                        <div
+                                            key={chapter.id || index}
+                                            className="p-4 hover:bg-gray-50/70 transition-colors flex items-start gap-4"
+                                        >
+                                            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center font-bold text-xs shrink-0">
+                                                {index + 1}
+                                            </div>
+
+                                            <div className="flex flex-col flex-1 min-w-0">
+                                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                                    <span className="font-semibold text-gray-800 text-sm">
+                                                        {chapterName}
+                                                    </span>
+                                                    {createdAt && (
+                                                        <span className="inline-flex items-center gap-1 text-[11px] text-gray-400 font-medium">
+                                                            <CalendarDays size={12} />
+                                                            {moment(createdAt).format('MMM DD, YYYY')}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {chapterDesc ? (
+                                                    <p className="text-xs text-gray-600 mt-1 leading-relaxed line-clamp-2">
+                                                        {chapterDesc}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-gray-400 italic mt-0.5">
+                                                        No description provided for this chapter.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-10 text-center gap-2">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center">
+                                    <Layers size={18} />
+                                </div>
+                                <p className="text-xs font-semibold text-gray-600">No Chapters Attached</p>
+                                <p className="text-[11px] text-gray-400 max-w-xs">
+                                    This trail course does not have any specific chapters configured yet.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
