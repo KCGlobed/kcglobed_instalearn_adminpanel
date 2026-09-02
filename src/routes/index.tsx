@@ -7,7 +7,7 @@ import PrivateRoute from "./privateRoutes";
 import PublicRoute from "./publicRoutes";
 
 import ForgotFlow from "../pages/forgotpassward";
-import DashboardPage from "../pages/dashboard/home";
+import DashboardPage from "../pages/dashboard/DashboardGraph";
 import ResetPassword from "../pages/forgotpassward/ResetPassword";
 import ManageCategories from "../pages/course/ManageCategories";
 import ManageSubCategories from "../pages/course/ManageSubCategories";

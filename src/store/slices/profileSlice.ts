@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import type { UserProfile, ProfileState, UpdateUserProfilePayload } from "../../utils/types";
+import type { UserProfile, ProfileState, UpdateUserProfilePayload, UpdatePasswordPayload } from "../../utils/types";
 import {
   getUserProfileApi,
   updateUserProfileApi,
   updateUserProfileImageApi,
   updateUserBannerImageApi,
   removeUserProfileImageApi,
+  updateUserPasswordApi,
 } from "../../services/apiServices";
 
 const initialState: ProfileState = {
@@ -15,6 +16,7 @@ const initialState: ProfileState = {
   updateLoading: false,
   imageLoading: false,
   bannerLoading: false,
+  passwordLoading: false,
 };
 
 export const getProfile = createAsyncThunk<UserProfile, void, { rejectValue: string }>(
@@ -84,6 +86,23 @@ export const removeProfileImage = createAsyncThunk<any, void, { rejectValue: str
       return response?.data || response;
     } catch (err: any) {
       return rejectWithValue(err?.message || "Failed to remove profile image");
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk<any, UpdatePasswordPayload, { rejectValue: string }>(
+  "profile/updatePassword",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const cleanPayload = {
+        current_password: payload.current_password || "",
+        password: payload.password || "",
+        confirm_password: payload.confirm_password || "",
+      };
+      const response = await updateUserPasswordApi(cleanPayload);
+      return response?.data || response;
+    } catch (err: any) {
+      return rejectWithValue(err?.message || "Failed to update password");
     }
   }
 );
@@ -175,6 +194,19 @@ const profileSlice = createSlice({
       })
       .addCase(removeProfileImage.rejected, (state) => {
         state.imageLoading = false;
+      })
+
+      // updatePassword
+      .addCase(updatePassword.pending, (state) => {
+        state.passwordLoading = true;
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.passwordLoading = false;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.passwordLoading = false;
+        state.error = action.payload || "Failed to update password";
       });
   },
 });

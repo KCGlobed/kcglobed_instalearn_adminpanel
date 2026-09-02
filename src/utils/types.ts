@@ -1568,6 +1568,12 @@ export interface UpdateUserProfilePayload {
   [key: string]: any;
 }
 
+export interface UpdatePasswordPayload {
+  current_password: string;
+  password: string;
+  confirm_password: string;
+}
+
 export interface ProfileState {
   data: UserProfile | null;
   loading: boolean;
@@ -1575,5 +1581,6 @@ export interface ProfileState {
   updateLoading: boolean;
   imageLoading: boolean;
   bannerLoading: boolean;
+  passwordLoading: boolean;
 }
 
