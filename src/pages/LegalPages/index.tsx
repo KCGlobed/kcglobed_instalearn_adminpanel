@@ -222,7 +222,7 @@ const ManageLegalPage: React.FC = () => {
             title="View Page"
             onClick={() => {
               showModal({
-                title: 'Legal Page Details',
+                title: 'View Legal Page',
                 content: <LegalPageView page={row} />,
                 type: 'custom',
                 size: 'xxl',

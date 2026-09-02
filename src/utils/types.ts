@@ -956,6 +956,11 @@ export interface Blog {
   image: string;
   category_id: number;
   category_title?: string;
+  category_info?: {
+    id?: number;
+    title?: string;
+    name?: string;
+  } | null;
   canonical_url: string;
   schema_markup: string;
   reading_time: string;
@@ -1224,6 +1229,12 @@ export interface PracticeChartData {
   total_practice_test_created: number;
 }
 
+export interface CorporateAdminGraphData {
+  start_date: string;
+  end_date?: string;
+  total_corporate_registered: number;
+}
+
 export interface RecentCorporateAdmin {
   id: number;
   first_name: string | null;
@@ -1260,7 +1271,7 @@ export interface DashboardState {
   revenueGraph: RevenueGraphData[];
   videoGraph: VideoGraphData[];
   orderGraph: OrderGraphData[];
-  corporateAdminGraph: any[];
+  corporateAdminGraph: CorporateAdminGraphData[];
   practiceGraph: PracticeChartData[];
   recentCorporateAdmins: RecentCorporateAdmin[];
   recentStudents: RecentStudent[];

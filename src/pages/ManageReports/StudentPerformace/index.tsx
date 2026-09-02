@@ -189,7 +189,7 @@ const StudentPerformace: React.FC = () => {
                                 title: 'View Student Performance',
                                 content: <StudentPerformanceView performance={row} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     />

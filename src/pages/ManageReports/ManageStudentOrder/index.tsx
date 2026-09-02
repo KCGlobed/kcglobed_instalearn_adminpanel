@@ -171,7 +171,7 @@ const ManageStudentOrder: React.FC = () => {
                                 title: 'View Student Order',
                                 content: <StudentOrderView order={row} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     />

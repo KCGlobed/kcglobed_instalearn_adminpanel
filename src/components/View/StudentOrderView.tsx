@@ -3,12 +3,16 @@ import moment from 'moment';
 import {
     Calendar,
     BookOpen,
-    Clock,
-    ShieldCheck,
     Mail,
     Phone,
     CreditCard,
-    ShoppingCart
+    ShoppingCart,
+    User,
+    CheckCircle,
+    XCircle,
+    Clock,
+    AlertCircle,
+    PauseCircle,
 } from 'lucide-react';
 
 interface StudentOrderViewProps {
@@ -16,174 +20,197 @@ interface StudentOrderViewProps {
 }
 
 const StudentOrderView: React.FC<StudentOrderViewProps> = ({ order }) => {
-    const getSubscriptionStatus = (status: any) => {
-        if (status === true || status === 'true') {
-            return 'Active';
+    const getSubscriptionStatusInfo = (status: any) => {
+        if (status === true || status === 'true' || status === 2 || status === '2') {
+            return {
+                label: 'Active',
+                className: 'bg-green-100 text-green-700 border-green-200',
+                icon: <CheckCircle size={14} />,
+            };
         }
-        if (status === false || status === 'false') {
-            return 'Expired';
+        if (status === false || status === 'false' || status === 3 || status === '3') {
+            return {
+                label: 'Expired',
+                className: 'bg-red-100 text-red-700 border-red-200',
+                icon: <XCircle size={14} />,
+            };
         }
-        const statuses: { [key: string]: string } = {
-            '1': 'Initiate',
-            '2': 'Active',
-            '3': 'Expired',
-            '4': 'Paused',
-            '5': 'Cancelled'
+        if (status === 1 || status === '1') {
+            return {
+                label: 'Initiate',
+                className: 'bg-blue-100 text-blue-700 border-blue-200',
+                icon: <Clock size={14} />,
+            };
+        }
+        if (status === 4 || status === '4') {
+            return {
+                label: 'Paused',
+                className: 'bg-amber-100 text-amber-700 border-amber-200',
+                icon: <PauseCircle size={14} />,
+            };
+        }
+        if (status === 5 || status === '5') {
+            return {
+                label: 'Cancelled',
+                className: 'bg-rose-100 text-rose-700 border-rose-200',
+                icon: <AlertCircle size={14} />,
+            };
+        }
+        return {
+            label: 'Unknown',
+            className: 'bg-gray-100 text-gray-700 border-gray-200',
+            icon: <AlertCircle size={14} />,
         };
-        return statuses[String(status)] || 'Unknown';
     };
 
     if (!order) {
-        return null;
+        return (
+            <div className="p-8 text-center text-gray-500 text-sm">
+                No student order data found.
+            </div>
+        );
     }
 
-    return (
-        <div className="flex flex-col w-full max-h-[85vh] overflow-y-auto bg-gray-50/30 custom-scrollbar relative animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Header Gradient Banner */}
-            <div className="relative w-full h-32 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 shrink-0 overflow-hidden rounded-2xl">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+    const statusInfo = getSubscriptionStatusInfo(order.subscription_status);
+    const orderedCourses = order.ordered_courses || [];
+    const studentFullName = `${order.first_name || ''} ${order.last_name || ''}`.trim() || 'N/A';
 
-                <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white shadow-sm border border-white/20">
-                            <ShoppingCart size={22} className="text-white" />
-                        </div>
-                        <span className="text-white/90 text-xs font-bold uppercase tracking-widest">Student Order Details</span>
-                    </div>
+    return (
+        <div className="flex flex-col gap-6">
+            {/* Top Notice Card */}
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-indigo-50 border border-indigo-100">
+                <span className="p-2 bg-indigo-100 rounded-lg text-indigo-600">
+                    <ShoppingCart size={18} />
+                </span>
+                <div>
+                    <p className="text-sm font-semibold text-indigo-800">Student Order Details</p>
+                    <p className="text-xs text-indigo-500 mt-0.5">
+                        Viewing detailed order, subscription timeline, and course enrollment info.
+                    </p>
                 </div>
             </div>
 
-            {/* Content Section */}
-            <div className="flex flex-col gap-6 px-6 py-8 -mt-6 relative z-10">
-                {/* Student Info & Status */}
-                <div className="flex flex-col gap-4 bg-white p-6 rounded-2xl shadow-xl shadow-indigo-100/20 border border-gray-200">
-                    <div className="flex items-start justify-between gap-4">
-                        <h1 className="text-xl font-black text-gray-900 leading-tight">
-                            {order.first_name} {order.last_name}
-                        </h1>
-                        <span className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border ${
-                            order.subscription_status === 2 || order.subscription_status === true || order.subscription_status === 'true' ? 'bg-green-50 text-green-700 border-green-200' :
-                            order.subscription_status === 3 || order.subscription_status === 5 || order.subscription_status === false || order.subscription_status === 'false' ? 'bg-red-50 text-red-700 border-red-200' :
-                            order.subscription_status === 1 ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                            order.subscription_status === 4 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                            'bg-gray-50 text-gray-700 border-gray-200'
-                        }`}>
-                            {getSubscriptionStatus(order.subscription_status)}
+            {/* Form Fields Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 px-1">
+                {/* Full Name */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <User size={14} /> Student Name
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-800 font-semibold text-sm">
+                        {studentFullName}
+                    </div>
+                </div>
+
+                {/* Email */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Mail size={14} /> Email Address
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-800 font-medium text-sm truncate" title={order.email}>
+                        {order.email || 'N/A'}
+                    </div>
+                </div>
+
+                {/* Mobile */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Phone size={14} /> Mobile Number
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-800 font-medium text-sm">
+                        {order.phone || 'N/A'}
+                    </div>
+                </div>
+
+                {/* Status */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        Subscription Status
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-2">
+                        <span className={`flex items-center gap-1.5 font-semibold text-sm px-3 py-1 rounded-full border ${statusInfo.className}`}>
+                            {statusInfo.icon} {statusInfo.label}
                         </span>
                     </div>
+                </div>
 
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-2">
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Mail size={14} className="text-indigo-500" />
-                            <span className="font-semibold text-gray-800">{order.email || '-'}</span>
+                {/* Total Amount Paid */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <CreditCard size={14} /> Total Amount Paid
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-indigo-700 font-extrabold text-base">
+                        ₹{Number(order.total_amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </div>
+                </div>
+
+                {/* Order Created On */}
+                <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Calendar size={14} /> Order Placed On
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-700 text-sm">
+                        {order.created_at ? moment(order.created_at).format('MMM DD, YYYY hh:mm A') : 'N/A'}
+                    </div>
+                </div>
+
+                {/* Subscription Timeline (Full Width) */}
+                <div className="col-span-1 md:col-span-2">
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <Clock size={14} /> Subscription Timeline
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex flex-col bg-white p-3.5 rounded-lg border border-gray-200/80">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Start Date</span>
+                            <span className="text-sm font-semibold text-gray-800 mt-1">
+                                {order.start_date ? moment(order.start_date).format('MMM DD, YYYY') : 'N/A'}
+                            </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Phone size={14} className="text-purple-500" />
-                            <span className="font-medium text-gray-800">{order.phone || '-'}</span>
+                        <div className="flex flex-col bg-white p-3.5 rounded-lg border border-gray-200/80">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">End Date</span>
+                            <span className="text-sm font-semibold text-gray-800 mt-1">
+                                {order.end_date ? moment(order.end_date).format('MMM DD, YYYY') : 'N/A'}
+                            </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Calendar size={14} className="text-orange-400" />
-                            <span className="font-medium">Created: {order.created_at ? moment(order.created_at).format('MMM DD, YYYY') : '-'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <Clock size={14} className="text-blue-400" />
-                            <span className="font-medium">{order.created_at ? moment(order.created_at).format('hh:mm A') : ''}</span>
+                        <div className="flex flex-col bg-white p-3.5 rounded-lg border border-gray-200/80">
+                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">Next Due Date</span>
+                            <span className="text-sm font-bold text-indigo-700 mt-1">
+                                {order.next_due ? moment(order.next_due).format('MMM DD, YYYY') : 'N/A'}
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Subscription Schedule / Timeline */}
-                <div className="flex flex-col gap-2 bg-white p-5 rounded-2xl shadow-xl shadow-indigo-100/20 border border-gray-200">
-                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subscription & Timeline</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex flex-col gap-1 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100/80">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Start Date</span>
-                            <span className="text-sm font-semibold text-slate-800">
-                                {order.start_date ? moment(order.start_date).format('MMMM DD, YYYY') : '-'}
-                            </span>
-                        </div>
-                        <div className="flex flex-col gap-1 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100/80">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">End Date</span>
-                            <span className="text-sm font-semibold text-slate-800">
-                                {order.end_date ? moment(order.end_date).format('MMMM DD, YYYY') : '-'}
-                            </span>
-                        </div>
-                        <div className="flex flex-col gap-1 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100/80">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Next Due Date</span>
-                            <span className="text-sm font-semibold text-indigo-600 font-bold">
-                                {order.next_due ? moment(order.next_due).format('MMMM DD, YYYY') : '-'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Details Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Payment Info */}
-                    <div className="flex flex-col gap-2">
-                        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">Payment Details</h2>
-                        <div className="flex items-center justify-between bg-gradient-to-br from-indigo-50/80 to-purple-50/50 p-5 rounded-2xl border border-indigo-100/50 shadow-sm transition-all hover:shadow-md group h-full">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 bg-white rounded-xl text-indigo-600 shadow-sm border border-indigo-100 flex items-center justify-center">
-                                    <CreditCard size={20} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Amount Paid</span>
-                                    <span className="font-extrabold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors">
-                                        ₹{Number(order.total_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Subscription Info */}
-                    <div className="flex flex-col gap-2">
-                        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">Subscription Mode</h2>
-                        <div className="flex items-center justify-between bg-gradient-to-br from-purple-50/80 to-indigo-50/50 p-5 rounded-2xl border border-purple-100/50 shadow-sm transition-all hover:shadow-md group h-full">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 bg-white rounded-xl text-purple-600 shadow-sm border border-purple-100 flex items-center justify-center">
-                                    <ShieldCheck size={20} />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Subscription Status</span>
-                                    <span className="font-bold text-gray-900 text-sm group-hover:text-purple-600 transition-colors">
-                                        {getSubscriptionStatus(order.subscription_status)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Ordered Courses Section */}
-                <div className="flex flex-col gap-3 mt-2">
-                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2">
-                        Ordered Courses ({order.ordered_courses?.length || 0})
-                    </h2>
-                    <div className="flex flex-col gap-3">
-                        {order.ordered_courses && order.ordered_courses.length > 0 ? (
-                            order.ordered_courses.map((course: any, index: number) => (
-                                <div key={index} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm transition-all hover:shadow-md">
-                                    <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0 border border-indigo-100 shadow-sm">
-                                        <BookOpen size={20} />
-                                    </div>
-                                    <div className="flex flex-col gap-0.5 w-full">
-                                        <span className="font-bold text-gray-900 text-sm">
-                                            {course.name}
-                                        </span>
-                                        <span className="text-[10px] text-gray-400 font-semibold tracking-wide">
-                                            Course ID: {course.id || '-'}
+                {/* Ordered Courses (Full Width) */}
+                <div className="col-span-1 md:col-span-2">
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                        <BookOpen size={14} /> Ordered Courses ({orderedCourses.length})
+                    </label>
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col gap-2.5">
+                        {orderedCourses.length > 0 ? (
+                            orderedCourses.map((course: any, index: number) => (
+                                <div
+                                    key={course.id || index}
+                                    className="p-3.5 bg-white rounded-lg border border-gray-200/80 shadow-2xs flex items-center justify-between gap-3"
+                                >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-100">
+                                            <BookOpen size={15} />
+                                        </div>
+                                        <span className="font-semibold text-gray-800 text-sm truncate">
+                                            {course.name || `Course #${course.id}`}
                                         </span>
                                     </div>
+                                    {course.id && (
+                                        <span className="text-[11px] font-mono text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-200 shrink-0">
+                                            ID: #{course.id}
+                                        </span>
+                                    )}
                                 </div>
                             ))
                         ) : (
-                            <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-gray-200 text-center gap-2">
-                                <BookOpen size={24} className="text-gray-300 animate-pulse" />
-                                <span className="text-sm font-medium text-gray-400">No courses listed in this order.</span>
+                            <div className="py-6 text-center text-gray-400 text-xs italic">
+                                No courses attached to this order.
                             </div>
                         )}
                     </div>
