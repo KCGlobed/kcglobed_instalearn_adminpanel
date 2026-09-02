@@ -6,7 +6,8 @@ import {
     updateProfile,
     updateProfileImage,
     updateBannerImage,
-    removeProfileImage
+    removeProfileImage,
+    updatePassword,
 } from '../../../store/slices/profileSlice';
 import { CropperModal } from '../../../components/ImageCropper/components/CropperModal';
 import type { CropResult } from '../../../components/ImageCropper/utils/cropCanvas';
@@ -16,12 +17,13 @@ import { FiLoader } from 'react-icons/fi';
 import HeroProfile from './components/HeroProfile';
 import Navigation from './components/Navigation';
 import OverviewTab from './components/OverviewTab';
-import AccountSettingsTab from './components/AccountSettingsTab';
+import AccountSettingsTab from '../AccountSettings/AccountSettingsTab';
+import ChangePassword from '../ChangePassword/index';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const dispatch = useAppDispatch();
-    const { data, loading, updateLoading, imageLoading, bannerLoading } = useAppSelector(
+    const { data, loading, updateLoading, imageLoading, bannerLoading, passwordLoading } = useAppSelector(
         (state: any) => state.profile || { data: null, loading: false }
     );
 
@@ -58,6 +60,17 @@ const Profile = () => {
         } catch (err: any) {
             const errorMsg = typeof err === 'string' ? err : err?.message || "Failed to update profile";
             toast.error(errorMsg);
+        }
+    };
+
+    const handleUpdatePassword = async (payload: any) => {
+        try {
+            await dispatch(updatePassword(payload)).unwrap();
+            toast.success("Password updated successfully!");
+        } catch (err: any) {
+            const errorMsg = typeof err === 'string' ? err : err?.message || "Failed to update password";
+            toast.error(errorMsg);
+            throw err;
         }
     };
 
@@ -177,6 +190,12 @@ const Profile = () => {
                                 />
                             )}
                             {activeTab === 'settings' && <AccountSettingsTab />}
+                            {activeTab === 'Change Password' && (
+                                <ChangePassword
+                                    onSave={handleUpdatePassword}
+                                    loading={passwordLoading}
+                                />
+                            )}
                         </div>
                     </main>
                 </div>

@@ -1,5 +1,5 @@
     import React from 'react';
-import { FiUser, FiSettings } from 'react-icons/fi';
+import { FiUser, FiSettings, FiLock } from 'react-icons/fi';
 
 interface NavigationProps {
     activeTab: string;
@@ -9,6 +9,7 @@ interface NavigationProps {
 const navItems = [
     { id: 'overview', label: 'Personal Info', icon: FiUser },
     { id: 'settings', label: 'Account Settings', icon: FiSettings },
+    { id: 'Change Password', label: "Change Password", icon: FiLock }
 ];
 
 const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => (
