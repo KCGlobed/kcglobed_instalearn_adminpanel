@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell } from 'lucide-react';
-import { FaChevronDown, FaChevronUp, FaUser, FaSignOutAlt, FaKey } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { logout } from '../../store/slices/authSlice';
 
@@ -121,14 +121,6 @@ const DashboardHeader: React.FC = () => {
             >
               <FaUser className="w-4 h-4 mr-2 text-gray-400" />
               Profile
-            </button>
-
-            <button
-              onClick={() => { navigate('/dashboard/forgot-password'); setDropdownOpen(false); }}
-              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-            >
-              <FaKey className="w-4 h-4 mr-2 text-gray-400" />
-              Forgot Password
             </button>
 
             <div className="my-1 border-t border-gray-100" />

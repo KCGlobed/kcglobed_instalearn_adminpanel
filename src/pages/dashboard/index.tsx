@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem, FaBuilding, FaKey } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaHome, FaUser, FaDiscourse, FaQuestionCircle, FaClipboardList, FaCog, FaBlog, FaHeadset, FaGem, FaBuilding } from 'react-icons/fa';
 import logo from '../../assets/instalogo.png';
 import DashboardHeader from '../../components/DashboardHeader';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
@@ -257,14 +257,6 @@ const Dashboard: React.FC = () => {
               >
                 <FaUser className="w-4 h-4 mr-2" />
                 Profile
-              </button>
-
-              <button
-                onClick={() => navigate('/dashboard/forgot-password')}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <FaKey className="w-4 h-4 mr-2" />
-                Forgot Password
               </button>
               <button
                 onClick={onLogoutClick}

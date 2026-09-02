@@ -1851,5 +1851,13 @@ export const removeUserProfileImageApi = async (): Promise<any> => {
   return await apiRequest(`user/remove-profile-image/`, 'POST');
 };
 
+export const updateUserPasswordApi = async (payload: {
+  current_password: string;
+  password: string;
+  confirm_password: string;
+}): Promise<any> => {
+  return await apiRequest(`user/update-password/`, 'POST', payload);
+};
+
 // ---------------- User Profile End ---------------- //
 
