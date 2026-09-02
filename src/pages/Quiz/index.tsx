@@ -203,10 +203,10 @@ const ManageQuiz: React.FC = () => {
                         title="View"
                         onClick={() =>
                             showModal({
-                                title: 'Quiz Details',
+                                title: 'View Quiz Details',
                                 content: <QuizView id={row.id} hideModal={hideModal} />,
                                 type: 'custom',
-                                size: 'xl',
+                                size: 'xxl',
                             })
                         }
                     />
@@ -233,7 +233,7 @@ const ManageQuiz: React.FC = () => {
                                 content: <DeleteConfirmationModal
                                     id={row}
                                     name={row.name}
-                                    onDelete={async (id) => {
+                                    onDelete={async (_) => {
                                         try {
                                             await dispatch(deleteQuiz(row.id)).unwrap();
                                             toast.success('Quiz removed successfully');

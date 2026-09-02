@@ -199,7 +199,7 @@ const ManageStudentNotesReport: React.FC = () => {
                                     title: 'View Student Notes',
                                     content: <StudentNotesView userId={row.user} courses={uniqueCourses} initialCourseId={row.course} />,
                                     type: 'custom',
-                                    size: 'xl',
+                                    size: 'xxl',
                                 })
                             }
                         />

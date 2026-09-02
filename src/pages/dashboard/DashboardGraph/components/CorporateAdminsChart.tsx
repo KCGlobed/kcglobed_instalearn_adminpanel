@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import moment from "moment";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +23,7 @@ import {
   PieChart as DoughnutChartIcon,
   Loader2,
 } from "lucide-react";
+import { formatGraphLabel, sortGraphDataChronologically } from "../utils/chartHelpers";
 
 ChartJS.register(
   CategoryScale,
@@ -77,15 +77,17 @@ export const CorporateAdminsChart: React.FC<CorporateAdminsChartProps> = ({
   onFilterChange,
   onChartTypeChange,
 }) => {
-  const corpAdminList = Array.isArray(corporateAdminGraph) ? corporateAdminGraph : [];
-  const corpAdminLabels = corpAdminList.map((item: any) => {
-    if (!item.start_date) return "";
-    if (filter === "year") return moment(item.start_date).format("YYYY");
-    if (filter === "month") return moment(item.start_date).format("MMM YYYY");
-    return moment(item.start_date).format("MMM DD");
-  });
-  const corpAdminCounts = corpAdminList.map(
-    (item: any) => Number(item.total_corporate_registered) || 0
+  const corpAdminList = useMemo(
+    () => sortGraphDataChronologically(Array.isArray(corporateAdminGraph) ? corporateAdminGraph : []),
+    [corporateAdminGraph]
+  );
+  const corpAdminLabels = useMemo(
+    () => corpAdminList.map((item: any) => formatGraphLabel(item, filter)),
+    [corpAdminList, filter]
+  );
+  const corpAdminCounts = useMemo(
+    () => corpAdminList.map((item: any) => Number(item.total_corporate_registered) || 0),
+    [corpAdminList]
   );
   const hasCorpAdminData = corpAdminCounts.some((val: number) => val > 0);
 
@@ -126,8 +128,7 @@ export const CorporateAdminsChart: React.FC<CorporateAdminsChartProps> = ({
         pointHoverRadius: 6,
       },
     ],
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [corporateAdminGraph, chartType, filter]);
+  }), [corpAdminLabels, corpAdminCounts, chartType]);
 
   const chartOptions: any = useMemo(() => ({
     responsive: true,

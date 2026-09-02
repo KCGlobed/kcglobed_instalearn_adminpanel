@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import moment from "moment";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,6 +23,7 @@ import {
   PieChart as DoughnutChartIcon,
   Loader2,
 } from "lucide-react";
+import { formatGraphLabel, sortGraphDataChronologically } from "../utils/chartHelpers";
 
 ChartJS.register(
   CategoryScale,
@@ -77,12 +77,17 @@ export const StudentOrdersChart: React.FC<StudentOrdersChartProps> = ({
   onFilterChange,
   onChartTypeChange,
 }) => {
-  const orderList = Array.isArray(orderGraph) ? orderGraph : [];
-  const orderLabels = orderList.map((item: any) =>
-    item.start_date ? moment(item.start_date).format("MMM DD") : ""
+  const orderList = useMemo(
+    () => sortGraphDataChronologically(Array.isArray(orderGraph) ? orderGraph : []),
+    [orderGraph]
   );
-  const orderCounts = orderList.map(
-    (item: any) => Number(item.total_orders) || 0
+  const orderLabels = useMemo(
+    () => orderList.map((item: any) => formatGraphLabel(item, filter)),
+    [orderList, filter]
+  );
+  const orderCounts = useMemo(
+    () => orderList.map((item: any) => Number(item.total_orders) || 0),
+    [orderList]
   );
   const hasOrderData = orderCounts.some((val: number) => val > 0);
 
@@ -123,8 +128,7 @@ export const StudentOrdersChart: React.FC<StudentOrdersChartProps> = ({
         pointHoverRadius: 6,
       },
     ],
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [orderGraph, chartType]);
+  }), [orderLabels, orderCounts, chartType]);
 
   const chartOptions: any = useMemo(() => ({
     responsive: true,
