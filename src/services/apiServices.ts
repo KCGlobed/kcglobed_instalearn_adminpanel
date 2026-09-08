@@ -839,6 +839,11 @@ export const downloadStudentNotesExcelApi = async ({ search = "", first_name = "
   return await apiRequest(`reports/get-admin-notes-listing-report-excel/?${search ? `&search=${encodeURIComponent(search)}` : ""}${first_name ? `&first_name=${encodeURIComponent(first_name)}` : ""}${last_name ? `&last_name=${encodeURIComponent(last_name)}` : ""}${email ? `&email=${encodeURIComponent(email)}` : ""}${course ? `&course__name=${encodeURIComponent(course)}` : ""}${start_date ? `&start_date=${encodeURIComponent(start_date)}` : ""}${end_date ? `&end_date=${encodeURIComponent(end_date)}` : ""}`, 'GET');
 }
 
+export const getStudentWishlistListingApi = async (studentId: string | number): Promise<any> => {
+  return await apiRequest(`reports/get-student-wishlist-listing/${studentId}`, 'GET');
+};
+
+
 // ---------------- blog category service start ------- //
 export async function fetchBlogCategoryApi(page = 1, search: string = "", title: string = "", description: string = "", ordering: string = "", status: string = "", start_date: string = "", end_date: string = ""): Promise<any> {
   const statusVal = status === 'active' ? '1' : status === 'deactive' ? '0' : '';

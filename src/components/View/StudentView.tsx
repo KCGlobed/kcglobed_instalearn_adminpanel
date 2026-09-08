@@ -7,7 +7,7 @@ import {
     Mail, Phone, MapPin, Calendar, BookOpen,
     ArrowLeft, Smartphone, Check,
     Monitor, Award, CheckSquare, Bell, Clock, XCircle,
-    Download, FileText, PlayCircle, Eye, Info, HelpCircle, 
+    Download, FileText, PlayCircle, Eye, Info, HelpCircle, Heart
 } from 'lucide-react';
 import moment from 'moment';
 import toast from 'react-hot-toast';
@@ -28,6 +28,7 @@ import {
     downloadStudentReminderReportExcelApi
 } from '../../services/apiServices';
 import { formatReminderDateTime } from './CorporateStudentReminder';
+import StudentWishlistView from './StudentWishlistView';
 
 const CARD = 'bg-white rounded-2xl border border-gray-200 shadow-sm';
 
@@ -68,7 +69,7 @@ const StudentProfile: React.FC = () => {
 
     const [imgError, setImgError] = useState(false);
     const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-    const [activeReportTab, setActiveReportTab] = useState<'video' | 'notes' | 'quizzes' | 'reminders'>('video');
+    const [activeReportTab, setActiveReportTab] = useState<'video' | 'notes' | 'quizzes' | 'reminders' | 'wishlist'>('video');
 
     const [reportData, setReportData] = useState<any>(null);
     const [loadingReport, setLoadingReport] = useState<boolean>(false);
@@ -604,6 +605,16 @@ const StudentProfile: React.FC = () => {
                                         </span>
                                     )}
                                 </button>
+                                <button
+                                    onClick={() => setActiveReportTab('wishlist')}
+                                    className={`flex items-center gap-2 pb-3.5 text-xs font-bold transition-all border-b-2 ${activeReportTab === 'wishlist'
+                                        ? 'border-[#4318FF] text-[#4318FF]'
+                                        : 'border-transparent text-gray-500 hover:text-gray-800'
+                                        }`}
+                                >
+                                    <Heart size={15} />
+                                    <span>Wishlist</span>
+                                </button>
                             </div>
 
                             {/* TAB 1: Video Reports */}
@@ -1052,6 +1063,13 @@ const StudentProfile: React.FC = () => {
                                             <p className="text-xs text-gray-400">No study reminders have been set by the student for this course yet.</p>
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {/* TAB 5: Wishlist */}
+                            {activeReportTab === 'wishlist' && (
+                                <div className="flex flex-col flex-1 h-full">
+                                    <StudentWishlistView studentId={Number(id)} />
                                 </div>
                             )}
                         </div>

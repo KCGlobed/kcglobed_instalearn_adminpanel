@@ -29,7 +29,8 @@ import UniversityStudentLoginActivityView from '../../components/View/University
 import ImportUniversityStudents from '../../components/Forms/ImportUniversityStudents';
 import AddUniversityStudent from '../../components/Forms/AddUniversityStudent';
 import { useModal } from '../../context/ModalContext';
-import { PlayCircle, FileText, CheckCircle, Bell, LogIn, UploadCloud, UserPlus } from 'lucide-react';
+import StudentWishlistView from '../../components/View/StudentWishlistView';
+import { PlayCircle, FileText, CheckCircle, Bell, LogIn, UploadCloud, UserPlus, Heart } from 'lucide-react';
 
 const CARD = 'bg-white rounded-[22px] border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300';
 
@@ -151,6 +152,12 @@ const UniversityProfile = () => {
                             label: 'Login Activity',
                             icon: <LogIn size={15} />,
                             component: <UniversityStudentLoginActivityView studentId={student.id} />
+                        },
+                        {
+                            key: 'wishlist',
+                            label: 'Wishlist',
+                            icon: <Heart size={15} />,
+                            component: <StudentWishlistView studentId={student.id} />
                         }
                     ]}
                 />
