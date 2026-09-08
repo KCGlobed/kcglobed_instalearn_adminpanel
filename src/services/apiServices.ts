@@ -291,6 +291,10 @@ export const updateInstructorPublicProfileApi = async (id: string | number, payl
   return await apiRequest(`user/update-instructor-public-profile/${id}`, 'POST', payload);
 };
 
+export const viewUserDetailApi = async (id: string | number): Promise<any> => {
+  return await apiRequest(`user/view-user-detail/${id}`, 'GET');
+};
+
 //----------------------------------------Abhishek Manage Instructor end ---------------------------------------------------------//
 
 //==============================Abhishek Manage Faq Topics ===================
@@ -332,6 +336,10 @@ export const fetchFaqApi = async (page: number = 1, search: string = "", title: 
 
 export const addFaqApi = async (payload: any): Promise<any> => {
   return await apiRequest(`cms/create-faq/`, 'POST', payload);
+};
+
+export const viewFaqApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/view-faq-info/${id}`, 'GET');
 };
 
 export const updateFaqApi = async (id: number | string, payload: any): Promise<any> => {
@@ -971,6 +979,10 @@ export const updateTestimonialStatusApi = async (id: string | number, payload: {
   return await apiRequest(`cms/update-testimonials-status/${id}`, 'POST', payload);
 };
 
+export const viewTestimonialsApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/view-testimonials-info/${id}`, 'GET');
+};
+
 //----------------- testimonials end ------------------//
 
 //------------------ quiz start ------------------//
@@ -1109,6 +1121,10 @@ export const updateSupportArticleStatusApi = async (id: string | number, payload
 
 export const fetchSupportTopicAndSubList = async (): Promise<any> => {
   return await apiRequest(`cms/get-help-support-topic-and-sub-list/`, 'GET');
+};
+
+export const viewHelpSupportArticleApi = async (id: number | string): Promise<any> => {
+  return await apiRequest(`cms/view-help-support-article-info/${id}`, 'GET');
 };
 
 //----------------- help and support article end ------------------//

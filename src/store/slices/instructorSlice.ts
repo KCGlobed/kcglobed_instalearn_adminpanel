@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Instructor, Pagination } from "../../utils/types";
-import { createInstructor, deleteInstructorApi, fetchInstructor, updateInstructorApi, updateInstructorStatusApi } from "../../services/apiServices";
+import { createInstructor, deleteInstructorApi, fetchInstructor, updateInstructorApi, updateInstructorStatusApi, viewUserDetailApi } from "../../services/apiServices";
 
 interface instructorState extends Pagination<Instructor> { }
 
@@ -78,6 +78,19 @@ export const deleteInstructor = createAsyncThunk<number | string, any, { rejectV
         }
     }
 )
+
+export const viewInstructor = createAsyncThunk<
+    Instructor,
+    number | string,
+    { rejectValue: string }
+>("instructor/viewInstructor", async (id, { rejectWithValue }) => {
+    try {
+        const response = await viewUserDetailApi(id);
+        return response.data ? response.data : response;
+    } catch (error: any) {
+        return rejectWithValue(error.message || "Failed to view instructor");
+    }
+});
 
 const instructorSlice = createSlice({
     name: "instructor",

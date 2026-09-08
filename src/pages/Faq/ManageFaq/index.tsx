@@ -7,7 +7,7 @@ import { getFaq, removeFaq, updateFaqStatus } from '../../../store/slices/faqSli
 import moment from 'moment';
 import toast from 'react-hot-toast';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiEye, FiTrash } from 'react-icons/fi';
 import ManageFaqForm from '../../../components/Forms/FaqForm';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import { deleteFaqApi } from '../../../services/apiServices';
@@ -18,6 +18,7 @@ import DynamicFilter from '../../../components/common/DynamicFilter';
 import { faqFilterConfig } from '../../../utils/filterConfiguration';
 import InlineDateFilter from '../../../components/common/InlineDateFilter';
 import DynamicServerTable from '../../../components/Table/Table';
+import ViewFaqForm from '../../../components/Forms/ViewFaqForm';
 
 
 interface ColumnDef {
@@ -175,6 +176,19 @@ const ManageFaq: React.FC = () => {
       title: 'Actions',
       render: (_, row) => (
         <div className="flex items-center justify-end gap-3 pr-2">
+          <GlassButton
+            icon={<FiEye />}
+            color="blue"
+            title="View"
+            onClick={() =>
+              showModal({
+                title: 'View FAQ',
+                content: <ViewFaqForm id={row.id} faqData={row} />,
+                type: 'success',
+                size: 'xxl',
+              })
+            }
+          />
           <GlassButton
             icon={<FiEdit />}
             color="green"

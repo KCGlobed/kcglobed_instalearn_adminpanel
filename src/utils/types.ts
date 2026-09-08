@@ -600,6 +600,10 @@ export interface Faq extends FaqTopics {
     id: number;
     title: string;
   };
+  title:string,
+  description:string,
+  status:boolean,
+  created_at:string
 }
 
 //--------------Faq End------------//
@@ -1594,4 +1598,3 @@ export interface ProfileState {
   bannerLoading: boolean;
   passwordLoading: boolean;
 }
-
