@@ -10,8 +10,9 @@ import InstructorForm from '../../components/Forms/InstructorForm';
 import { useModal } from '../../context/ModalContext';
 import toast from 'react-hot-toast';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash, FiSettings } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiSettings, FiEye } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
+import ViewInstructor from '../../components/View/ViewInstructor';
 import { deleteInstructorApi, downloadInstructorPdfApi, downloadInstructorExcelApi } from '../../services/apiServices';
 import InlineDateFilter from '../../components/common/InlineDateFilter';
 import ExportFile from '../../components/Forms/ExportFile';
@@ -189,6 +190,19 @@ const ManageInstructors: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View Instructor',
+                                content: <ViewInstructor id={row.id} instructorData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            });
+                        }}
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"

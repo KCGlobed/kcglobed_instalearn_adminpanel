@@ -5,7 +5,8 @@ import {
   createTestimonialsApi,
   updateTestimonialsApi,
   deleteTestimonialsApi,
-  updateTestimonialStatusApi
+  updateTestimonialStatusApi,
+  viewTestimonialsApi
 } from "../../services/apiServices";
 
 interface testimonialState extends Pagination<Testimonials> { }
@@ -114,6 +115,19 @@ export const updateTestimonialStatus = createAsyncThunk<
     return { id, status };
   } catch (error: any) {
     return rejectWithValue(error.message || "Failed to update status");
+  }
+});
+
+export const viewTestimonial = createAsyncThunk<
+  Testimonials,
+  number | string,
+  { rejectValue: string }
+>("testimonial/viewTestimonial", async (id, { rejectWithValue }) => {
+  try {
+    const response = await viewTestimonialsApi(id);
+    return response.data ? response.data : response;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to view testimonial");
   }
 });
 

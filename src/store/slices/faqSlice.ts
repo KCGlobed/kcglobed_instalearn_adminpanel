@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Faq, Pagination } from "../../utils/types";
-import { fetchFaqApi, addFaqApi, updateFaqApi, deleteFaqApi, updateFaqStatusApi } from "../../services/apiServices";
+import { fetchFaqApi, addFaqApi, updateFaqApi, deleteFaqApi, updateFaqStatusApi, viewFaqApi } from "../../services/apiServices";
 
 interface faqState extends Pagination<Faq> { }
 
@@ -30,6 +30,18 @@ export const getFaq = createAsyncThunk<Pagination<Faq>, { page?: number; search?
             return await fetchFaqApi(page, search, title, description, ordering, status, start_date, end_date);
         } catch (err: any) {
             return rejectWithValue(err?.message || "Failed to fetch FAQ");
+        }
+    }
+);
+
+export const viewFaq= createAsyncThunk<Faq, number | string, { rejectValue: string }>(
+    "faq/viewFaq",
+    async (id, { rejectWithValue }) => {
+        try {
+            const data = await viewFaqApi(id);
+            return data?.data ? data.data : data;
+        } catch (error: any) {
+            return rejectWithValue(error?.message || "Failed to view FAQ");
         }
     }
 );
