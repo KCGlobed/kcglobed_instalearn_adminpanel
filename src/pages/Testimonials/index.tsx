@@ -15,9 +15,10 @@ import DynamicFilter from '../../components/common/DynamicFilter';
 import { testimonialFilterConfig } from '../../utils/filterConfiguration';
 import TestimonialForm from '../../components/Forms/TestimonialForm';
 import GlassButton from '../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../components/Modal/DeleteModal';
 import { deleteTestimonialsApi } from '../../services/apiServices';
+import ViewTestimonial from '../../components/View/ViewTestimonial';
 
 interface ColumnDef {
     key: string;
@@ -202,6 +203,19 @@ const ManageTestimonials: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View Testimonial',
+                                content: <ViewTestimonial id={row.id} testimonialData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            });
+                        }}
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"

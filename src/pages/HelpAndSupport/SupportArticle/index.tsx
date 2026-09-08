@@ -15,9 +15,10 @@ import DynamicFilter from '../../../components/common/DynamicFilter';
 import { supportArticleFilterConfig } from '../../../utils/filterConfiguration';
 import SupportArticleForm from '../../../components/Forms/SupportArticleForm';
 import GlassButton from '../../../components/Button/Button';
-import { FiEdit, FiTrash } from 'react-icons/fi';
+import { FiEdit, FiTrash, FiEye } from 'react-icons/fi';
 import DeleteConfirmationModal from '../../../components/Modal/DeleteModal';
 import { deleteSupportArticleApi } from '../../../services/apiServices';
+import ViewHelpSupportArticle from '../../../components/View/ViewHelpSupportArticle';
 
 interface ColumnDef {
     key: string;
@@ -170,6 +171,19 @@ const ManageSupportArticle: React.FC = () => {
             title: 'Actions',
             render: (_, row) => (
                 <div className="flex items-center justify-end gap-3 pr-2">
+                    <GlassButton
+                        icon={<FiEye />}
+                        color="blue"
+                        title="View"
+                        onClick={() => {
+                            showModal({
+                                title: 'View Support Article',
+                                content: <ViewHelpSupportArticle id={row.id} articleData={row} />,
+                                type: 'success',
+                                size: 'xxl',
+                            });
+                        }}
+                    />
                     <GlassButton
                         icon={<FiEdit />}
                         color="green"

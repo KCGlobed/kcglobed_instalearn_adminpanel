@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
 import type { supportArticle, Pagination } from "../../utils/types";
-import { createSupportArticle, fetchSupportArticle, updateSupportArticleApi, updateSupportArticleStatusApi,  } from "../../services/apiServices";
+import { createSupportArticle, fetchSupportArticle, updateSupportArticleApi, updateSupportArticleStatusApi, viewHelpSupportArticleApi } from "../../services/apiServices";
 
 interface SupportArticleState extends Pagination<supportArticle> { }
 
@@ -68,6 +68,19 @@ export const updateSupportArticleStatus = createAsyncThunk<supportArticle, any, 
             }
         }
     );
+
+export const viewSupportArticle = createAsyncThunk<
+    supportArticle,
+    number | string,
+    { rejectValue: string }
+>("supportArticle/viewSupportArticle", async (id, { rejectWithValue }) => {
+    try {
+        const response = await viewHelpSupportArticleApi(id);
+        return response.data ? response.data : response;
+    } catch (error: any) {
+        return rejectWithValue(error.message || "Failed to view support article");
+    }
+});
 
 const supportArticleSlice = createSlice({
     name: "supportArticle",
