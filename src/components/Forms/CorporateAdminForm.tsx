@@ -25,9 +25,10 @@ type CorporateAdminFormValues = {
 
 type Props = {
     adminData?: any;
+    onSuccess?: () => void;
 };
 
-const CorporateAdminForm = ({ adminData }: Props) => {
+const CorporateAdminForm = ({ adminData, onSuccess }: Props) => {
     const [saving, setSaving] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [imageError, setImageError] = useState('');
@@ -177,6 +178,7 @@ const CorporateAdminForm = ({ adminData }: Props) => {
                 toast.success("Corporate Admin added successfully");
             }
             hideModal();
+            onSuccess?.();
         } catch (err: any) {
             console.error('Corporate Admin submission failed:', err);
             toast.error(err || "Failed to submit corporate admin");
