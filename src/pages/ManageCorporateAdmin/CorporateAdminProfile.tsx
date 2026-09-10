@@ -27,7 +27,8 @@ import CorporateStudentNotes from '../../components/View/CorporateStudentNotes';
 import CorporateStudentQuizReport from '../../components/View/CorporateStudentQuizReport';
 import CorporateStudentReminder from '../../components/View/CorporateStudentReminder';
 import CorporateStudentLoginActivityView from '../../components/View/CorporateStudentLoginActivityView';
-import { PlayCircle, FileText, HelpCircle, Bell, Eye } from 'lucide-react';
+import StudentWishlistView from '../../components/View/StudentWishlistView';
+import { PlayCircle, FileText, HelpCircle, Bell, Eye, Heart } from 'lucide-react';
 
 const CARD = 'bg-white rounded-[22px] border border-gray-100 shadow-[0_2px_10px_rgba(15,23,42,0.04)] transition-all duration-300';
 const CARD_HOVER = 'hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-gray-200';
@@ -375,6 +376,12 @@ const CorporateAdminProfile = () => {
                                                                                 label: 'Login Activity',
                                                                                 icon: <Activity size={15} />,
                                                                                 component: <CorporateStudentLoginActivityView studentId={student.id} />
+                                                                            },
+                                                                            {
+                                                                                key: 'wishlist',
+                                                                                label: 'Wishlist',
+                                                                                icon: <Heart size={15} />,
+                                                                                component: <StudentWishlistView studentId={student.id} />
                                                                             }
                                                                         ]}
                                                                     />
